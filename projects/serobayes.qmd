@@ -1,0 +1,24 @@
+---
+title: "Evaluating the performance of COVID-19 rapid tests"
+description: "A Bayesian framework for diagnostic tests"
+date:   Jun-2020
+image: cover_images/sero_bayes.png
+fig-cap-location: margin
+---
+
+::: {.callout-note}
+Note that in the early days of the 2020 pandemic there was a lot of uncertainty regarding the effectiveness of the rapid tests. This was an attempt at quantifying the performance of the different tests present in the market.
+:::
+
+In this project, I developed a framework to quantify the uncertainty surrounding the performance of several Sars-CoV-2 rapid serological tests.  This allows to:
+
+1) given the results of a population study, to correct the results for false positives and false negatives,
+1) to make informed decisions about the choice of test to use, when planning studies
+
+All diagnostic tests are affected by false positives and false negatives. 
+I used to the data reported to the US Food and Drug Administration (FDA) by the manufacturers to quantify the sensitivity and specificty of each test, together with the uncertainty associated with it. 
+
+
+Given these estimates, one can then use them to predict 
+
+

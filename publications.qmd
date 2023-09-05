@@ -1,0 +1,10 @@
+---
+title: Publications
+bibliography: MyPapers.bib
+csl: apa-cv.csl
+reference-section-title: "Publications"
+nocite: |
+  @*
+---
+
+Please also check <a href="https://scholar.google.com/citations?user=7x0vA8EAAAAJ&hl=en">Google Scholar</a> and <a href="https://orcid.org/0000-0003-2361-3953">ORCID</a>

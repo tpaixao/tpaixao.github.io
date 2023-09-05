@@ -1,0 +1,39 @@
+---
+title: "Estimating allelic trajectories from PooledSeq"
+description: "Using SDEs to estimate allelic trajectories and associated evolutionary parameters from PooledSeq"
+date: Jan-2021
+image: cover_images/BayesEvolveResequence.png
+fig-cap-location: margin
+title-block-banner: cover_images/BayesEvolveResequence_trajectories_small.png
+---
+
+
+
+In typical evolve and resequence experiments, the objective is to find genetic variants respondible for adaptation to a particular selection pressure. In these experiments, populations are evolved under some selective pressure and sequenced both at the start and at the end of the experiment.
+
+In this particular case, the type of sequencing was PooledSeq, in which (a sample of) the population is sequenced as a whole, thereby loosing all information about individual haplotypes. Here the objective is really to measure allele frequencies. 
+
+Typically these experiments are analyzed through the Cochram-Mantel-Haenzel (CMH) test. The CMH test is a generalization of the chi-square for stratitified contingency tables. In the case at hand, the stratification is over replicates. In essence, one makes an association test over the read counts between the treatment (Evolved / Control) and time ( initial timepoint / final timepoint ). Because experiments are replicated, one ends up with several contingency tables (one for each replicate), over which the CMH test can be used to determine if there is a consistent association between the two variables (treatment and time) over the several replicates. In practice, the test is actually two tests: one that tests if the pooled odds-ratio is null, and another (the Breslow-Day test) that tests if the Odds-Ratio is the same across all tables.
+
+There are however, a number of issues with this statistical approach: 
+
+1. This approach assumes a pairing between evolved and control populations. In reality, very rarely there is any biological reason to assume that a particular control replicated is related to any specific treatment replicate. 
+2. There is no reason to use only two time points in this type of experimental design. This procedure would not be able to accomodate extra time points.
+3. More importantly, this procedure does not incorporate all the knowledge we have regarding the process that generates the data: The variance across replicates depends on the number of generations of evolution, the initial allele frequency, and the selection coefficient. Because the process is inherently stochastic, and this method has no information about the variance that may be expected, associations may arise simply by chance.
+
+## Principled inference: incorporating scientific knowledge in the inference process
+
+Instead of trying to "shoehorn" a generic statistical test to our data, one can instead incorporate the mechanisms that we know should be acting to generate the data. This in principle will allow us to take more out of our data.
+
+In these kinds of experiments, particularly with organisms such as drosophila, generations are discrete by design, and the population size is fixed. This allows us to write the expected change in allele frequencies from basic population genetics theory as:
+
+$$
+  \Delta p = \left[ p\left(W_{11}-W_{01}\right) + (1-p)\left(W_{01}-W_{00}\right) \right]\frac{p(1-p)}{\bar{W}}
+$$
+
+where $p$ tracks the frequency of a particular variant at a locus (be it a SNP, an aminoacid, or a whole gene variant) and $W_{11}=(1+s)^2$, $W_{00}=1$ and $W_{01}=(1+sh)$ are the fitnesses of the both homozygotes and the heterozygote, respectively. Note that here we are assuming that patterns of dominance may exist.
+
+Furthermore, we know this allele frequency is affected by genetic drift, and a good approximation for this sampling process is the binomial (the Wright-Fisher model).
+
+Beyond the population genetics knowledge, one can also incorporate the added variance that is introduced by the sub-sampling of the population that is performed for the sequencing, as well as the sequencing depth of each locus. Both of these processes can also be described by binomial processes.
+

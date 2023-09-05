@@ -1,0 +1,22 @@
+project:
+  type: website
+
+website:
+  title: "Tiago Paixão"
+  navbar:
+    background: light
+    foreground: dark
+    right:
+      - projects.qmd
+      - blog.qmd
+      - publications.qmd
+      - href: about.qmd
+        text: About
+format:
+  html:
+    theme: journal
+    css: styles.css
+    toc: false
+
+
+

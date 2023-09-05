@@ -1,0 +1,24 @@
+---
+title: "Tiago Paixão"
+about:
+  id: hero
+  template: jolla
+  image: assets/tiago2.png
+  image-shape: round
+  links:
+    - icon: twitter
+      text: twitter
+      href: https://twitter.com/tpaixao
+    - icon: github
+      text: Github
+      href: https://github.com/tpaixao
+    - icon: linkedin
+      text: LinkedIn
+      href: https://linkedin.com/in/tiago-paixao
+---
+
+:::{#hero}
+this is me
+:::
+
+

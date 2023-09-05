@@ -1,0 +1,50 @@
+---
+title: "Tiago Paixão"
+subtitle: "Grabbing reality by the data<br/>\
+          this is another line "
+about:
+  template: trestles
+  image: assets/tiago2.png
+  image-shape: round
+  image-width: 8em
+  links:
+    - icon: twitter
+      text: twitter
+      href: https://twitter.com/tpaixao
+    - icon: github
+      text: Github
+      href: https://github.com/tpaixao
+    - icon: linkedin
+      text: LinkedIn
+      href: https://linkedin.com/in/tiago-paixao
+---
+
+
+## Work Experience
+
+Head of the Advanced Data Analysis unit
+: (2023 -- ) Instituto Gulbenkian de Ciência, Portugal
+
+Head of Quantitative Biology \& Digital Science
+: (2020 -- 2023 ) Instituto Gulbenkian de Ciência, Portugal
+
+Head of Clinical Research
+: (2018 -- 2019) IBLab GmbH (ImageBiopsy Lab), Austria
+
+Postdoctoral Researcher
+:  (2011 -- 2017) Institute of Science and Technology Austria, Austria
+
+Postdoctoral Researcher
+: (2008 -- 2011) Univeristy of Houston, USA
+
+Research Assistant
+: (2001 -- 2003) Instituto Superior Técnico, Portugal
+
+## Education
+
+PhD - Biomedical Sciences
+: (2003 -- 2007) Universidade do Porto / Instituto Gulbenkian de Ciência
+
+BSc/MSc - Physics Engineering
+: (1996 -- 2001) Insituto Superior Técnico
+
