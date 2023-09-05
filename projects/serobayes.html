@@ -62,11 +62,13 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent">
+<body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -110,9 +112,10 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content page-columns page-full" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -157,13 +160,35 @@ Note
 </div>
 <p>In this project, I developed a framework to quantify the uncertainty surrounding the performance of several Sars-CoV-2 rapid serological tests. This allows to:</p>
 <ol type="1">
-<li>given the results of a population study, to correct the results for false positives and false negatives,</li>
+<li>given the results of a population study, to correct the results for false positives and false negatives, in a test-specific manner, in order to obtain accurate estimates of the real prevalence of seropositives, together with a measure of its uncertainty.</li>
 <li>to make informed decisions about the choice of test to use, when planning studies</li>
 </ol>
-<p>All diagnostic tests are affected by false positives and false negatives. I used to the data reported to the US Food and Drug Administration (FDA) by the manufacturers to quantify the sensitivity and specificty of each test, together with the uncertainty associated with it.</p>
-<p>Given these estimates, one can then use them to predict</p>
+<p>I used to the data reported to the US Food and Drug Administration (FDA) by the manufacturers to quantify the sensitivity and specificty of each test, together with the uncertainty associated with it. From here, we write the observed frequency of sero-positive results in a study as a function of the actual prevalence, the rate of false positives, and the rate of false negatives:</p>
+<p><span class="math display">\[
+p_{\textrm{obs} } = p_{prev}\cdot (1-p_\textrm{fnr}) + (1- p_\textrm{prev} ) \cdot p_\textrm{fpr}
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(p_{\textrm{obs} }\)</span> is the observed frequency of positives</li>
+<li><span class="math inline">\(p_{prev}\)</span> is the <em>real</em> prevalence</li>
+<li><span class="math inline">\(p_\textrm{fnr}\)</span> is the rate of false <em>negatives</em></li>
+<li><span class="math inline">\(p_\textrm{fpr}\)</span> is the rate of false <em>positives</em></li>
+</ul>
+<p>So, essentially, this formula is saying that the observed frequency of positives (<span class="math inline">\(p_\textrm{obs}\)</span>) is the real positives times the <strong>true</strong> positive rate (discounting false negatives) <strong>plus</strong> the number of negatives times the false positive rate.</p>
+<p>We then include this formula in a Bayesian framework, that assigns this probability of observing positives to a Binomial distribution, as well as the numbers of the diagnotics test (numbers and totals of false positives and false negatives). This model jointly estimates false positive and negative rates, together with the real prevalence and the joint uncertainty. We wrap this as a pymc model, that allows us to sample the posterior distribution using NUTS, the state of the art Hamiltonean Monte-Carlo sampler.</p>
+<section id="comparing-test-specfic-distortions" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="comparing-test-specfic-distortions">Comparing test-specfic distortions</h3>
+<p>One thing we can do to illustrate the differences between tests, is to see what the real prevalence would be for the same number of <em>observed</em> positives (figure <a href="#fig-tests">Figure&nbsp;1</a> ).</p>
+<div id="fig-tests" class="quarto-figure quarto-figure-center anchored page-columns page-full">
+<figure class="figure page-columns page-full">
+<p><img src="cover_images/sero_bayes.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption margin-caption">Figure&nbsp;1: For the same number of observed positives, different tests would imply different real prevalences</figcaption>
+</figure>
+</div>
+<p>Alternatively, one can simulate data, assuming one real prevalence, and running it through the several tests to see what the reported rate of positives would be for each test.</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
