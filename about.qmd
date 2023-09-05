@@ -1,6 +1,6 @@
 ---
 title: "Tiago Paixão"
-subtitle: "Grabbing reality by the data<br/>\"
+subtitle: "Grabbing reality by the data<br/>"
 about:
   template: trestles
   image: assets/tiago2.png
