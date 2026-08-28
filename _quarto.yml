@@ -1,5 +1,11 @@
 project:
   type: website
+  output-dir: _site
+  render:
+    - "*.qmd"
+    - "*.md"
+  exclude:
+    - "orcid/"
 
 website:
   title: "Tiago Paixão"
