@@ -4,8 +4,6 @@ project:
   render:
     - "*.qmd"
     - "*.md"
-  exclude:
-    - "orcid/"
 
 website:
   title: "Tiago Paixão"
