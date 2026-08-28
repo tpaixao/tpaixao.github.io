@@ -1,0 +1,22 @@
+site_name: Tiago Paixão Blog
+site_url: https://tiago-paixao.github.io
+repo_url: https://github.com/tpaixao/tpaixao.github.io
+theme:
+  name: material
+nav:
+  - Home: index.qmd
+  - Blog:
+      - Power Analysis: blog/power_analysis_best_practices.qmd
+      - Normalization: blog/normalize_rnaseq.qmd
+      - Interpret p-values: blog/interpret_pvalues_fdr.qmd
+  - Publications
+  - About
+plugins:
+  - search
+  - mkdocstrings
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - toc:
+      permalink: true
