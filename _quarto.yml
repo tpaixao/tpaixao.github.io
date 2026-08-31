@@ -4,6 +4,8 @@ project:
   render:
     - "*.qmd"
     - "*.md"
+  post-render:
+    - _post_render.py
 
 website:
   title: "Tiago Paixão"
@@ -21,6 +23,5 @@ format:
     theme: journal
     css: styles.css
     toc: false
-
 
 
