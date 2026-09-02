@@ -9,13 +9,18 @@ project:
 
 website:
   title: "Tiago Paixão"
+  site-url: https://tiagopaixao.com
+  favicon: assets/favicon.png
+  search: true
   navbar:
     background: light
     foreground: dark
+    pinned: true
     right:
       - projects.qmd
       - blog.qmd
       - publications.qmd
+      - cv.qmd
       - href: about.qmd
         text: About
 format:
