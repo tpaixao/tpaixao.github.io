@@ -1,14 +1,24 @@
 /* css styles */
 
-/* Compact icon-only social links */
+/* Compact icon-only social links (override jolla full-width stacked buttons) */
 .quarto-about-jolla .about-links {
   display: flex;
   flex-direction: row;
   justify-content: center;
   gap: 0.75rem;
 }
+
+@media (max-width: 991.98px) {
+  .quarto-about-jolla .about-links {
+    flex-direction: row;
+    width: auto;
+    align-self: center;
+  }
+}
+
 .quarto-about-jolla .about-links .about-link {
   width: auto;
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -16,7 +26,10 @@
   border: none;
   background: transparent;
 }
-.quarto-about-jolla .about-links .about-link svg {
+
+.quarto-about-jolla .about-links .about-link svg,
+.quarto-about-jolla .about-links .about-link i {
   width: 1.15rem;
   height: 1.15rem;
+  font-size: 1.15rem;
 }
