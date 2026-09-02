@@ -1,13 +1,13 @@
 /* css styles */
 
 /* Compact icon-only social links */
-.about-links {
+.quarto-about-jolla .about-links {
   display: flex;
   flex-direction: row;
   justify-content: center;
   gap: 0.75rem;
 }
-.about-links .about-link {
+.quarto-about-jolla .about-links .about-link {
   width: auto;
   display: inline-flex;
   align-items: center;
@@ -16,7 +16,7 @@
   border: none;
   background: transparent;
 }
-.about-links .about-link svg {
+.quarto-about-jolla .about-links .about-link svg {
   width: 1.15rem;
   height: 1.15rem;
 }
