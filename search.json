@@ -60,42 +60,28 @@
     "href": "index.html",
     "title": "Tiago Paixão",
     "section": "",
-    "text": "Grabbing reality by the data\n \n  \n   \n  \n    \n     twitter\n  \n  \n    \n     Github\n  \n  \n    \n     LinkedIn\n  \n\n\n\nI lead the Advanced Data Analysis unit at the Gulbenkian Institute for Molecular Medicine, where my team brings statistical rigor and machine learning to biology: experimental design, Bayesian inference, multi-omics data integration, and the honest analysis of single-cell and spatial transcriptomics data.\nI am increasingly interested in how AI changes the practice of science itself: agentic systems for data analysis, foundation models for biology, and what it takes to make AI-generated analysis trustworthy rather than merely fast. I write about this on the blog, and build tools under Projects."
+    "text": "Grabbing reality by the data\n \n  \n   \n  \n    \n     twitter\n  \n  \n    \n     Github\n  \n  \n    \n     LinkedIn"
   },
   {
     "objectID": "about.html",
     "href": "about.html",
-    "title": "About",
+    "title": "Tiago Paixão",
     "section": "",
-    "text": "I am Head of the Advanced Data Analysis unit at the Gulbenkian Institute for Molecular Medicine (GIMM). My unit is a core facility dedicated to bioinformatics, data analysis, computational biology, experimental design, and data management, serving research groups across the institute. My own work sits at the interface of statistics and biology: Bayesian inference, machine learning for biomedical applications, multi-omics data integration, and the statistical foundations of single-cell and spatial transcriptomics.\nA recurring theme in my recent work is the arrival of AI in scientific data analysis. Pipelines for processing data are mature; the layer where analysis is actually judged, statistical inference, experimental design, uncertainty quantification, is not. Most of my current projects orbit this gap: Project Anvil, structured and provenance-tracked AI-assisted analysis for biology; an agentic harness architecture that enforces quality gates mechanically rather than through prompts; and AI-first approaches to biological databases.\nBefore GIMM I led Quantitative Biology and Digital Science at the Instituto Gulbenkian de Ciência, was Head of Clinical Research at ImageBiopsy Lab (medical AI software, including an FDA 510(k) clearance), and did postdoctoral work in evolutionary genetics at IST Austria and the University of Houston. I hold a PhD in Biomedical Sciences (Universidade do Porto / IGC) and started out in physics engineering at Instituto Superior Técnico."
-  },
-  {
-    "objectID": "about.html#work",
-    "href": "about.html#work",
-    "title": "About",
-    "section": "",
-    "text": "I am Head of the Advanced Data Analysis unit at the Gulbenkian Institute for Molecular Medicine (GIMM). My unit is a core facility dedicated to bioinformatics, data analysis, computational biology, experimental design, and data management, serving research groups across the institute. My own work sits at the interface of statistics and biology: Bayesian inference, machine learning for biomedical applications, multi-omics data integration, and the statistical foundations of single-cell and spatial transcriptomics.\nA recurring theme in my recent work is the arrival of AI in scientific data analysis. Pipelines for processing data are mature; the layer where analysis is actually judged, statistical inference, experimental design, uncertainty quantification, is not. Most of my current projects orbit this gap: Project Anvil, structured and provenance-tracked AI-assisted analysis for biology; an agentic harness architecture that enforces quality gates mechanically rather than through prompts; and AI-first approaches to biological databases.\nBefore GIMM I led Quantitative Biology and Digital Science at the Instituto Gulbenkian de Ciência, was Head of Clinical Research at ImageBiopsy Lab (medical AI software, including an FDA 510(k) clearance), and did postdoctoral work in evolutionary genetics at IST Austria and the University of Houston. I hold a PhD in Biomedical Sciences (Universidade do Porto / IGC) and started out in physics engineering at Instituto Superior Técnico."
-  },
-  {
-    "objectID": "about.html#currently-thinking-about",
-    "href": "about.html#currently-thinking-about",
-    "title": "About",
-    "section": "Currently thinking about",
-    "text": "Currently thinking about\n\nAgentic systems for scientific data analysis, and how to make their output auditable\nBayesian and amortized inference (PyMC, simulation-based inference)\nFoundation models for single-cell biology: what they actually learn, and when to trust them\nStatistical failure modes in single-cell and spatial omics: pseudoreplication, compositional data, batch-confounded designs\nBuilding AI adoption strategy for a research institute"
+    "text": "Head of the Advanced Data Analysis unit\n\n(2023 – ) Instituto Gulbenkian de Ciência, Portugal\n\nHead of Quantitative Biology & Digital Science\n\n(2020 – 2023 ) Instituto Gulbenkian de Ciência, Portugal\n\nHead of Clinical Research\n\n(2018 – 2019) IBLab GmbH (ImageBiopsy Lab), Austria\n\nPostdoctoral Researcher\n\n(2011 – 2017) Institute of Science and Technology Austria, Austria\n\nPostdoctoral Researcher\n\n(2008 – 2011) Univeristy of Houston, USA\n\nResearch Assistant\n\n(2001 – 2003) Instituto Superior Técnico, Portugal"
   },
   {
     "objectID": "about.html#work-experience",
     "href": "about.html#work-experience",
-    "title": "About",
-    "section": "Work Experience",
-    "text": "Work Experience\n\nHead of the Advanced Data Analysis unit\n\n(2023 – ) Gulbenkian Institute for Molecular Medicine, Portugal\n\nHead of Quantitative Biology & Digital Science\n\n(2020 – 2023) Instituto Gulbenkian de Ciência, Portugal\n\nHead of Clinical Research\n\n(2018 – 2019) IBLab GmbH (ImageBiopsy Lab), Austria\n\nPostdoctoral Researcher\n\n(2011 – 2017) Institute of Science and Technology Austria, Austria\n\nPostdoctoral Researcher\n\n(2008 – 2011) University of Houston, USA\n\nResearch Assistant\n\n(2001 – 2003) Instituto Superior Técnico, Portugal"
+    "title": "Tiago Paixão",
+    "section": "",
+    "text": "Head of the Advanced Data Analysis unit\n\n(2023 – ) Instituto Gulbenkian de Ciência, Portugal\n\nHead of Quantitative Biology & Digital Science\n\n(2020 – 2023 ) Instituto Gulbenkian de Ciência, Portugal\n\nHead of Clinical Research\n\n(2018 – 2019) IBLab GmbH (ImageBiopsy Lab), Austria\n\nPostdoctoral Researcher\n\n(2011 – 2017) Institute of Science and Technology Austria, Austria\n\nPostdoctoral Researcher\n\n(2008 – 2011) Univeristy of Houston, USA\n\nResearch Assistant\n\n(2001 – 2003) Instituto Superior Técnico, Portugal"
   },
   {
     "objectID": "about.html#education",
     "href": "about.html#education",
-    "title": "About",
+    "title": "Tiago Paixão",
     "section": "Education",
-    "text": "Education\n\nPhD - Biomedical Sciences\n\n(2003 – 2007) Universidade do Porto / Instituto Gulbenkian de Ciência\n\nBSc/MSc - Physics Engineering\n\n(1996 – 2001) Instituto Superior Técnico"
+    "text": "Education\n\nPhD - Biomedical Sciences\n\n(2003 – 2007) Universidade do Porto / Instituto Gulbenkian de Ciência\n\nBSc/MSc - Physics Engineering\n\n(1996 – 2001) Insituto Superior Técnico"
   },
   {
     "objectID": "cv.html",
