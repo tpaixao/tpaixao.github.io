@@ -1,0 +1,23 @@
+---
+title: "Voice Assistant"
+description: "A voice-in, voice-out web app connected to a full personal AI assistant, built to test how low conversational latency can go on home hardware."
+date: 2026-09-01
+categories: [voice, latency, llm, home server]
+---
+
+This is a web application you talk to: you speak, it transcribes, thinks, and answers out loud. Unlike a plain chat model, it runs with the full context and memory of a personal assistant (notes, preferences, ongoing projects), and it runs on a Raspberry Pi at home. The repository is at [github.com/tpaixao/voice_chat](https://github.com/tpaixao/voice_chat).
+
+The project is primarily a latency engineering exercise: the goal is not to build another voice UI, but to find out where the milliseconds actually go in a speech-to-LLM-to-speech pipeline and what can be done about each component.
+
+## Design choices
+
+- **One tap to start.** The interface is icon-only with minimal interaction; recording starts on tap and stops on silence.
+- **Relaxed pacing.** The silence window is deliberately generous (1.6 seconds, tunable) so the user never feels pressured to keep talking.
+- **Sentence-level streaming.** Audio for each completed sentence is synthesized and sent as soon as it is ready, rather than waiting for the full answer.
+- **Screen keep-awake.** The page holds a wake lock so phone microphones keep working with the screen on.
+
+## Sibling project
+
+[Voice Adventure](https://github.com/tpaixao/voice-adventure) applies the same stack (voice narration, streaming responses, pre-generated artwork) to illustrated choose-your-own-adventure stories for young children, with age-banded content and zero reading required.
+
+A technical post on the latency findings is in the blog: [Latency engineering for streaming voice AI](/blog/voice-latency-engineering.html).

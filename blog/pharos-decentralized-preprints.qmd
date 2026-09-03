@@ -1,0 +1,58 @@
+---
+title: "Why preprints need decentralized infrastructure"
+description: "Centralized preprint servers have real failure modes: finances, outages, and content removal. What would it take to replace them with peer-to-peer infrastructure? Notes from building a prototype."
+date: 2026-09-03
+categories: [scholarly communication, p2p, infrastructure]
+---
+
+Preprints are the raw record of science, and they currently live on a handful of servers. This post argues that this arrangement is more fragile than it looks, describes the properties a decentralized alternative would need, and reports on Pharos, a working prototype I built to test the idea end to end.
+
+## 1. The dependence problem
+
+A centralized preprint server concentrates three risks in one place. The first is financial: arXiv has run deficits for years and transitioned to nonprofit stewardship in 2026, a reminder that even the most successful repository in science is structurally dependent on subsidies and goodwill. The second is operational: bioRxiv sits behind a commercial content-delivery network, and content-delivery networks have major outages every year; when the CDN fails, the literature is unreachable. The third is political: government and institutional pages have been removed from the web in bulk in recent years, and there is no technical reason a preprint server could not be compelled or persuaded to take content down.
+
+None of these risks require malice. They follow from the architecture itself: one copy, one operator, one point of failure.
+
+## 2. What a decentralized archive must provide
+
+Replacing a central server is not just mirroring. A peer-to-peer archive has to reproduce four properties that centralized systems get implicitly:
+
+1. **Integrity.** Readers must be able to verify that a paper has not been altered. Content-addressed storage gives this for free: the address of a file is derived from its content, so any modification changes the address.
+2. **Persistence without a guarantor.** Somebody must keep copies. In a peer-to-peer design, preservation is an emergent property of many nodes each storing what they care about, plus explicit pinning by institutions that have a stake in the literature they produced.
+3. **Attribution.** Authorship claims must be verifiable. Pharos uses ORCID as the low-friction identity layer: an author authenticates through ORCID at publish time, and the resulting signed claims travel with the paper. Cryptographic key management is deliberately kept away from authors, who are famously bad at it.
+4. **Discovery.** Readers must find papers without a central index. This is the genuinely hard part; rendezvous-based peer discovery does not by itself give you search. The current prototype solves discovery among known publishers and leaves open-peer discovery as future work.
+
+## 3. What the prototype shows
+
+Pharos implements the full publish-to-read cycle with no central server. A node publishes a paper (PDF plus metadata) into a content-addressed, replicated store; a second node can fetch the archive metadata, pin papers, and report on replication health. Publishing takes seconds, and the two-node deployment has been verified end to end.
+
+The instructive findings are the constraints, not the features:
+
+| Concern | Centralized server | Pharos-style archive |
+|---|---|---|
+| Uptime | Single operator, CDN dependent | Availability depends on online peers |
+| Content removal | Operator decision, legal pressure | Cannot be centrally compelled |
+| Integrity | Trust the operator | Verifiable from content |
+| Discovery | Trivial (one index) | Hard (gossip, rendezvous, search) |
+| Moderation | Straightforward | Unsettled |
+| Cost model | Subsidies and volunteer labor | Volunteer nodes and pinning |
+
+The table makes the trade explicit: the decentralized design wins on integrity and censorship resistance, and loses on convenience. Discovery and moderation have no clean decentralized answers yet, and any honest proposal has to say so.
+
+## 4. Institutions as first-class citizens
+
+The design decision I consider most important is that institutions (universities, institutes) act as pinning nodes for their own researchers' output. This mirrors how libraries already see themselves as preservation infrastructure, and it solves the bootstrapping problem: individual authors should not have to run servers forever, and institutions already have the storage, the mandate, and the incentive.
+
+## Take-home messages
+
+- The fragility of centralized preprint infrastructure is architectural, not managerial; it persists regardless of who operates the server.
+- Content-addressed peer-to-peer storage provides integrity and censorship resistance that centralized systems can only approximate through policy.
+- Discovery and moderation remain the open problems; a decentralized archive that ignores them is a demo, not a replacement.
+- Building a prototype is worth more than a white paper: several design assumptions only became visible when code had to make a choice.
+
+## References
+
+- arXiv: announcement of transition to nonprofit stewardship (2026), arxiv.org
+- LOCKSS Program: lots of copies keep stuff safe, lockss.org
+- Holepunch: Hypercore, Hyperdrive and Hyperswarm documentation, docs.holepunch.org
+- Pharos repository and design documents: github.com/tpaixao/pharos

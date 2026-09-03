@@ -1,0 +1,51 @@
+---
+title: "Latency engineering for streaming voice AI"
+description: "Where do the seconds go in a speech-to-LLM-to-speech pipeline? A measurement-driven breakdown of voice round-trip latency, and what streaming actually buys you."
+date: 2026-09-03
+categories: [latency, llm, voice, engineering]
+---
+
+I built a voice assistant that runs at home and answers with full assistant context, and the interesting part turned out not to be the conversation but the clock. This post breaks down where the time goes between finishing a sentence and hearing the reply, based on measurements from the working system rather than estimates.
+
+## 1. Anatomy of the round trip
+
+The pipeline is: microphone capture and silence detection, speech-to-text, the language model turn, text-to-speech, and playback. Each stage adds latency, and they are not equally tractable:
+
+- **Capture and transcription** are fast and predictable; with a hosted transcription model, this stage contributes on the order of a second.
+- **Text-to-speech** per sentence is likewise sub-second.
+- **The model turn** dominates, and not uniformly: there is a prefill cost that grows with context size, and then the generation time itself.
+
+The counterintuitive result is that the largest component of perceived latency for reasoning models is neither prefill nor speech, but the model's own thinking phase.
+
+## 2. Streaming does not help where you need it
+
+Streaming text generation is usually presented as the fix for conversational latency: tokens arrive incrementally, so the first sentence can be spoken while the rest generates. That works when the model emits visible tokens steadily from early on.
+
+Reasoning models break this assumption. Several cloud APIs buffer all visible output until the model's internal reasoning phase completes, so the stream is effectively turn-based: nothing arrives for many seconds, then everything arrives at once. In my setup, a warm request spends roughly one to two seconds on framework overhead and prefill, then about ten seconds in the model's thinking phase with zero output flowing, before the first speakable sentence exists.
+
+This has a practical consequence: choosing a model for a voice agent is not only about quality and cost, it is about whether the provider streams thinking models' visible output incrementally or buffers it. Two providers offering the same checkpoint can deliver very different first-audio latency.
+
+## 3. Keeping the connection alive during tool use
+
+A voice assistant that can also search the web, read files, or run code has a second buffering problem. While the agent executes a tool call, no tokens flow, and intermediaries (proxies, load balancers, the browser itself) treat a silent connection as dead.
+
+The fix is to send inaudible silence frames between real audio chunks, at stream start and on every tool event. The client skips frames below a small size threshold, so the user never hears them, but the connection never goes idle. It is an unglamorous fix that turned timeouts from constant into nonexistent.
+
+## 4. Measure, then optimize
+
+Every improvement I made came from decomposing time-to-first-audio into stages and measuring each one on a warm system. Two lessons generalize:
+
+1. **Optimize the dominant term only.** Tweaking speech synthesis when the model thinks for ten seconds is wasted effort.
+2. **Watch the first token, not the last.** Perceived responsiveness is governed by when the first audible output arrives, which can be nearly independent of total generation time.
+
+## Take-home messages
+
+- In a voice pipeline with a reasoning model, the model's thinking phase is usually the dominant latency term.
+- Provider-side buffering of visible output during reasoning silently turns streaming APIs turn-based; it must be measured per provider.
+- Silence keepalive frames solve connection drops during tool calls with negligible cost.
+- Decompose time-to-first-audio before optimizing anything.
+
+## References
+
+- Voice assistant implementation: github.com/tpaixao/voice_chat
+- Project page with design notes: /projects/voice_chat.html

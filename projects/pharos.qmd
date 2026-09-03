@@ -1,0 +1,27 @@
+---
+title: "Pharos"
+description: "A decentralized preprint archive built on peer-to-peer storage, exploring how scientific publishing could work without a central server."
+date: 2026-09-01
+categories: [infrastructure, p2p, scholarly communication]
+---
+
+Pharos is a working prototype of a decentralized preprint archive: authors publish directly, content is stored and replicated peer-to-peer, and no central authority is needed to serve or preserve it. The repository is at [github.com/tpaixao/pharos](https://github.com/tpaixao/pharos) and the landing page at [tiagopaixao.com/pharos/](https://tiagopaixao.com/pharos/). A longer argument for why this matters is in the blog post [Why preprints need decentralized infrastructure](/blog/pharos-decentralized-preprints.html).
+
+## What it does
+
+The prototype supports the full publish-to-read cycle without a central server:
+
+1. **Direct publishing.** An author runs a single command to publish a paper. Identity is established through ORCID at publish time, so there are no cryptographic keys for authors to manage.
+2. **Distributed metadata index.** Paper metadata lives in a replicated, append-only database that every participating node can hold a copy of.
+3. **Content-addressed storage.** Each paper is a package of files whose integrity is verifiable from the content itself, so corruption and tampering are detectable by construction.
+4. **Category-based replication.** Peers choose what to mirror (for example, all computational biology preprints), which spreads preservation across many nodes without requiring anyone to store everything.
+5. **Versioning.** Revisions link explicitly to the previous version, giving a verifiable version chain.
+6. **Web UI.** Browsing, searching, reading PDFs, and pinning content all work through a web interface served by a single process.
+
+## Status
+
+The minimum viable product is complete and tested end-to-end on a two-node deployment: one node publishes, the other fetches, pins, and reports archive health. Roughly a hundred tests cover the core flows. Remaining gaps are cross-publisher discovery (finding papers from publishers you do not already follow) and moderation, both documented in the repository.
+
+## Why the name
+
+A pharos is a lighthouse: a fixed, trustworthy reference point that helps you navigate. The project aims at a reference layer for scientific literature that does not depend on any single institution staying solvent, online, and permissive.
