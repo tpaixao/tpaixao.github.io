@@ -1,7 +1,8 @@
 /* css styles */
 
-/* Compact icon-only social links (jolla about template) */
-div.quarto-about-jolla .about-links {
+/* Compact icon-only social links (jolla + trestles about templates) */
+div.quarto-about-jolla .about-links,
+div.quarto-about-trestles .about-links {
   flex-direction: row;
   justify-content: center;
   row-gap: 0;
@@ -9,7 +10,8 @@ div.quarto-about-jolla .about-links {
   width: auto;
   padding-bottom: 1.5em;
 }
-div.quarto-about-jolla .about-link {
+div.quarto-about-jolla .about-link,
+div.quarto-about-trestles .about-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -18,7 +20,11 @@ div.quarto-about-jolla .about-link {
   border: none;
   background: transparent;
 }
-div.quarto-about-jolla .about-link i.bi {
+div.quarto-about-jolla .about-link i.bi,
+div.quarto-about-trestles .about-link i.bi {
   font-size: 1.3rem;
   margin-right: 0;
+}
+div.quarto-about-trestles .about-link span.about-link-text {
+  display: none;
 }
