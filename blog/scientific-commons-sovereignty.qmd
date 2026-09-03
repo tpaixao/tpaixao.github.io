@@ -1,0 +1,97 @@
+---
+title: "Digital sovereignty and the scientific commons"
+description: "Data nationalism restricts science, national infrastructure outages disrupt it, and the sovereignty-driven alternatives being built today recreate the same dependencies at a smaller scale. What would a scientific commons that actually breaks the pattern require?"
+date: 2026-09-03
+draft: true
+categories: [scholarly communication, infrastructure, policy]
+---
+
+The scientific record has a geography problem. The databases that molecular biology runs on sit in one country, funded by one government, subject to one political cycle. In 2025 that arrangement stopped being abstract: PubMed went dark for a day and the global research community panicked, thousands of federal web pages and datasets disappeared, and access to major biomedical repositories was cut off for entire countries. This post argues that these events are three faces of one problem, that digital sovereignty is both the cause and the currently fashionable cure, and that the cure as practiced today does not actually solve the disease.
+
+## 1. Sovereignty as the cause: data nationalism
+
+The restrictions on scientific data sharing are not accidents of bad policy design; they are sovereignty claims, applied to data. The pattern is old and bipartisan across many governments:
+
+- The United States has restricted technology and data transfer since the Cold War (ITAR deemed-export rules), privatized Landsat in 1984 with the effect of pricing academic users out of Earth observation data, bought exclusive rights to commercial satellite imagery of Afghanistan after 2001, and banned NASA-China cooperation by statute since 2011.
+- Since April 2025, researchers from six countries (China, Russia, Iran, North Korea, Cuba, Venezuela) are barred from 21 NIH controlled-access repositories, including dbGaP and TCGA; since October 2025, human biospecimens cannot be shared with those countries at all.
+- China has restricted foreign access to human genetic resources since 1998, formalized in 2019 regulations, and built the China National GeneBank explicitly to reduce dependence on foreign databases.
+- Indonesia withdrew H5N1 virus samples from the WHO system in 2007, claiming "viral sovereignty" after vaccines derived from its samples proved unaffordable to its own population.
+
+| Year | Action | Sovereignty claim |
+|---|---|---|
+| 1976 | ITAR deemed-export rule | Technical data is national strategic material |
+| 2007 | Indonesia stops H5N1 sharing | Pathogens isolated on national territory |
+| 2011 | Wolf Amendment | Lunar and space science as bilateral leverage |
+| 2019 | China HGR regulations | Genetic resources as national heritage |
+| 2025 | NIH repository blocks | Genomic data as security asset |
+| 2025 | Federal website removals | Public data as domestic political content |
+
+Each claim is defensible in its own terms: security, privacy, benefit-sharing, or domestic mandate. The cumulative effect, however, is asymmetric fragmentation. The US restricts its data from China; China restricts its data from the US; both treat "their" data as a national asset. Nobody claims sovereignty over the scientific problem being solved, which is global by construction.
+
+## 2. Sovereignty as the exposure: one country runs the commons
+
+The uncomfortable asymmetry is that the same country asserting sovereignty over its data also operates most of the infrastructure everyone else depends on. GenBank, SRA, PubMed, and BLAST sit at the US National Library of Medicine. When that host has a bad year, the whole world feels it, and 2025 was a bad year:
+
+| Date | Event | Effect |
+|---|---|---|
+| Mar 2025 | PubMed blackout (technical) | Global panic in about a day |
+| Jul 2025 | 24+ hour NLM data center maintenance | All NCBI services offline |
+| Apr 2025 | 1,200+ NIH layoffs, rising toward 5,000 | Capacity for curation and maintenance reduced |
+| Oct 2025 | Government shutdown | PubMed on "autopilot", 25% staffing, NLM Board of Regents abolished |
+| FY2026 | Proposed 40% budget cut | Lowest inflation-adjusted NIH funding in 25 years |
+
+Alongside the operational fragility came deliberate content removal: 8,000+ federal web pages and roughly 3,000 datasets removed or modified in the first months of 2025, including the National Climate Assessment, taken offline by the government whose 1990 law mandates it. Volunteer archivists restored some of it; the End of Term Web Archive and Public Environmental Data Partners preserved what they could reach in time. Note what this episode demonstrates: when a government decides that public data is politically inconvenient, there is no international recourse, and the preservation burden falls on ad hoc volunteers.
+
+A one-day PubMed outage prompting Germany to announce a PubMed alternative is the tell. The international reaction to fragility was not to build commons infrastructure; it was to plan another national one.
+
+## 3. The sovereignty paradox
+
+Here is the puzzle at the center of this post. The reaction to dependency on US infrastructure is a European search for "digital sovereignty", and yet sovereignty is precisely the logic that produced the dependency problem in the first place.
+
+The existing counter-examples show what works. The International Nucleotide Sequence Database Collaboration (NCBI, EMBL-EBI, DDBJ) achieves genuine resilience through a tripartite structure with daily synchronization: no single point of control, each member independently funded. EMBL and CERN are treaty-based intergovernmental organizations that no single government can unilaterally control; CERN's members continued operating after suspending Russia's observer status in 2022, absorbing the lost contribution among the rest. The European Open Science Cloud, by contrast, is a European Commission-funded partnership: real infrastructure, but its independence runs only as far as the EU's political perimeter.
+
+| Model | Example | Independence | Failure mode |
+|---|---|---|---|
+| National | NCBI, proposed German PubMed | None: single government | Politics, budgets, shutdowns |
+| Regional | EOSC | EU perimeter | Recentered dependency, non-EU users still outside |
+| Intergovernmental treaty | CERN, EMBL | High: consensus of member states | Slow decisions, treaty revision is hard |
+| Distributed federation | INSDC, GA4GH | High: no single controller | Coordination, uneven funding |
+
+A "sovereign European PubMed" would fix the specific fear of the moment and leave the structure of the problem intact: one operator, one jurisdiction, one budget line. Swapping the flag on the dependency is not resilience.
+
+## 4. What the commons actually requires
+
+The requirement is not a single spectacular institution. It is a set of properties that together remove any single actor's ability to break the system:
+
+1. **Multi-jurisdictional hosting.** The same data exists, synchronized, under several legal systems simultaneously. INSDC is the working precedent; it deserves to be the template generalized beyond nucleotide sequences.
+2. **Legal independence for the coordination layer.** Treaty-based intergovernmental status (the CERN model) where governance, funding commitments, and data policy cannot be rewritten by one parliament's budget cycle.
+3. **Mixed funding.** No single funder dominant; member contributions, host-nation infrastructure, and philanthropic sources combined, as EMBL-EBI already does.
+4. **Interoperability standards separated from operators.** Bodies like GA4GH and the RDA define the contracts; many independent organizations implement them. This is what prevents lock-in to any provider, sovereign or otherwise.
+5. **Preservation as a first-class duty.** The 2025 data rescues showed that preservation currently depends on volunteers reacting faster than deleters. A commons treats replication guarantees and archival capture as infrastructure, not activism.
+
+Peer-to-peer replication is the maximal version of property 1: content-addressed data replicated across institutional nodes cannot be removed by any single government, and its integrity is verifiable rather than trusted. The honest caveats from building such systems are that discovery and quality control have no clean decentralized answers, and that petabyte-scale query services (a BLAST search) do not live happily on volunteer nodes. The pragmatic reading: P2P suits the archival and distribution layer; federated treaty infrastructure suits the curated, high-performance services. The two compose.
+
+## 5. What this means for Europe
+
+Europe is currently spending political capital on digital sovereignty, and the scientific variant of that program should be judged by whether it builds the properties above or merely re-hosts dependencies. Concretely:
+
+- Funding a PubMed alternative is defensible as redundancy; it should be designed as a federated node with open synchronization rather than a sovereign replacement, or it just becomes the next single point of failure.
+- EOSC's trajectory matters: a federation of national nodes under EU governance is a step toward the commons; a European monopoly on European data would repeat the American mistake with a European flag.
+- The natural European role is the one CERN and EMBL already demonstrate: convener of treaty infrastructure that non-Europeans can join and trust, not a fortress with better branding.
+
+## Take-home messages
+
+- Scientific data restrictions, content removals, and infrastructure outages in 2025 are one phenomenon: science runs on infrastructure owned by governments, and governments act like governments.
+- Digital sovereignty is both the disease and the proposed cure; sovereignty-based alternatives reproduce dependency at a different scale.
+- The working precedents are federated and treaty-based: INSDC's daily synchronization, CERN's legal independence, EMBL-EBI's mixed funding.
+- A scientific commons requires multi-jurisdictional replication, treaty-level coordination, mixed funding, standards separated from operators, and preservation as infrastructure rather than volunteer heroics.
+
+## References
+
+- Nature: "Omg, did PubMed go dark?" (2025), doi:10.1038/d41586-025-00674-3
+- BMJ: "PubMed is running on autopilot during shutdown" (2025), doi:10.1136/bmj.r2158
+- NIH NOT-OD-25-083: security measures for controlled-access data repositories (2025)
+- Executive Order 14117 and the DOJ Data Security Program (2025)
+- National Security Archive: "Disappearing Data" reports (2025)
+- Stanford Law School: geopolitics and US-China genomic data policies (2025)
+- INSDC, CERN, EMBL-EBI, EOSC, GA4GH governance documentation
