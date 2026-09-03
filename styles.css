@@ -11,7 +11,7 @@ div.quarto-about-trestles .about-links {
   padding-bottom: 1.5em;
 }
 div.quarto-about-jolla .about-link,
-div.quarto-about-trestles .about-link {
+div.quarto-about-trestles .about-entity .about-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -21,10 +21,10 @@ div.quarto-about-trestles .about-link {
   background: transparent;
 }
 div.quarto-about-jolla .about-link i.bi,
-div.quarto-about-trestles .about-link i.bi {
+div.quarto-about-trestles .about-entity .about-link i.bi {
   font-size: 1.3rem;
   margin-right: 0;
 }
-div.quarto-about-trestles .about-link span.about-link-text {
+div.quarto-about-trestles .about-entity .about-link span.about-link-text {
   display: none;
 }
