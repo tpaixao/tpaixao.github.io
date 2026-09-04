@@ -3,6 +3,7 @@ title: "Why preprints need decentralized infrastructure"
 description: "Centralized preprint servers have real failure modes: finances, outages, and content removal. What would it take to replace them with peer-to-peer infrastructure? Notes from building a prototype."
 date: 2026-09-03
 categories: [Scientific Infrastructure]
+draft: true
 ---
 
 Preprints are the raw record of science, and they currently live on a handful of servers. This post argues that this arrangement is more fragile than it looks, describes the properties a decentralized alternative would need, and reports on Pharos, a working prototype I built to test the idea end to end.
