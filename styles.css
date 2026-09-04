@@ -2,7 +2,8 @@
 
 /* Compact icon-only social links (jolla + trestles about templates) */
 div.quarto-about-jolla .about-links,
-div.quarto-about-trestles .about-links {
+div.quarto-about-trestles .about-entity .about-links {
+  display: flex;
   flex-direction: row;
   justify-content: center;
   row-gap: 0;
