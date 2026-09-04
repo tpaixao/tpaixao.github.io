@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2021-01-01">
+<meta name="description" content="Using SDEs to estimate allelic trajectories and associated evolutionary parameters from PooledSeq">
 
-<title>Projects – Tiago Paixão</title>
+<title>Estimating allelic trajectories from PooledSeq – Tiago Paixão</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -29,25 +31,23 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<link href="./assets/favicon.png" rel="icon" type="image/png">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-2509606372cd5e8cdac7b219c213e0ff.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../assets/favicon.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-2509606372cd5e8cdac7b219c213e0ff.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -75,35 +75,13 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
+<style>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-title','listing-author','listing-date','listing-image','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
+      .quarto-title-block .quarto-title-banner {
+        background-image: url(cover_images/BayesEvolveResequence_trajectories_small.png);
+background-size: cover;
+      }
+</style>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
@@ -135,17 +113,17 @@ window.Quarto = {
 };
 </script>
 
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../styles.css">
 </head>
 
 <body class="nav-fixed fullcontent quarto-light">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">Tiago Paixão</span>
     </a>
   </div>
@@ -156,19 +134,19 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./projects.html" aria-current="page"> 
+    <a class="nav-link" href="../projects.html"> 
 <span class="menu-text">Projects</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./blog.html"> 
+    <a class="nav-link" href="../blog.html"> 
 <span class="menu-text">Blog</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./publications.html"> 
+    <a class="nav-link" href="../publications.html"> 
 <span class="menu-text">Publications</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
@@ -179,89 +157,68 @@ window.Quarto = {
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Estimating allelic trajectories from PooledSeq</h1>
+                  <div>
+        <div class="description">
+          Using SDEs to estimate allelic trajectories and associated evolutionary parameters from PooledSeq
+        </div>
+      </div>
+                </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">January 1, 2021</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
     
 <!-- main -->
-<main class="content" id="quarto-document-content">
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Projects</h1>
-</div>
-
-
-
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
-
-
-</header>
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
 
 
 
 
+<p>In typical evolve and resequence experiments, the objective is to find genetic variants respondible for adaptation to a particular selection pressure. In these experiments, populations are evolved under some selective pressure and sequenced both at the start and at the end of the experiment.</p>
+<p>In this particular case, the type of sequencing was PooledSeq, in which (a sample of) the population is sequenced as a whole, thereby loosing all information about individual haplotypes. Here the objective is really to measure allele frequencies.</p>
+<p>Typically these experiments are analyzed through the Cochram-Mantel-Haenzel (CMH) test. The CMH test is a generalization of the chi-square for stratitified contingency tables. In the case at hand, the stratification is over replicates. In essence, one makes an association test over the read counts between the treatment (Evolved / Control) and time ( initial timepoint / final timepoint ). Because experiments are replicated, one ends up with several contingency tables (one for each replicate), over which the CMH test can be used to determine if there is a consistent association between the two variables (treatment and time) over the several replicates. In practice, the test is actually two tests: one that tests if the pooled odds-ratio is null, and another (the Breslow-Day test) that tests if the Odds-Ratio is the same across all tables.</p>
+<p>There are however, a number of issues with this statistical approach:</p>
+<ol type="1">
+<li>This approach assumes a pairing between evolved and control populations. In reality, very rarely there is any biological reason to assume that a particular control replicated is related to any specific treatment replicate.</li>
+<li>There is no reason to use only two time points in this type of experimental design. This procedure would not be able to accomodate extra time points.</li>
+<li>More importantly, this procedure does not incorporate all the knowledge we have regarding the process that generates the data: The variance across replicates depends on the number of generations of evolution, the initial allele frequency, and the selection coefficient. Because the process is inherently stochastic, and this method has no information about the variance that may be expected, associations may arise simply by chance.</li>
+</ol>
+<section id="principled-inference-incorporating-scientific-knowledge-in-the-inference-process" class="level2">
+<h2 class="anchored" data-anchor-id="principled-inference-incorporating-scientific-knowledge-in-the-inference-process">Principled inference: incorporating scientific knowledge in the inference process</h2>
+<p>Instead of trying to “shoehorn” a generic statistical test to our data, one can instead incorporate the mechanisms that we know should be acting to generate the data. This in principle will allow us to take more out of our data.</p>
+<p>In these kinds of experiments, particularly with organisms such as drosophila, generations are discrete by design, and the population size is fixed. This allows us to write the expected change in allele frequencies from basic population genetics theory as:</p>
+<p><span class="math display">\[
+  \Delta p = \left[ p\left(W_{11}-W_{01}\right) + (1-p)\left(W_{01}-W_{00}\right) \right]\frac{p(1-p)}{\bar{W}}
+\]</span></p>
+<p>where <span class="math inline">\(p\)</span> tracks the frequency of a particular variant at a locus (be it a SNP, an aminoacid, or a whole gene variant) and <span class="math inline">\(W_{11}=(1+s)^2\)</span>, <span class="math inline">\(W_{00}=1\)</span> and <span class="math inline">\(W_{01}=(1+sh)\)</span> are the fitnesses of the both homozygotes and the heterozygote, respectively. Note that here we are assuming that patterns of dominance may exist.</p>
+<p>Furthermore, we know this allele frequency is affected by genetic drift, and a good approximation for this sampling process is the binomial (the Wright-Fisher model).</p>
+<p>Beyond the population genetics knowledge, one can also incorporate the added variance that is introduced by the sub-sampling of the population that is performed for the sequencing, as well as the sequencing depth of each locus. Both of these processes can also be described by binomial processes.</p>
 
-<div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
-<div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-listing-date-sort="1609459200000" data-listing-file-modified-sort="1788555109555" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="558">
-<a href="./projects/Bayes_EvolveResequence.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./projects/cover_images/BayesEvolveResequence.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Estimating allelic trajectories from PooledSeq
-</h5>
-<div class="card-text listing-description delink">
-<p>Using SDEs to estimate allelic trajectories and associated evolutionary parameters from PooledSeq</p>
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
 
-</div>
-<div class="listing-date">
-Jan 1, 2021
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="1" data-listing-date-sort="1590966000000" data-listing-file-modified-sort="1788555109555" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="402">
-<a href="./projects/serobayes.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./projects/cover_images/sero_bayes.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Evaluating the performance of COVID-19 rapid tests
-</h5>
-<div class="card-text listing-description delink">
-<p>A Bayesian framework for diagnostic tests</p>
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
+</section>
 
-</div>
-<div class="listing-date">
-Jun 1, 2020
-</div>
-</div>
-</div>
-</div></a>
-</div>
-</div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
