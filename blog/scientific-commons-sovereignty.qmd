@@ -3,7 +3,7 @@ title: "Digital sovereignty and the scientific commons"
 description: "Data nationalism restricts science, national infrastructure outages disrupt it, and the sovereignty-driven alternatives being built today recreate the same dependencies at a smaller scale. What would a scientific commons that actually breaks the pattern require?"
 date: 2026-09-03
 draft: true
-categories: [scholarly communication, infrastructure, policy]
+categories: [Scientific Infrastructure]
 ---
 
 The scientific record has a geography problem. The databases that molecular biology runs on sit in one country, funded by one government, subject to one political cycle. In 2025 that arrangement stopped being abstract: PubMed went dark for a day and the global research community panicked, thousands of federal web pages and datasets disappeared, and access to major biomedical repositories was cut off for entire countries. This post argues that these events are three faces of one problem, that digital sovereignty is both the cause and the currently fashionable cure, and that the cure as practiced today does not actually solve the disease.

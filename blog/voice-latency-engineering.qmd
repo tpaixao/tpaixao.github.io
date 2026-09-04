@@ -2,7 +2,7 @@
 title: "Latency engineering for streaming voice AI"
 description: "Where do the seconds go in a speech-to-LLM-to-speech pipeline? A measurement-driven breakdown of voice round-trip latency, and what streaming actually buys you."
 date: 2026-09-03
-categories: [latency, llm, voice, engineering]
+categories: [Tools & Apps]
 ---
 
 I built a voice assistant that runs at home and answers with full assistant context, and the interesting part turned out not to be the conversation but the clock. This post breaks down where the time goes between finishing a sentence and hearing the reply, based on measurements from the working system rather than estimates.
