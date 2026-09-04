@@ -20,7 +20,6 @@ website:
       - projects.qmd
       - blog.qmd
       - publications.qmd
-      - cv.qmd
       - href: about.qmd
         text: About
 format:

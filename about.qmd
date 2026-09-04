@@ -13,6 +13,9 @@ about:
       href: https://github.com/tpaixao
     - icon: linkedin
       href: https://linkedin.com/in/tiago-paixao
+    - icon: file-earmark-pdf
+      href: assets/cv.pdf
+      aria-label: Curriculum Vitae (PDF)
 ---
 
 ## Work
