@@ -76,11 +76,40 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent quarto-light">
+<body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -124,17 +153,15 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content page-columns page-full" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">Evaluating the performance of COVID-19 rapid tests</h1>
-  <div class="quarto-categories">
-    <div class="quarto-category">Methods &amp; Inference</div>
-  </div>
-  </div>
+</div>
 
 <div>
   <div class="description">
@@ -174,45 +201,38 @@ Note
 <p>Note that in the early days of the 2020 pandemic there was a lot of uncertainty regarding the effectiveness of the rapid tests. This was an attempt at quantifying the performance of the different tests present in the market.</p>
 </div>
 </div>
-<section id="abstract" class="level2">
-<h2 class="anchored" data-anchor-id="abstract">Abstract</h2>
-<p>We present a Bayesian hierarchical model to infer true prevalence from observed test results while estimating test‑specific false‑positive and false‑negative rates. The approach accommodates multiple diagnostic tests and provides uncertainty quantification for all parameters.</p>
-</section>
-<section id="introduction" class="level2">
-<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>During the early phase of the COVID‑19 pandemic, rapid serological tests were deployed at scale, but their performance characteristics were poorly understood. Accurate estimation of true prevalence is essential for interpreting serosurveys and informing public‑health decisions.</p>
-</section>
-<section id="methods" class="level2">
-<h2 class="anchored" data-anchor-id="methods">Methods</h2>
-<section id="statistical-model" class="level3">
-<h3 class="anchored" data-anchor-id="statistical-model">Statistical model</h3>
-<p>Let (p_{}) be the observed proportion of positive tests in a population of size (N). The relationship between the observed frequency and the underlying prevalence (p_{}) is</p>
-<p>[ p_{} = p_{} (1 - p_{}) + (1 - p_{}) p_{}, ]</p>
-<p>where (p_{}) and (p_{}) denote false‑negative and false‑positive rates, respectively. We place weakly informative priors on (p_{}), (p_{}), and (p_{}) and sample the joint posterior using Hamiltonian Monte‑Carlo (NUTS) within a PyMC model.</p>
-</section>
-<section id="extension-to-multiple-tests" class="level3">
-<h3 class="anchored" data-anchor-id="extension-to-multiple-tests">Extension to multiple tests</h3>
-<p>For (K) tests, observed counts (y_k) follow binomial distributions with test‑specific sensitivities and specificities. The hierarchical structure shares information across tests while allowing test‑specific effects.</p>
-</section>
-</section>
-<section id="results" class="level2">
-<h2 class="anchored" data-anchor-id="results">Results</h2>
+<p>In this project, I developed a framework to quantify the uncertainty surrounding the performance of several Sars-CoV-2 rapid serological tests. This allows to:</p>
+<ol type="1">
+<li>given the results of a population study, to correct the results for false positives and false negatives, in a test-specific manner, in order to obtain accurate estimates of the real prevalence of seropositives, together with a measure of its uncertainty.</li>
+<li>to make informed decisions about the choice of test to use, when planning studies</li>
+</ol>
+<p>I used to the data reported to the US Food and Drug Administration (FDA) by the manufacturers to quantify the sensitivity and specificty of each test, together with the uncertainty associated with it. From here, we write the observed frequency of sero-positive results in a study as a function of the actual prevalence, the rate of false positives, and the rate of false negatives:</p>
+<p><span class="math display">\[
+p_{\textrm{obs} } = p_{prev}\cdot (1-p_\textrm{fnr}) + (1- p_\textrm{prev} ) \cdot p_\textrm{fpr}
+\]</span></p>
+<p>where:</p>
 <ul>
-<li><strong>Simulation study</strong>: Demonstrates unbiased prevalence estimates when the model is correctly specified.</li>
-<li><strong>Application to FDA‑reported data</strong>: Shows how raw observed positivity rates are adjusted and how uncertainty propagates to prevalence estimates.</li>
+<li><span class="math inline">\(p_{\textrm{obs} }\)</span> is the observed frequency of positives</li>
+<li><span class="math inline">\(p_{prev}\)</span> is the <em>real</em> prevalence</li>
+<li><span class="math inline">\(p_\textrm{fnr}\)</span> is the rate of false <em>negatives</em></li>
+<li><span class="math inline">\(p_\textrm{fpr}\)</span> is the rate of false <em>positives</em></li>
 </ul>
-</section>
-<section id="discussion" class="level2">
-<h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
-<p>The framework separates statistical modelling of test performance from epidemiological inference, enabling: - Calibrated prevalence estimates even with uncertain test characteristics. - Comparative evaluation of tests on a common scale. - Propagation of uncertainty from test performance to prevalence estimates for risk‑aware decision making.</p>
-</section>
-<section id="conclusions" class="level2">
-<h2 class="anchored" data-anchor-id="conclusions">Conclusions</h2>
-<p>By integrating Bayesian inference with a biologically plausible model of test outcomes, this approach improves the reliability of seroprevalence estimates derived from rapid COVID‑19 tests. Future extensions will consider hierarchical population structures and incorporate prior knowledge from related pathogens.</p>
-</section>
-<section id="references" class="level2">
-<h2 class="anchored" data-anchor-id="references">References</h2>
-<p>References can be added here in any citation style supported by Quarto.</p>
+<p>So, essentially, this formula is saying that the observed frequency of positives (<span class="math inline">\(p_\textrm{obs}\)</span>) is the real positives times the <strong>true</strong> positive rate (discounting false negatives) <strong>plus</strong> the number of negatives times the false positive rate.</p>
+<p>We then include this formula in a Bayesian framework, that assigns this probability of observing positives to a Binomial distribution, as well as the numbers of the diagnotics test (numbers and totals of false positives and false negatives). This model jointly estimates false positive and negative rates, together with the real prevalence and the joint uncertainty. We wrap this as a pymc model, that allows us to sample the posterior distribution using NUTS, the state of the art Hamiltonean Monte-Carlo sampler.</p>
+<section id="comparing-test-specfic-distortions" class="level3 page-columns page-full">
+<h3 class="anchored" data-anchor-id="comparing-test-specfic-distortions">Comparing test-specfic distortions</h3>
+<p>One thing we can do to illustrate the differences between tests, is to see what the real prevalence would be for the same number of <em>observed</em> positives (figure <a href="#fig-tests" class="quarto-xref">Figure&nbsp;1</a> ).</p>
+<div id="fig-tests" class="quarto-float quarto-figure quarto-figure-center anchored page-columns page-full">
+<figure class="quarto-float quarto-float-fig figure page-columns page-full">
+<div aria-describedby="fig-tests-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="cover_images/sero_bayes.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-margin quarto-float-caption quarto-float-fig margin-caption" id="fig-tests-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: For the same number of observed positives, different tests would imply different real prevalences
+</figcaption>
+</figure>
+</div>
+<p>Alternatively, one can simulate data, assuming one real prevalence, and running it through the several tests to see what the reported rate of positives would be for each test.</p>
 
 
 </section>

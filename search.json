@@ -11,105 +11,21 @@
     "href": "projects/serobayes.html",
     "title": "Evaluating the performance of COVID-19 rapid tests",
     "section": "",
-    "text": "Note\n\n\n\nNote that in the early days of the 2020 pandemic there was a lot of uncertainty regarding the effectiveness of the rapid tests. This was an attempt at quantifying the performance of the different tests present in the market."
-  },
-  {
-    "objectID": "projects/serobayes.html#abstract",
-    "href": "projects/serobayes.html#abstract",
-    "title": "Evaluating the performance of COVID-19 rapid tests",
-    "section": "Abstract",
-    "text": "Abstract\nWe present a Bayesian hierarchical model to infer true prevalence from observed test results while estimating test‑specific false‑positive and false‑negative rates. The approach accommodates multiple diagnostic tests and provides uncertainty quantification for all parameters."
-  },
-  {
-    "objectID": "projects/serobayes.html#introduction",
-    "href": "projects/serobayes.html#introduction",
-    "title": "Evaluating the performance of COVID-19 rapid tests",
-    "section": "Introduction",
-    "text": "Introduction\nDuring the early phase of the COVID‑19 pandemic, rapid serological tests were deployed at scale, but their performance characteristics were poorly understood. Accurate estimation of true prevalence is essential for interpreting serosurveys and informing public‑health decisions."
-  },
-  {
-    "objectID": "projects/serobayes.html#methods",
-    "href": "projects/serobayes.html#methods",
-    "title": "Evaluating the performance of COVID-19 rapid tests",
-    "section": "Methods",
-    "text": "Methods\n\nStatistical model\nLet (p_{}) be the observed proportion of positive tests in a population of size (N). The relationship between the observed frequency and the underlying prevalence (p_{}) is\n[ p_{} = p_{} (1 - p_{}) + (1 - p_{}) p_{}, ]\nwhere (p_{}) and (p_{}) denote false‑negative and false‑positive rates, respectively. We place weakly informative priors on (p_{}), (p_{}), and (p_{}) and sample the joint posterior using Hamiltonian Monte‑Carlo (NUTS) within a PyMC model.\n\n\nExtension to multiple tests\nFor (K) tests, observed counts (y_k) follow binomial distributions with test‑specific sensitivities and specificities. The hierarchical structure shares information across tests while allowing test‑specific effects."
-  },
-  {
-    "objectID": "projects/serobayes.html#results",
-    "href": "projects/serobayes.html#results",
-    "title": "Evaluating the performance of COVID-19 rapid tests",
-    "section": "Results",
-    "text": "Results\n\nSimulation study: Demonstrates unbiased prevalence estimates when the model is correctly specified.\nApplication to FDA‑reported data: Shows how raw observed positivity rates are adjusted and how uncertainty propagates to prevalence estimates."
-  },
-  {
-    "objectID": "projects/serobayes.html#discussion",
-    "href": "projects/serobayes.html#discussion",
-    "title": "Evaluating the performance of COVID-19 rapid tests",
-    "section": "Discussion",
-    "text": "Discussion\nThe framework separates statistical modelling of test performance from epidemiological inference, enabling: - Calibrated prevalence estimates even with uncertain test characteristics. - Comparative evaluation of tests on a common scale. - Propagation of uncertainty from test performance to prevalence estimates for risk‑aware decision making."
-  },
-  {
-    "objectID": "projects/serobayes.html#conclusions",
-    "href": "projects/serobayes.html#conclusions",
-    "title": "Evaluating the performance of COVID-19 rapid tests",
-    "section": "Conclusions",
-    "text": "Conclusions\nBy integrating Bayesian inference with a biologically plausible model of test outcomes, this approach improves the reliability of seroprevalence estimates derived from rapid COVID‑19 tests. Future extensions will consider hierarchical population structures and incorporate prior knowledge from related pathogens."
-  },
-  {
-    "objectID": "projects/serobayes.html#references",
-    "href": "projects/serobayes.html#references",
-    "title": "Evaluating the performance of COVID-19 rapid tests",
-    "section": "References",
-    "text": "References\nReferences can be added here in any citation style supported by Quarto."
+    "text": "Note\n\n\n\nNote that in the early days of the 2020 pandemic there was a lot of uncertainty regarding the effectiveness of the rapid tests. This was an attempt at quantifying the performance of the different tests present in the market.\n\n\nIn this project, I developed a framework to quantify the uncertainty surrounding the performance of several Sars-CoV-2 rapid serological tests. This allows to:\n\ngiven the results of a population study, to correct the results for false positives and false negatives, in a test-specific manner, in order to obtain accurate estimates of the real prevalence of seropositives, together with a measure of its uncertainty.\nto make informed decisions about the choice of test to use, when planning studies\n\nI used to the data reported to the US Food and Drug Administration (FDA) by the manufacturers to quantify the sensitivity and specificty of each test, together with the uncertainty associated with it. From here, we write the observed frequency of sero-positive results in a study as a function of the actual prevalence, the rate of false positives, and the rate of false negatives:\n\\[\np_{\\textrm{obs} } = p_{prev}\\cdot (1-p_\\textrm{fnr}) + (1- p_\\textrm{prev} ) \\cdot p_\\textrm{fpr}\n\\]\nwhere:\n\n\\(p_{\\textrm{obs} }\\) is the observed frequency of positives\n\\(p_{prev}\\) is the real prevalence\n\\(p_\\textrm{fnr}\\) is the rate of false negatives\n\\(p_\\textrm{fpr}\\) is the rate of false positives\n\nSo, essentially, this formula is saying that the observed frequency of positives (\\(p_\\textrm{obs}\\)) is the real positives times the true positive rate (discounting false negatives) plus the number of negatives times the false positive rate.\nWe then include this formula in a Bayesian framework, that assigns this probability of observing positives to a Binomial distribution, as well as the numbers of the diagnotics test (numbers and totals of false positives and false negatives). This model jointly estimates false positive and negative rates, together with the real prevalence and the joint uncertainty. We wrap this as a pymc model, that allows us to sample the posterior distribution using NUTS, the state of the art Hamiltonean Monte-Carlo sampler.\n\nComparing test-specfic distortions\nOne thing we can do to illustrate the differences between tests, is to see what the real prevalence would be for the same number of observed positives (figure Figure 1 ).\n\n\n\n\n\n\nFigure 1: For the same number of observed positives, different tests would imply different real prevalences\n\n\n\nAlternatively, one can simulate data, assuming one real prevalence, and running it through the several tests to see what the reported rate of positives would be for each test."
   },
   {
     "objectID": "projects/Bayes_EvolveResequence.html",
     "href": "projects/Bayes_EvolveResequence.html",
     "title": "Estimating allelic trajectories from PooledSeq",
     "section": "",
-    "text": "In pooled‑sequencing experiments the goal is to track changes in allele frequencies across generations under selective pressure. Here we introduce a mechanistic, stochastic model that extends the classic Cochran‑Mantel‑Haenszel framework by explicitly incorporating population‑genetic processes such as selection, dominance, genetic drift, and sampling variance."
+    "text": "In typical evolve and resequence experiments, the objective is to find genetic variants respondible for adaptation to a particular selection pressure. In these experiments, populations are evolved under some selective pressure and sequenced both at the start and at the end of the experiment.\nIn this particular case, the type of sequencing was PooledSeq, in which (a sample of) the population is sequenced as a whole, thereby loosing all information about individual haplotypes. Here the objective is really to measure allele frequencies.\nTypically these experiments are analyzed through the Cochram-Mantel-Haenzel (CMH) test. The CMH test is a generalization of the chi-square for stratitified contingency tables. In the case at hand, the stratification is over replicates. In essence, one makes an association test over the read counts between the treatment (Evolved / Control) and time ( initial timepoint / final timepoint ). Because experiments are replicated, one ends up with several contingency tables (one for each replicate), over which the CMH test can be used to determine if there is a consistent association between the two variables (treatment and time) over the several replicates. In practice, the test is actually two tests: one that tests if the pooled odds-ratio is null, and another (the Breslow-Day test) that tests if the Odds-Ratio is the same across all tables.\nThere are however, a number of issues with this statistical approach:"
   },
   {
-    "objectID": "projects/Bayes_EvolveResequence.html#abstract",
-    "href": "projects/Bayes_EvolveResequence.html#abstract",
+    "objectID": "projects/Bayes_EvolveResequence.html#principled-inference-incorporating-scientific-knowledge-in-the-inference-process",
+    "href": "projects/Bayes_EvolveResequence.html#principled-inference-incorporating-scientific-knowledge-in-the-inference-process",
     "title": "Estimating allelic trajectories from PooledSeq",
-    "section": "",
-    "text": "In pooled‑sequencing experiments the goal is to track changes in allele frequencies across generations under selective pressure. Here we introduce a mechanistic, stochastic model that extends the classic Cochran‑Mantel‑Haenszel framework by explicitly incorporating population‑genetic processes such as selection, dominance, genetic drift, and sampling variance."
-  },
-  {
-    "objectID": "projects/Bayes_EvolveResequence.html#introduction",
-    "href": "projects/Bayes_EvolveResequence.html#introduction",
-    "title": "Estimating allelic trajectories from PooledSeq",
-    "section": "Introduction",
-    "text": "Introduction\nPooled‑Seq designs allow high‑throughput screening of adaptive evolution by sequencing pooled samples at multiple time points. Traditional analyses rely on contingency‑table tests (e.g., Cochran‑Mantel‑Haenszel) that often ignore key sources of variability."
-  },
-  {
-    "objectID": "projects/Bayes_EvolveResequence.html#classical-cmhbased-approach",
-    "href": "projects/Bayes_EvolveResequence.html#classical-cmhbased-approach",
-    "title": "Estimating allelic trajectories from PooledSeq",
-    "section": "Classical CMH‑Based Approach",
-    "text": "Classical CMH‑Based Approach\nThe standard workflow proceeds as follows: 1. Pairwise association – test for frequency differences between treatment and control replicates. 2. Stratified analysis – combine replicate‑specific 2×2 tables using the CMH test. 3. Goodness‑of‑fit – assess consistency across strata with the Breslow‑Day test.\nLimitations - Pairing assumption – requires a biologically unjustified link between specific control and treatment replicates. - Fixed time points – cannot naturally accommodate additional intermediate measurements. - Variance ignored – does not model the stochastic nature of allele‑frequency changes, leading to inflated false‑positive rates."
-  },
-  {
-    "objectID": "projects/Bayes_EvolveResequence.html#mechanistic-stochastic-model",
-    "href": "projects/Bayes_EvolveResequence.html#mechanistic-stochastic-model",
-    "title": "Estimating allelic trajectories from PooledSeq",
-    "section": "Mechanistic, Stochastic Model",
-    "text": "Mechanistic, Stochastic Model\n\nPopulation‑genetic framework\nThe expected change in the frequency (p) of a focal allele is\n\\[\n\\Delta p = \\frac{p\\big(W_{11}-W_{01}\\big)+(1-p)\\big(W_{01}-W_{00}\\big)}{\\bar{W}}\\,p(1-p),\n\\]\nwhere (W_{11}=(1+s)^2), (W_{00}=1), and (W_{01}=(1+sh)) are the fitnesses of the homozygotes and heterozygote, respectively. This formulation permits arbitrary dominance ((h)) and selection coefficients ((s)).\n\n\nGenetic drift and sampling variance\nAllele‑frequency estimates from Pooled‑Seq are subject to two additional binomial processes: - Genetic drift during discrete, fixed‑size Wright–Fisher generations. - Sequencing subsampling at a given depth (d), which introduces extra sampling variance.\nBoth effects can be modeled as binomial draws, allowing an explicit variance term to be added to downstream inference."
-  },
-  {
-    "objectID": "projects/Bayes_EvolveResequence.html#results-and-discussion",
-    "href": "projects/Bayes_EvolveResequence.html#results-and-discussion",
-    "title": "Estimating allelic trajectories from PooledSeq",
-    "section": "Results and Discussion",
-    "text": "Results and Discussion\nThe proposed model: - Captures the influence of dominance and selection on allele‑frequency trajectories. - Provides a realistic variance estimate that accounts for both biological drift and technical sampling. - Enables straightforward extension to more than two time points or hierarchical experimental designs."
-  },
-  {
-    "objectID": "projects/Bayes_EvolveResequence.html#conclusions",
-    "href": "projects/Bayes_EvolveResequence.html#conclusions",
-    "title": "Estimating allelic trajectories from PooledSeq",
-    "section": "Conclusions",
-    "text": "Conclusions\nBy embedding the statistical test within a biologically grounded stochastic model, we obtain more reliable estimates of evolutionary parameters and avoid the pitfalls of ad‑hoc stratification. This approach facilitates deeper insight from Pooled‑Seq experiments and can be readily extended to related problems."
+    "section": "Principled inference: incorporating scientific knowledge in the inference process",
+    "text": "Principled inference: incorporating scientific knowledge in the inference process\nInstead of trying to “shoehorn” a generic statistical test to our data, one can instead incorporate the mechanisms that we know should be acting to generate the data. This in principle will allow us to take more out of our data.\nIn these kinds of experiments, particularly with organisms such as drosophila, generations are discrete by design, and the population size is fixed. This allows us to write the expected change in allele frequencies from basic population genetics theory as:\n\\[\n  \\Delta p = \\left[ p\\left(W_{11}-W_{01}\\right) + (1-p)\\left(W_{01}-W_{00}\\right) \\right]\\frac{p(1-p)}{\\bar{W}}\n\\]\nwhere \\(p\\) tracks the frequency of a particular variant at a locus (be it a SNP, an aminoacid, or a whole gene variant) and \\(W_{11}=(1+s)^2\\), \\(W_{00}=1\\) and \\(W_{01}=(1+sh)\\) are the fitnesses of the both homozygotes and the heterozygote, respectively. Note that here we are assuming that patterns of dominance may exist.\nFurthermore, we know this allele frequency is affected by genetic drift, and a good approximation for this sampling process is the binomial (the Wright-Fisher model).\nBeyond the population genetics knowledge, one can also incorporate the added variance that is introduced by the sub-sampling of the population that is performed for the sequencing, as well as the sequencing depth of each locus. Both of these processes can also be described by binomial processes."
   },
   {
     "objectID": "index.html",
@@ -179,6 +95,6 @@
     "href": "projects.html",
     "title": "Projects",
     "section": "",
-    "text": "Estimating allelic trajectories from PooledSeq\n\n\n\nMethods & Inference\n\n\n\nUsing SDEs to estimate allelic trajectories and associated evolutionary parameters from PooledSeq\n\n\n\n\n\n\nJan 1, 2021\n\n\n\n\n\n\n\n\n\n\n\n\n\nEvaluating the performance of COVID-19 rapid tests\n\n\n\nMethods & Inference\n\n\n\nA Bayesian framework for diagnostic tests\n\n\n\n\n\n\nJun 1, 2020\n\n\n\n\n\n\nNo matching items"
+    "text": "Estimating allelic trajectories from PooledSeq\n\n\nUsing SDEs to estimate allelic trajectories and associated evolutionary parameters from PooledSeq\n\n\n\n\n\n\nJan 1, 2021\n\n\n\n\n\n\n\n\n\n\n\n\n\nEvaluating the performance of COVID-19 rapid tests\n\n\nA Bayesian framework for diagnostic tests\n\n\n\n\n\n\nJun 1, 2020\n\n\n\n\n\n\nNo matching items"
   }
 ]

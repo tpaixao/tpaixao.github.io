@@ -166,10 +166,7 @@ window.Quarto = {
           Using SDEs to estimate allelic trajectories and associated evolutionary parameters from PooledSeq
         </div>
       </div>
-                          <div class="quarto-categories">
-                <div class="quarto-category">Methods &amp; Inference</div>
-              </div>
-                  </div>
+                </div>
   </div>
     
   
@@ -198,42 +195,25 @@ window.Quarto = {
 
 
 
-<section id="abstract" class="level2">
-<h2 class="anchored" data-anchor-id="abstract">Abstract</h2>
-<p><em>In pooled‑sequencing experiments the goal is to track changes in allele frequencies across generations under selective pressure. Here we introduce a mechanistic, stochastic model that extends the classic Cochran‑Mantel‑Haenszel framework by explicitly incorporating population‑genetic processes such as selection, dominance, genetic drift, and sampling variance.</em></p>
-</section>
-<section id="introduction" class="level2">
-<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>Pooled‑Seq designs allow high‑throughput screening of adaptive evolution by sequencing pooled samples at multiple time points. Traditional analyses rely on contingency‑table tests (e.g., Cochran‑Mantel‑Haenszel) that often ignore key sources of variability.</p>
-</section>
-<section id="classical-cmhbased-approach" class="level2">
-<h2 class="anchored" data-anchor-id="classical-cmhbased-approach">Classical CMH‑Based Approach</h2>
-<p>The standard workflow proceeds as follows: 1. <strong>Pairwise association</strong> – test for frequency differences between treatment and control replicates. 2. <strong>Stratified analysis</strong> – combine replicate‑specific 2×2 tables using the CMH test. 3. <strong>Goodness‑of‑fit</strong> – assess consistency across strata with the Breslow‑Day test.</p>
-<p><strong>Limitations</strong> - <strong>Pairing assumption</strong> – requires a biologically unjustified link between specific control and treatment replicates. - <strong>Fixed time points</strong> – cannot naturally accommodate additional intermediate measurements. - <strong>Variance ignored</strong> – does not model the stochastic nature of allele‑frequency changes, leading to inflated false‑positive rates.</p>
-</section>
-<section id="mechanistic-stochastic-model" class="level2">
-<h2 class="anchored" data-anchor-id="mechanistic-stochastic-model">Mechanistic, Stochastic Model</h2>
-<section id="populationgenetic-framework" class="level3">
-<h3 class="anchored" data-anchor-id="populationgenetic-framework">Population‑genetic framework</h3>
-<p>The expected change in the frequency (p) of a focal allele is</p>
+<p>In typical evolve and resequence experiments, the objective is to find genetic variants respondible for adaptation to a particular selection pressure. In these experiments, populations are evolved under some selective pressure and sequenced both at the start and at the end of the experiment.</p>
+<p>In this particular case, the type of sequencing was PooledSeq, in which (a sample of) the population is sequenced as a whole, thereby loosing all information about individual haplotypes. Here the objective is really to measure allele frequencies.</p>
+<p>Typically these experiments are analyzed through the Cochram-Mantel-Haenzel (CMH) test. The CMH test is a generalization of the chi-square for stratitified contingency tables. In the case at hand, the stratification is over replicates. In essence, one makes an association test over the read counts between the treatment (Evolved / Control) and time ( initial timepoint / final timepoint ). Because experiments are replicated, one ends up with several contingency tables (one for each replicate), over which the CMH test can be used to determine if there is a consistent association between the two variables (treatment and time) over the several replicates. In practice, the test is actually two tests: one that tests if the pooled odds-ratio is null, and another (the Breslow-Day test) that tests if the Odds-Ratio is the same across all tables.</p>
+<p>There are however, a number of issues with this statistical approach:</p>
+<ol type="1">
+<li>This approach assumes a pairing between evolved and control populations. In reality, very rarely there is any biological reason to assume that a particular control replicated is related to any specific treatment replicate.</li>
+<li>There is no reason to use only two time points in this type of experimental design. This procedure would not be able to accomodate extra time points.</li>
+<li>More importantly, this procedure does not incorporate all the knowledge we have regarding the process that generates the data: The variance across replicates depends on the number of generations of evolution, the initial allele frequency, and the selection coefficient. Because the process is inherently stochastic, and this method has no information about the variance that may be expected, associations may arise simply by chance.</li>
+</ol>
+<section id="principled-inference-incorporating-scientific-knowledge-in-the-inference-process" class="level2">
+<h2 class="anchored" data-anchor-id="principled-inference-incorporating-scientific-knowledge-in-the-inference-process">Principled inference: incorporating scientific knowledge in the inference process</h2>
+<p>Instead of trying to “shoehorn” a generic statistical test to our data, one can instead incorporate the mechanisms that we know should be acting to generate the data. This in principle will allow us to take more out of our data.</p>
+<p>In these kinds of experiments, particularly with organisms such as drosophila, generations are discrete by design, and the population size is fixed. This allows us to write the expected change in allele frequencies from basic population genetics theory as:</p>
 <p><span class="math display">\[
-\Delta p = \frac{p\big(W_{11}-W_{01}\big)+(1-p)\big(W_{01}-W_{00}\big)}{\bar{W}}\,p(1-p),
+  \Delta p = \left[ p\left(W_{11}-W_{01}\right) + (1-p)\left(W_{01}-W_{00}\right) \right]\frac{p(1-p)}{\bar{W}}
 \]</span></p>
-<p>where (W_{11}=(1+s)^2), (W_{00}=1), and (W_{01}=(1+sh)) are the fitnesses of the homozygotes and heterozygote, respectively. This formulation permits arbitrary dominance ((h)) and selection coefficients ((s)).</p>
-</section>
-<section id="genetic-drift-and-sampling-variance" class="level3">
-<h3 class="anchored" data-anchor-id="genetic-drift-and-sampling-variance">Genetic drift and sampling variance</h3>
-<p>Allele‑frequency estimates from Pooled‑Seq are subject to two additional binomial processes: - <strong>Genetic drift</strong> during discrete, fixed‑size Wright–Fisher generations. - <strong>Sequencing subsampling</strong> at a given depth (d), which introduces extra sampling variance.</p>
-<p>Both effects can be modeled as binomial draws, allowing an explicit variance term to be added to downstream inference.</p>
-</section>
-</section>
-<section id="results-and-discussion" class="level2">
-<h2 class="anchored" data-anchor-id="results-and-discussion">Results and Discussion</h2>
-<p>The proposed model: - Captures the influence of dominance and selection on allele‑frequency trajectories. - Provides a realistic variance estimate that accounts for both biological drift and technical sampling. - Enables straightforward extension to more than two time points or hierarchical experimental designs.</p>
-</section>
-<section id="conclusions" class="level2">
-<h2 class="anchored" data-anchor-id="conclusions">Conclusions</h2>
-<p>By embedding the statistical test within a biologically grounded stochastic model, we obtain more reliable estimates of evolutionary parameters and avoid the pitfalls of ad‑hoc stratification. This approach facilitates deeper insight from Pooled‑Seq experiments and can be readily extended to related problems.</p>
+<p>where <span class="math inline">\(p\)</span> tracks the frequency of a particular variant at a locus (be it a SNP, an aminoacid, or a whole gene variant) and <span class="math inline">\(W_{11}=(1+s)^2\)</span>, <span class="math inline">\(W_{00}=1\)</span> and <span class="math inline">\(W_{01}=(1+sh)\)</span> are the fitnesses of the both homozygotes and the heterozygote, respectively. Note that here we are assuming that patterns of dominance may exist.</p>
+<p>Furthermore, we know this allele frequency is affected by genetic drift, and a good approximation for this sampling process is the binomial (the Wright-Fisher model).</p>
+<p>Beyond the population genetics knowledge, one can also incorporate the added variance that is introduced by the sub-sampling of the population that is performed for the sequencing, as well as the sequencing depth of each locus. Both of these processes can also be described by binomial processes.</p>
 
 
 </section>
