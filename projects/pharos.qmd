@@ -3,6 +3,7 @@ title: "Pharos"
 description: "A decentralized preprint archive built on peer-to-peer storage, exploring how scientific publishing could work without a central server."
 date: 2026-09-01
 categories: [Scientific Infrastructure]
+draft: true
 ---
 
 Pharos is a working prototype of a decentralized preprint archive: authors publish directly, content is stored and replicated peer-to-peer, and no central authority is needed to serve or preserve it. The repository is at [github.com/tpaixao/pharos](https://github.com/tpaixao/pharos) and the landing page at [tiagopaixao.com/pharos/](https://tiagopaixao.com/pharos/). A longer argument for why this matters is in the blog post [Why preprints need decentralized infrastructure](/blog/pharos-decentralized-preprints.html).

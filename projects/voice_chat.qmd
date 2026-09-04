@@ -3,6 +3,7 @@ title: "Voice Assistant"
 description: "A voice-in, voice-out web app connected to a full personal AI assistant, built to test how low conversational latency can go on home hardware."
 date: 2026-09-01
 categories: [Tools & Apps]
+draft: true
 ---
 
 This is a web application you talk to: you speak, it transcribes, thinks, and answers out loud. Unlike a plain chat model, it runs with the full context and memory of a personal assistant (notes, preferences, ongoing projects), and it runs on a Raspberry Pi at home. The repository is at [github.com/tpaixao/voice_chat](https://github.com/tpaixao/voice_chat).
