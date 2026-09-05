@@ -1,0 +1,52 @@
+---
+title: "DAWN: a blockchain asset protocol from 2018"
+description: "An early homebrew NFT protocol built on Steem, written before ERC-721 tooling existed. Notes on what it did, what it got right, and what happened to the ecosystem it depended on."
+date: 2026-09-05
+categories: [Scientific Infrastructure]
+draft: true
+---
+
+While going through old repositories I found DAWN, short for Decentralized Asset Worldwide Network, a small project I built in April 2018 on the Steem blockchain. It is a minimal protocol for registering ownership of digital assets and transferring that ownership between accounts, which is to say it is an NFT protocol, written at a moment when the word had not yet been coined. Looking back at it now is instructive, both for what the design got right and for what the subsequent history of the ecosystem did to it.
+
+## 1. The moment it was written
+
+The timing matters. CryptoKitties had launched in late 2017 and briefly clogged the Ethereum network, demonstrating that provably scarce digital collectibles had an audience. The ERC-721 standard was finalized in January 2018, and everything that would later be called an NFT was, in early 2018, still mostly confined to Ethereum experiments: CryptoPunks, a few trading card projects, and a long lineage reaching back to colored coins on Bitcoin and Counterparty's Rare Pepes. The term non-fungible token did not enter common usage until late that year.
+
+Steem was an odd but rational choice of platform at the time. Transactions were free, funded through a bandwidth allowance rather than gas fees, blocks confirmed in three seconds, and the chain natively supported a generic `custom_json` operation that any application could define and any node could replay. Steem Monsters, later Splinterlands and one of the more durable blockchain games, used exactly this mechanism. DAWN was the same idea applied to general asset ownership rather than game cards: use the chain as a public append-only log of signed claims, and nothing else.
+
+## 2. What the protocol did
+
+The protocol had two operations, broadcast as custom JSON with the identifier `DAWN`:
+
+```json
+["register_asset", {
+    "permlink": "author/title",
+    "title": "title",
+    "author": "author",
+    "owner": "author",
+    "data": {}
+}]
+
+["transfer_asset", {
+    "permlink": "author/title",
+    "new_owner": "new_account"
+}]
+```
+
+The identifier of an asset was a Steem permlink, `author/title`, which was convenient because the chain already used that format for posts. Registration embedded arbitrary asset data alongside the ownership claim. Transfer named a new owner. The rules of validity were simple and did the real work: a registration was accepted only if the transaction was signed by the stated author, and a transfer only if signed by the current owner. Forgeries were therefore impossible by construction, and anyone could reconstruct the complete ownership history of any asset by replaying the chain from the genesis block and checking signatures.
+
+Around this protocol sat a replay engine in Python that mirrored the chain into a local SQLite database with tables for assets, transfers, and users, resuming from the last parsed block, and a Flask API exposing queries such as the assets owned by an account and the transfer history of an asset. Browser clients and a Qt GUI were in progress; the TODO file shows a login form and a register-asset button that never quite shipped. The testnet deployment used a few generated accounts and a genesis block somewhere in the six-digit block numbers.
+
+## 3. What the design got right
+
+Two choices in DAWN now look like early statements of ideas that became standard. The first is that ownership is a chain of signed claims rather than state in a program. There is no smart contract holding the asset; the asset exists only as an append-only sequence of authorizations, and validity is defined by who signed, not by what code runs. This is, structurally, the same model as a git history or an append-only log with verifiable signatures, and it makes the entire ownership record independently auditable by replay.
+
+The second is that the protocol does not require its own blockchain, its own token, or fees. It piggybacks on an existing public log, which keeps the cost of the whole system near zero. The corresponding weakness is equally clear in hindsight: Steem had no programmable asset state, so royalties, auctions, and composability, the things that later made ERC-721 an ecosystem rather than a format, had to be built application by application. A minimal ownership log is a foundation; it is not a marketplace.
+
+## 4. What happened next
+
+The project stalled, as weekend projects do, and then the ground moved underneath it. Steem was acquired in 2020 by a new owner whose community disagreed with the direction, the community forked the chain into Hive, and both Steem and Hive spent the following years at marginal relevance while the NFT conversation moved entirely to Ethereum and its rollups. The 2021 boom validated the core idea at enormous scale, and also demonstrated the failure modes of putting it on fee-paying, energy-intensive infrastructure: speculation first, utility a distant second, and an environmental cost that took the wind out of the movement's sails.
+
+DAWN itself is now a curiosity, but a useful one. The pattern it implemented, minimal signed claims over a public append-only log with ownership defined by signature chains, is exactly the pattern I would later reach for in Pharos, a peer-to-peer preprint archive where publication, versioning, and authorship are verifiable claims rather than state in someone's database. The difference is the substrate: in 2018 the only affordable public log was a blockchain, whereas content-addressed p2p storage now provides the same integrity guarantees without the fee and energy overhead.
+
+The lesson I take from it is that the interesting part of these systems was never the token. It is the ability to make a claim, sign it, and have anyone verify the chain of custody years later without asking permission from whoever operates the infrastructure. That idea survived every hype cycle since 2018. It was simply waiting for better plumbing.

@@ -1,0 +1,31 @@
+---
+title: "A personal prehistory of decentralized apps"
+description: "Three half-finished projects from 2017 to 2019, an Ethereum dApp, a Steem protocol experiment, and a dat-powered lab notebook, and what they taught me before I came back to the same ideas in 2026."
+date: 2026-09-05
+categories: [Scientific Infrastructure]
+draft: true
+---
+
+Going through my old GitHub repositories after writing about DAWN, I realized DAWN was not an isolated experiment but the middle act of a three-part arc that ran from 2017 to 2019. Each project attacked the same question from a different angle, which question being, in one sentence: can a small group of people keep shared records without trusting an operator? None of the projects shipped, but the pattern they trace is the same one I now work on with Pharos, so it is worth reconstructing the arc.
+
+## 1. dAppTest (mid 2017): the smart contract era
+
+The first attempt, from the spring of 2017, was an Ethereum dApp built the way everyone built them at the time: a Solidity contract called `Market` with offers that could be added, taken, and confirmed, the status machine expressed as an enum and the events as log entries, and a Riot.js frontend glued together with Bower. The git history is two commits long and the last one reads "trying to pass functions with values. not done yet." What I remember of that era is the tooling friction: deploying to testnets, managing keys, paying gas to learn that your contract had a bug, and the sense that every simple application required an entire development stack to say something quite small. The lesson I took from it was the one that later shaped everything else: putting state into a smart contract buys you trustlessness at a high price, and for most applications the price exceeds the benefit.
+
+## 2. steem-app (2017 to 2018): the protocol era
+
+The second project was a change of substrate. Steem was free to transact on, fast, and had a generic `custom_json` operation that applications could define, so the same problem, a marketplace with offers and confirmations, could be modeled as a protocol over an existing public log rather than as a program running somewhere. The repository contains a Python blockchain reader with a pickled SQLite-like database, validators that parsed `send:<amount>@<account>` commands out of transaction memos, and a confirmation module that would broadcast confirmations and even upvote valid ones. The git history again ends mid-sentence, with a commit called "creating a app-specific database."
+
+What this project clarified was the layering. The valuable part was not the contract logic, which was trivial, but the property that anyone could replay the public log and independently reconstruct the state, with validity defined by signatures and parsing rules rather than by code that had to be paid to run. That is the idea DAWN later stripped to its essentials, two operations and a signature chain. It is also, I can now see, the idea of a replicated log that underlies essentially all of the decentralized infrastructure I work with today.
+
+## 3. datnotebook (2019): the local-first era
+
+The third project came after a pause, and it moved the problem in the opposite direction: instead of putting records on a global public chain, make a lab notebook that works offline and syncs between devices. The repository is a React and Electron application, with entries in a Redux store, Summernote and Slate editors competing for attention in the dependencies, and a data model of notebooks with dated entries. The name records the ambition: dat was the protocol that later became Hypercore, the same append-only, content-addressed log that Pharos is built on. The git history is a single commit, "moving to electron," from July 2019.
+
+This was the moment the arc's underlying question finally got a substrate that fit it. A blockchain is one answer to how strangers agree on shared state, but a lab notebook does not need consensus between strangers; it needs tamper-evident history between devices owned by the same person or small group. Dat and Hypercore were designed for exactly that, single-writer append-only logs that peers verify by signature rather than by proof of work. The project itself went nowhere, but the substrate question it raised is the one that matters.
+
+## The arc
+
+Seen together, the three projects trace a movement away from global consensus and toward personal, verifiable logs: from a contract on Ethereum, where trustlessness is bought with fees and every application pays the same heavy price, to a protocol on Steem, where the log is public but the logic is application-level, to a local-first notebook, where the history is personal but the integrity guarantees are the same cryptographic ones. The 2021 NFT boom, which I wrote about in the DAWN post, ran the first era's model at planetary scale and demonstrated its costs; the p2p infrastructure I use now, Hypercore and Hyperswarm, is the third era's model matured into something usable.
+
+What is a little sobering is how long the ideas sat still while the tooling caught up. The claim I would sign in 2017, the replayable log I parsed in 2018, and the content-addressed history I wanted in 2019 are all present in what I build now. The difference is that in 2026 the plumbing exists: the substrate is mature, the identity story is solvable, and the cost is near zero. The arc did not end. It was waiting for its decade.

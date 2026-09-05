@@ -1,0 +1,26 @@
+---
+title: "DAWN"
+description: "An early blockchain asset protocol built on Steem in 2018: ownership as signed claims over a public append-only log, written before the word NFT existed."
+date: 2026-09-05
+categories: [Scientific Infrastructure]
+draft: true
+---
+
+DAWN, short for Decentralized Asset Worldwide Network, is a small protocol I built in April 2018 for registering and transferring ownership of digital assets on the Steem blockchain. It is the earliest example in my own work of a pattern that keeps recurring: verifiable claims over a public append-only log, with no central operator. The repository is at [github.com/tpaixao/DAWN](https://github.com/tpaixao/DAWN). The blog post [DAWN: a blockchain asset protocol from 2018](/blog/dawn-2018-asset-protocol.html) tells the story with historical context; this page is the technical summary.
+
+## What it does
+
+The protocol has two operations, broadcast as Steem `custom_json` transactions with the identifier `DAWN`:
+
+1. **register_asset.** An author registers an asset with a permlink identifier (`author/title`), a title, and arbitrary metadata. Valid only if signed by the stated author.
+2. **transfer_asset.** The current owner hands an asset to a new account. Valid only if signed by the current owner.
+
+Ownership is therefore defined by a chain of signatures, not by state in a program. Anyone can reconstruct the complete custody history of any asset by replaying the chain and checking who signed each claim. The protocol has no token, no fees, and no smart contract; it piggybacks on an existing public log.
+
+## Implementation
+
+Around the protocol sits a replay engine in Python that mirrors the Steem chain into a local SQLite database (assets, transfers, users), resuming from the last parsed block. A Flask API exposes queries such as the assets owned by an account and the transfer history of an asset, and browser and Qt clients were in progress. The project was deployed on the Steem testnet with generated accounts and seeded data; the main-net path is one config line away.
+
+## What I took from it
+
+Two ideas survived into later work. The first is that provenance is a chain of signed claims rather than mutable state, which makes the whole history independently auditable by replay; Pharos uses the same structure for publication and versioning. The second is that the substrate does not need to be a blockchain: Steem provided the log in 2018, but content-addressed p2p storage now gives the same integrity guarantees without fees or energy overhead. DAWN is the 2018 draft of an idea that Pharos is the 2026 version of.
