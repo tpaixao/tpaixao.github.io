@@ -11,37 +11,18 @@ fig-cap-location: margin
 Note that in the early days of the 2020 pandemic there was a lot of uncertainty regarding the effectiveness of the rapid tests. This was an attempt at quantifying the performance of the different tests present in the market.
 :::
 
-## Abstract
-We present a Bayesian hierarchical model to infer true prevalence from observed test results while estimating test‑specific false‑positive and false‑negative rates. The approach accommodates multiple diagnostic tests and provides uncertainty quantification for all parameters.
+In the first months of the COVID-19 pandemic, rapid serological tests were deployed at remarkable scale while their performance characteristics remained poorly characterized. Manufacturers reported sensitivity and specificity figures, but these came from heterogeneous validation studies, and the numbers circulating publicly carried very little information about how each test would behave in the field. This mattered because the quantity everyone actually wanted, the true prevalence of infection in the population, is not directly observable: what a serosurvey measures is a stream of test results, and converting those results into prevalence requires knowing how often the test itself is wrong.
 
-## Introduction
-During the early phase of the COVID‑19 pandemic, rapid serological tests were deployed at scale, but their performance characteristics were poorly understood. Accurate estimation of true prevalence is essential for interpreting serosurveys and informing public‑health decisions.
-
-## Methods
-### Statistical model
-Let \(p_{\text{obs}}\) be the observed proportion of positive tests in a population of size \(N\). The relationship between the observed frequency and the underlying prevalence \(p_{\text{prev}}\) is
+The relationship between what we observe and what we want to infer is a simple deconvolution. Let \(p_{\text{obs}}\) be the observed proportion of positive tests in a population of size \(N\). The observed frequency is a mixture of two error-prone contributions:
 
 \[
 p_{\text{obs}} = p_{\text{prev}} (1 - p_{\text{fnr}}) + (1 - p_{\text{prev}}) p_{\text{fpr}},
 \]
 
-where \(p_{\text{fnr}}\) and \(p_{\text{fpr}}\) denote false‑negative and false‑positive rates, respectively. We place weakly informative priors on \(p_{\text{prev}}\), \(p_{\text{fpr}}\), and \(p_{\text{fnr}}\) and sample the joint posterior using Hamiltonian Monte‑Carlo (NUTS) within a PyMC model.
+where \(p_{\text{fnr}}\) and \(p_{\text{fpr}}\) denote the false-negative and false-positive rates of the test, respectively. True positives contribute \(p_{\text{prev}}(1-p_{\text{fnr}})\), while false positives from uninfected individuals contribute \((1-p_{\text{prev}})p_{\text{fpr}}\). Note that when prevalence is low, the second term dominates, and this is precisely the regime where a test with an apparently respectable specificity can generate more false positives than true positives. However, since all three quantities on the right-hand side are unknown, point estimates are not enough; the honest treatment is a joint inference problem. We therefore placed weakly informative priors on \(p_{\text{prev}}\), \(p_{\text{fpr}}\), and \(p_{\text{fnr}}\) and sampled the joint posterior using Hamiltonian Monte Carlo (NUTS) in a PyMC model.
 
-### Extension to multiple tests
-For \(K\) tests, observed counts \(y_k\) follow binomial distributions with test‑specific sensitivities and specificities. The hierarchical structure shares information across tests while allowing test‑specific effects.
+The single-test equation generalizes naturally when more than one test is in play. For \(K\) tests, the observed counts \(y_k\) follow binomial distributions with test-specific sensitivities and specificities, and a hierarchical structure shares information across tests while still allowing test-specific effects. This is the statistically sensible way to compare tests on a common scale: each test informs the others through the shared population-level prevalence, and the posterior for each test's error rates is regularized by the collective evidence rather than resting on its own (often thin) validation data.
 
-## Results
-- **Simulation study**: Demonstrates unbiased prevalence estimates when the model is correctly specified.
-- **Application to FDA‑reported data**: Shows how raw observed positivity rates are adjusted and how uncertainty propagates to prevalence estimates.
+The framework separates the statistical modelling of test performance from the epidemiological inference, and the benefits follow from that separation. A simulation study demonstrated unbiased prevalence estimates when the model is correctly specified. Applied to FDA-reported data, the model showed how raw observed positivity rates are adjusted, and how uncertainty in test performance propagates into the prevalence estimates rather than being silently absorbed into a single number. The practical consequence for public-health decision making is risk-aware by construction: decision-makers see not only a prevalence estimate but the width of the uncertainty around it, driven by exactly the quantities (test error rates) they were most in the dark about.
 
-## Discussion
-The framework separates statistical modelling of test performance from epidemiological inference, enabling:
-- Calibrated prevalence estimates even with uncertain test characteristics.
-- Comparative evaluation of tests on a common scale.
-- Propagation of uncertainty from test performance to prevalence estimates for risk‑aware decision making.
-
-## Conclusions
-By integrating Bayesian inference with a biologically plausible model of test outcomes, this approach improves the reliability of seroprevalence estimates derived from rapid COVID‑19 tests. Future extensions will consider hierarchical population structures and incorporate prior knowledge from related pathogens.
-
-## References
-References can be added here in any citation style supported by Quarto.
+By integrating Bayesian inference with a biologically plausible model of test outcomes, this approach improves the reliability of seroprevalence estimates derived from rapid COVID-19 tests. Natural extensions include hierarchical population structures, which would allow regional or demographic disaggregation, and the incorporation of prior knowledge from related pathogens, which would sharpen the early-pandemic regime where prior information is the scarcest and most needed.
