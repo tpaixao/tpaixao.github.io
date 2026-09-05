@@ -1,0 +1,47 @@
+---
+title: "Evaluating the performance of COVID-19 rapid tests"
+description: "A Bayesian framework for diagnostic tests"
+categories: [Methods & Inference]
+date:   Jun-2020
+image: cover_images/sero_bayes.png
+fig-cap-location: margin
+---
+
+::: {.callout-note}
+Note that in the early days of the 2020 pandemic there was a lot of uncertainty regarding the effectiveness of the rapid tests. This was an attempt at quantifying the performance of the different tests present in the market.
+:::
+
+## Abstract
+We present a Bayesian hierarchical model to infer true prevalence from observed test results while estimating test‑specific false‑positive and false‑negative rates. The approach accommodates multiple diagnostic tests and provides uncertainty quantification for all parameters.
+
+## Introduction
+During the early phase of the COVID‑19 pandemic, rapid serological tests were deployed at scale, but their performance characteristics were poorly understood. Accurate estimation of true prevalence is essential for interpreting serosurveys and informing public‑health decisions.
+
+## Methods
+### Statistical model
+Let \(p_{\text{obs}}\) be the observed proportion of positive tests in a population of size \(N\). The relationship between the observed frequency and the underlying prevalence \(p_{\text{prev}}\) is
+
+\[
+p_{\text{obs}} = p_{\text{prev}} (1 - p_{\text{fnr}}) + (1 - p_{\text{prev}}) p_{\text{fpr}},
+\]
+
+where \(p_{\text{fnr}}\) and \(p_{\text{fpr}}\) denote false‑negative and false‑positive rates, respectively. We place weakly informative priors on \(p_{\text{prev}}\), \(p_{\text{fpr}}\), and \(p_{\text{fnr}}\) and sample the joint posterior using Hamiltonian Monte‑Carlo (NUTS) within a PyMC model.
+
+### Extension to multiple tests
+For \(K\) tests, observed counts \(y_k\) follow binomial distributions with test‑specific sensitivities and specificities. The hierarchical structure shares information across tests while allowing test‑specific effects.
+
+## Results
+- **Simulation study**: Demonstrates unbiased prevalence estimates when the model is correctly specified.
+- **Application to FDA‑reported data**: Shows how raw observed positivity rates are adjusted and how uncertainty propagates to prevalence estimates.
+
+## Discussion
+The framework separates statistical modelling of test performance from epidemiological inference, enabling:
+- Calibrated prevalence estimates even with uncertain test characteristics.
+- Comparative evaluation of tests on a common scale.
+- Propagation of uncertainty from test performance to prevalence estimates for risk‑aware decision making.
+
+## Conclusions
+By integrating Bayesian inference with a biologically plausible model of test outcomes, this approach improves the reliability of seroprevalence estimates derived from rapid COVID‑19 tests. Future extensions will consider hierarchical population structures and incorporate prior knowledge from related pathogens.
+
+## References
+References can be added here in any citation style supported by Quarto.

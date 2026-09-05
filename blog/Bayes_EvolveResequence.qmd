@@ -1,0 +1,53 @@
+---
+title: "Estimating allelic trajectories from PooledSeq"
+description: "Using SDEs to estimate allelic trajectories and associated evolutionary parameters from PooledSeq"
+categories: [Methods & Inference]
+date: Jan-2021
+image: cover_images/BayesEvolveResequence.png
+fig-cap-location: margin
+title-block-banner: cover_images/BayesEvolveResequence_trajectories_small.png
+---
+
+## Abstract
+*In pooled‑sequencing experiments the goal is to track changes in allele frequencies across generations under selective pressure. Here we introduce a mechanistic, stochastic model that extends the classic Cochran‑Mantel‑Haenszel framework by explicitly incorporating population‑genetic processes such as selection, dominance, genetic drift, and sampling variance.*
+
+## Introduction
+Pooled‑Seq designs allow high‑throughput screening of adaptive evolution by sequencing pooled samples at multiple time points. Traditional analyses rely on contingency‑table tests (e.g., Cochran‑Mantel‑Haenszel) that often ignore key sources of variability.
+
+## Classical CMH‑Based Approach
+The standard workflow proceeds as follows:
+1. **Pairwise association** – test for frequency differences between treatment and control replicates.
+2. **Stratified analysis** – combine replicate‑specific 2×2 tables using the CMH test.
+3. **Goodness‑of‑fit** – assess consistency across strata with the Breslow‑Day test.
+
+**Limitations**
+- **Pairing assumption** – requires a biologically unjustified link between specific control and treatment replicates.
+- **Fixed time points** – cannot naturally accommodate additional intermediate measurements.
+- **Variance ignored** – does not model the stochastic nature of allele‑frequency changes, leading to inflated false‑positive rates.
+
+## Mechanistic, Stochastic Model
+### Population‑genetic framework
+The expected change in the frequency \(p\) of a focal allele is
+
+$$
+\Delta p = \frac{p\big(W_{11}-W_{01}\big)+(1-p)\big(W_{01}-W_{00}\big)}{\bar{W}}\,p(1-p),
+$$
+
+where \(W_{11}=(1+s)^2\), \(W_{00}=1\), and \(W_{01}=(1+sh)\) are the fitnesses of the homozygotes and heterozygote, respectively. This formulation permits arbitrary dominance (\(h\)) and selection coefficients (\(s\)).
+
+### Genetic drift and sampling variance
+Allele‑frequency estimates from Pooled‑Seq are subject to two additional binomial processes:
+- **Genetic drift** during discrete, fixed‑size Wright–Fisher generations.
+- **Sequencing subsampling** at a given depth \(d\), which introduces extra sampling variance.
+
+Both effects can be modeled as binomial draws, allowing an explicit variance term to be added to downstream inference.
+
+## Results and Discussion
+The proposed model:
+- Captures the influence of dominance and selection on allele‑frequency trajectories.
+- Provides a realistic variance estimate that accounts for both biological drift and technical sampling.
+- Enables straightforward extension to more than two time points or hierarchical experimental designs.
+
+## Conclusions
+By embedding the statistical test within a biologically grounded stochastic model, we obtain more reliable estimates of evolutionary parameters and avoid the pitfalls of ad‑hoc stratification. This approach facilitates deeper insight from Pooled‑Seq experiments and can be readily extended to related problems.
+
