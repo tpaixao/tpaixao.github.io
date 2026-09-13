@@ -1,0 +1,57 @@
+---
+title: "A personal health-data pipeline on a Raspberry Pi"
+description: "From Google Drive CSV exports to a tidy dataset and a self-contained Plotly dashboard: the data-engineering decisions that matter when the subject is one person and the data is messy."
+date: 2026-09-13
+categories: [Tools & Apps]
+draft: true
+---
+
+I wear a smartwatch and carry a phone, and both track my health data, which syncs to Google Drive every morning as CSV exports. This post describes the pipeline I built to turn those exports into something analyzable: a tidy one-row-per-day dataset and a self-contained dashboard, rebuilt daily on a Raspberry Pi. The repository is at [github.com/tpaixao/health_sync_data](https://github.com/tpaixao/health_sync_data).
+
+![The dashboard: stat cards computed over recorded days only, with the steps chart below. Watch data takes precedence when worn; the phone fills gaps.](/assets/health_sync_data/dashboard_top.png)
+
+## 1. The data model was the hard part
+
+Two sources record overlapping signals: a Huawei Health watch and Health Connect (phone). Steps come from both; heart rate and sleep only from the watch. The exports arrive as one rolling 30-day file per day, which means each calendar day appears in about thirty overlapping files, and the naive aggregation is wrong: summing across files produces 478,000-step days. The correct operation is to take the maximum per-day value across files, then deduplicate between sources with watch-wins precedence and phone filling gaps.
+
+This is the least glamorous part of the project and the part with the most permanent consequences. Decisions like "take the max, never the sum" or "watch wins" are encoded once in the loader and silently determine every number the dashboard will ever show.
+
+## 2. Missing data is information, not zero
+
+A single-subject dataset has no sampling variability to hide behind: the wearer takes the watch off, forgets it at home, charges it. The design rules reflect that:
+
+- No zero-filling or interpolation for heart rate and sleep on unworn days; those days are missing values, not zero values.
+- Each day carries a coverage class (full, partial, minimal, none), so any downstream aggregation can restrict to observed days explicitly.
+- Trends are computed over recorded days only; the stat cards in the dashboard state their denominator ("5 nights recorded", "30 days with watch").
+
+The result is honest by construction: 378 days of data, of which 125 have full coverage and 80 have none. Zero-filling would have silently converted "watch not worn" into "slept zero hours".
+
+## 3. A static dashboard is enough
+
+The dashboard is a single HTML file, regenerated daily from the tidy CSV embedded as in-page JSON, with Plotly loaded from CDN and all rendering client-side. No server, no database, no JavaScript build step. Charts pan by dragging horizontally with the y-axis locked, which makes time series pleasant to browse on a phone.
+
+![Sleep by night, stacked by stage, with naps as markers. Recording drops off after April 2026, shown honestly as gaps rather than zeros.](/assets/health_sync_data/chart-sleep.png)
+
+![Heart rate over the full period: min/mean/max with resting heart rate and its 7-day average on a separate axis. Resting HR is the recovery signal here, since the exports contain no beat-level data for real HRV.](/assets/health_sync_data/chart-hr.png)
+
+The daily rebuild runs from cron fifteen minutes after the Drive sync, and reports success or failure. Because the dashboard is a build artifact rather than a service, there is nothing to keep alive and nothing to break beyond the cron job itself.
+
+![Wear hours per day against sleep hours. The wear-time trace doubles as a data-quality display: gaps in the line are days the watch was off.](/assets/health_sync_data/chart-wear.png)
+
+## 4. What the data says (and does not)
+
+A year in, the honest findings are modest. Sleep duration and heart rate are essentially uncorrelated in this dataset (r near zero, n=157), so the sleep-versus-HR cross-plot is not informative. Resting heart rate computed from the low decile of sleep-window samples behaves sensibly and is the closest available recovery signal, since these exports contain minute-level heart rate only, no beat-to-beat intervals, and therefore no real HRV.
+
+That last point is worth stating plainly: consumer exports decide for you what is measurable. The data schema is the ceiling of the analysis, not the watch's sensing capability.
+
+## Take-home messages
+
+- Rolling export files demand max-based deduplication; summing across overlapping files fabricates data.
+- For single-subject data, encode missingness explicitly (coverage classes, NA for unworn days) instead of zero-filling; every downstream number depends on this.
+- A static, self-contained dashboard rebuilt daily is the right complexity for personal analytics: no services to babysit.
+- Consumer health exports define the analysis ceiling; no RR intervals means no HRV, regardless of what the marketing says.
+
+## References
+
+- Pipeline repository: github.com/tpaixao/health_sync_data
+- Dashboard (LAN only): http://192.168.1.151:8095/dashboard.html
