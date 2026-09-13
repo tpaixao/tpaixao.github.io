@@ -1,6 +1,6 @@
 ---
 title: Publications
-bibliography: MyPapers.bib
+bibliography: MyPapers2026.bib
 csl: apa-cv.csl
 reference-section-title: "Publications"
 nocite: |
