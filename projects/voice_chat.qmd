@@ -1,14 +1,30 @@
 ---
-title: "Voice Assistant"
-description: "A voice-in, voice-out web app connected to a full personal AI assistant, built to test how low conversational latency can go on home hardware."
-date: 2026-09-01
-categories: [Tools & Apps]
+title: Voice Assistant
+description: A voice-in, voice-out web app connected to a full personal AI assistant, built to test how low conversational latency can go on home hardware.
+date: '2026-09-01'
+categories:
+  - Tools & Apps
 draft: true
+jupyter:
+  jupytext:
+    formats: ipynb,qmd
+    text_representation:
+      extension: .qmd
+      format_name: quarto
+      format_version: '1.0'
+      jupytext_version: 1.19.5
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
 ---
+
+
 
 This is a web application you talk to: you speak, it transcribes, thinks, and answers out loud. Unlike a plain chat model, it runs with the full context and memory of a personal assistant (notes, preferences, ongoing projects), and it runs on a Raspberry Pi at home. The repository is at [github.com/tpaixao/voice_chat](https://github.com/tpaixao/voice_chat).
 
 The project is primarily a latency engineering exercise: the goal is not to build another voice UI, but to find out where the milliseconds actually go in a speech-to-LLM-to-speech pipeline and what can be done about each component.
+
 
 ## Design choices
 
@@ -16,6 +32,7 @@ The project is primarily a latency engineering exercise: the goal is not to buil
 - **Relaxed pacing.** The silence window is deliberately generous (1.6 seconds, tunable) so the user never feels pressured to keep talking.
 - **Sentence-level streaming.** Audio for each completed sentence is synthesized and sent as soon as it is ready, rather than waiting for the full answer.
 - **Screen keep-awake.** The page holds a wake lock so phone microphones keep working with the screen on.
+
 
 ## Sibling project
 

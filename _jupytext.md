@@ -6,7 +6,12 @@ Not rendered by Quarto (files starting with `_` are ignored by project renders).
 
 - **jupytext engine** 1.19.5 — installed in conda env `jupyter` (`~/miniforge3/envs/jupyter/bin/jupytext`)
 - **JupyterLab integration** (`jupyterlab_jupytext` + `jupyterlab-jupytext` UI) — in the same env
-- Paired files live in `projects/`: `dawn`, `pharos`, `voice_chat` (`.ipynb` + `.qmd`)
+- Paired files (formats `ipynb,qmd`):
+  - `projects/`: `dawn`, `pharos`, `voice_chat`
+  - `blog/`: all 8 posts (Bayes_EvolveResequence, dawn-2018-asset-protocol,
+    decentralized-prehistory-2017-2019, health-data-pipeline,
+    pharos-decentralized-preprints, scientific-commons-sovereignty,
+    serobayes, voice-latency-engineering)
 - The site renders **only** `*.qmd` / `*.md` (see `_quarto.yml`) — the `.ipynb` twins are ignored
 
 ## Pairing in JupyterLab (do once per notebook)
