@@ -1,10 +1,22 @@
 ---
-title: "Evaluating the performance of COVID-19 rapid tests"
-description: "A Bayesian framework for diagnostic tests"
-categories: [Methods & Inference]
-date:   Jun-2020
+title: Evaluating the performance of COVID-19 rapid tests
+description: A Bayesian framework for diagnostic tests
+categories:
+  - Methods & Inference
+date: Jun-2020
 image: cover_images/sero_bayes.png
 fig-cap-location: margin
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .qmd
+      format_name: quarto
+      format_version: '1.0'
+      jupytext_version: 1.19.5
+  kernelspec:
+    display_name: Python 3 (main)
+    language: python
+    name: main
 ---
 
 ::: {.callout-note}
