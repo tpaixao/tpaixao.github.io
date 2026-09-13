@@ -1,12 +1,28 @@
 ---
-title: "Digital sovereignty and the scientific commons"
-description: "Data nationalism restricts science, national infrastructure outages disrupt it, and the sovereignty-driven alternatives being built today recreate the same dependencies at a smaller scale. What would a scientific commons that actually breaks the pattern require?"
-date: 2026-09-03
+title: Digital sovereignty and the scientific commons
+description: Data nationalism restricts science, national infrastructure outages disrupt it, and the sovereignty-driven alternatives being built today recreate the same dependencies at a smaller scale. What would a scientific commons that actually breaks the pattern require?
+date: '2026-09-03'
 draft: true
-categories: [Scientific Infrastructure]
+categories:
+  - Scientific Infrastructure
+jupyter:
+  jupytext:
+    formats: ipynb,qmd
+    text_representation:
+      extension: .qmd
+      format_name: quarto
+      format_version: '1.0'
+      jupytext_version: 1.19.5
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
 ---
 
+
+
 The scientific record has a geography problem. The databases that molecular biology runs on sit in one country, funded by one government, subject to one political cycle. In 2025 that arrangement stopped being abstract: PubMed went dark for a day and the global research community panicked, thousands of federal web pages and datasets disappeared, and access to major biomedical repositories was cut off for entire countries. This post argues that these events are three faces of one problem, that digital sovereignty is both the cause and the currently fashionable cure, and that the cure as practiced today does not actually solve the disease.
+
 
 ## 1. Sovereignty as the cause: data nationalism
 
@@ -28,6 +44,7 @@ The restrictions on scientific data sharing are not accidents of bad policy desi
 
 Each claim is defensible in its own terms: security, privacy, benefit-sharing, or domestic mandate. The cumulative effect, however, is asymmetric fragmentation. The US restricts its data from China; China restricts its data from the US; both treat "their" data as a national asset. Nobody claims sovereignty over the scientific problem being solved, which is global by construction.
 
+
 ## 2. Sovereignty as the exposure: one country runs the commons
 
 The uncomfortable asymmetry is that the same country asserting sovereignty over its data also operates most of the infrastructure everyone else depends on. GenBank, SRA, PubMed, and BLAST sit at the US National Library of Medicine. When that host has a bad year, the whole world feels it, and 2025 was a bad year:
@@ -44,6 +61,7 @@ Alongside the operational fragility came deliberate content removal: 8,000+ fede
 
 A one-day PubMed outage prompting Germany to announce a PubMed alternative is the tell. The international reaction to fragility was not to build commons infrastructure; it was to plan another national one.
 
+
 ## 3. The sovereignty paradox
 
 Here is the puzzle at the center of this post. The reaction to dependency on US infrastructure is a European search for "digital sovereignty", and yet sovereignty is precisely the logic that produced the dependency problem in the first place.
@@ -59,6 +77,7 @@ The existing counter-examples show what works. The International Nucleotide Sequ
 
 A "sovereign European PubMed" would fix the specific fear of the moment and leave the structure of the problem intact: one operator, one jurisdiction, one budget line. Swapping the flag on the dependency is not resilience.
 
+
 ## 4. What the commons actually requires
 
 The requirement is not a single spectacular institution. It is a set of properties that together remove any single actor's ability to break the system:
@@ -71,6 +90,7 @@ The requirement is not a single spectacular institution. It is a set of properti
 
 Peer-to-peer replication is the maximal version of property 1: content-addressed data replicated across institutional nodes cannot be removed by any single government, and its integrity is verifiable rather than trusted. The honest caveats from building such systems are that discovery and quality control have no clean decentralized answers, and that petabyte-scale query services (a BLAST search) do not live happily on volunteer nodes. The pragmatic reading: P2P suits the archival and distribution layer; federated treaty infrastructure suits the curated, high-performance services. The two compose.
 
+
 ## 5. What this means for Europe
 
 Europe is currently spending political capital on digital sovereignty, and the scientific variant of that program should be judged by whether it builds the properties above or merely re-hosts dependencies. Concretely:
@@ -79,12 +99,14 @@ Europe is currently spending political capital on digital sovereignty, and the s
 - EOSC's trajectory matters: a federation of national nodes under EU governance is a step toward the commons; a European monopoly on European data would repeat the American mistake with a European flag.
 - The natural European role is the one CERN and EMBL already demonstrate: convener of treaty infrastructure that non-Europeans can join and trust, not a fortress with better branding.
 
+
 ## Take-home messages
 
 - Scientific data restrictions, content removals, and infrastructure outages in 2025 are one phenomenon: science runs on infrastructure owned by governments, and governments act like governments.
 - Digital sovereignty is both the disease and the proposed cure; sovereignty-based alternatives reproduce dependency at a different scale.
 - The working precedents are federated and treaty-based: INSDC's daily synchronization, CERN's legal independence, EMBL-EBI's mixed funding.
 - A scientific commons requires multi-jurisdictional replication, treaty-level coordination, mixed funding, standards separated from operators, and preservation as infrastructure rather than volunteer heroics.
+
 
 ## References
 

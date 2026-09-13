@@ -1,12 +1,27 @@
 ---
-title: "Estimating allelic trajectories from PooledSeq"
-description: "Using SDEs to estimate allelic trajectories and associated evolutionary parameters from PooledSeq"
-categories: [Methods & Inference]
+title: Estimating allelic trajectories from PooledSeq
+description: Using SDEs to estimate allelic trajectories and associated evolutionary parameters from PooledSeq
+categories:
+  - Methods & Inference
 date: Jan-2021
 image: cover_images/BayesEvolveResequence.png
 fig-cap-location: margin
 title-block-banner: cover_images/BayesEvolveResequence_trajectories_small.png
+jupyter:
+  jupytext:
+    formats: ipynb,qmd
+    text_representation:
+      extension: .qmd
+      format_name: quarto
+      format_version: '1.0'
+      jupytext_version: 1.19.5
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
 ---
+
+
 
 Evolve-and-resequence experiments have become the workhorse of adaptive evolution studies: expose a population to a selective pressure, let it respond for a number of generations, and sequence pooled samples at several time points to watch allele frequencies move in real time. The appeal is obvious, since pooled sequencing trades individual genotypes for throughput, allowing entire replicate populations to be tracked at a fraction of the cost. The statistical analysis, however, has largely been inherited from contingency-table thinking, and the mismatch between the biology and the test shows up in the error rates.
 
@@ -21,4 +36,3 @@ $$
 where \(W_{11}=(1+s)^2\), \(W_{00}=1\), and \(W_{01}=(1+sh)\) are the fitnesses of the two homozygotes and the heterozygote, respectively. This formulation permits arbitrary dominance (\(h\)) and selection coefficients (\(s\)), so the model is not restricted to additive architectures. Note that selection alone is not the whole story in a pooled-sequencing experiment, because two additional binomial processes act on the observed frequencies. Genetic drift operates during the discrete, fixed-size Wright-Fisher generations, and sequencing itself subsamples individuals at a given depth \(d\). Both effects can be modeled as binomial draws, which allows an explicit variance term to be carried through to downstream inference instead of being treated as nuisance noise.
 
 The payoff is a framework that separates the signal from the stochastic background by construction, rather than by post-hoc correction. The model captures the influence of dominance and selection on the allele-frequency trajectories; it provides a realistic variance estimate that accounts for both biological drift and technical sampling; and it extends straightforwardly to more than two time points or to hierarchical experimental designs, situations where the stratified CMH analysis would require uncomfortable contortions. By grounding the statistical test in a biologically plausible stochastic model, we obtain more reliable estimates of the evolutionary parameters and avoid the pitfalls of ad-hoc stratification. The approach is readily transferable to related problems, and we consider it a small step toward making the inference layer of pooled-sequencing experiments match the sophistication of the sequencing layer itself.
-
