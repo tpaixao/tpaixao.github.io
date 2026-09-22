@@ -1,12 +1,28 @@
 ---
-title: "DAWN"
-description: "An early blockchain asset protocol built on Steem in 2018: ownership as signed claims over a public append-only log, written before the word NFT existed."
-date: 2026-09-05
-categories: [Scientific Infrastructure]
+title: DAWN
+description: 'An early blockchain asset protocol built on Steem in 2018: ownership as signed claims over a public append-only log, written before the word NFT existed.'
+date: '2026-09-05'
+categories:
+  - Scientific Infrastructure
 draft: true
+jupyter:
+  jupytext:
+    formats: ipynb,qmd
+    text_representation:
+      extension: .qmd
+      format_name: quarto
+      format_version: '1.0'
+      jupytext_version: 1.19.5
+  kernelspec:
+    display_name: Python 3 (main)
+    language: python
+    name: main
 ---
 
+
+
 DAWN, short for Decentralized Asset Worldwide Network, is a small protocol I built in April 2018 for registering and transferring ownership of digital assets on the Steem blockchain. It is the earliest example in my own work of a pattern that keeps recurring: verifiable claims over a public append-only log, with no central operator. The repository is at [github.com/tpaixao/DAWN](https://github.com/tpaixao/DAWN). The blog post [DAWN: a blockchain asset protocol from 2018](/blog/dawn-2018-asset-protocol.html) tells the story with historical context; this page is the technical summary.
+
 
 ## What it does
 
@@ -17,9 +33,11 @@ The protocol has two operations, broadcast as Steem `custom_json` transactions w
 
 Ownership is therefore defined by a chain of signatures, not by state in a program. Anyone can reconstruct the complete custody history of any asset by replaying the chain and checking who signed each claim. The protocol has no token, no fees, and no smart contract; it piggybacks on an existing public log.
 
+
 ## Implementation
 
 Around the protocol sits a replay engine in Python that mirrors the Steem chain into a local SQLite database (assets, transfers, users), resuming from the last parsed block. A Flask API exposes queries such as the assets owned by an account and the transfer history of an asset, and browser and Qt clients were in progress. The project was deployed on the Steem testnet with generated accounts and seeded data; the main-net path is one config line away.
+
 
 ## What I took from it
 

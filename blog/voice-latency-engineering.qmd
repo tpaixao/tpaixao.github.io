@@ -1,12 +1,28 @@
 ---
-title: "Latency engineering for streaming voice AI"
-description: "Where do the seconds go in a speech-to-LLM-to-speech pipeline? A measurement-driven breakdown of voice round-trip latency, and what streaming actually buys you."
-date: 2026-09-03
-categories: [Tools & Apps]
+title: Latency engineering for streaming voice AI
+description: Where do the seconds go in a speech-to-LLM-to-speech pipeline? A measurement-driven breakdown of voice round-trip latency, and what streaming actually buys you.
+date: '2026-09-03'
+categories:
+  - Tools & Apps
 draft: true
+jupyter:
+  jupytext:
+    formats: ipynb,qmd
+    text_representation:
+      extension: .qmd
+      format_name: quarto
+      format_version: '1.0'
+      jupytext_version: 1.19.5
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
 ---
 
+
+
 I built a voice assistant that runs at home and answers with full assistant context, and the interesting part turned out not to be the conversation but the clock. This post breaks down where the time goes between finishing a sentence and hearing the reply, based on measurements from the working system rather than estimates.
+
 
 ## 1. Anatomy of the round trip
 
@@ -18,6 +34,7 @@ The pipeline is: microphone capture and silence detection, speech-to-text, the l
 
 The counterintuitive result is that the largest component of perceived latency for reasoning models is neither prefill nor speech, but the model's own thinking phase.
 
+
 ## 2. Streaming does not help where you need it
 
 Streaming text generation is usually presented as the fix for conversational latency: tokens arrive incrementally, so the first sentence can be spoken while the rest generates. That works when the model emits visible tokens steadily from early on.
@@ -26,11 +43,13 @@ Reasoning models break this assumption. Several cloud APIs buffer all visible ou
 
 This has a practical consequence: choosing a model for a voice agent is not only about quality and cost, it is about whether the provider streams thinking models' visible output incrementally or buffers it. Two providers offering the same checkpoint can deliver very different first-audio latency.
 
+
 ## 3. Keeping the connection alive during tool use
 
 A voice assistant that can also search the web, read files, or run code has a second buffering problem. While the agent executes a tool call, no tokens flow, and intermediaries (proxies, load balancers, the browser itself) treat a silent connection as dead.
 
 The fix is to send inaudible silence frames between real audio chunks, at stream start and on every tool event. The client skips frames below a small size threshold, so the user never hears them, but the connection never goes idle. It is an unglamorous fix that turned timeouts from constant into nonexistent.
+
 
 ## 4. Measure, then optimize
 
@@ -39,12 +58,14 @@ Every improvement I made came from decomposing time-to-first-audio into stages a
 1. **Optimize the dominant term only.** Tweaking speech synthesis when the model thinks for ten seconds is wasted effort.
 2. **Watch the first token, not the last.** Perceived responsiveness is governed by when the first audible output arrives, which can be nearly independent of total generation time.
 
+
 ## Take-home messages
 
 - In a voice pipeline with a reasoning model, the model's thinking phase is usually the dominant latency term.
 - Provider-side buffering of visible output during reasoning silently turns streaming APIs turn-based; it must be measured per provider.
 - Silence keepalive frames solve connection drops during tool calls with negligible cost.
 - Decompose time-to-first-audio before optimizing anything.
+
 
 ## References
 

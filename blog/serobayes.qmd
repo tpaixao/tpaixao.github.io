@@ -1,11 +1,26 @@
 ---
-title: "Evaluating the performance of COVID-19 rapid tests"
-description: "A Bayesian framework for diagnostic tests"
-categories: [Methods & Inference]
-date:   Jun-2020
+title: Evaluating the performance of COVID-19 rapid tests
+description: A Bayesian framework for diagnostic tests
+categories:
+  - Methods & Inference
+date: Jun-2020
 image: cover_images/sero_bayes.png
 fig-cap-location: margin
+jupyter:
+  jupytext:
+    formats: ipynb,qmd
+    text_representation:
+      extension: .qmd
+      format_name: quarto
+      format_version: '1.0'
+      jupytext_version: 1.19.5
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
 ---
+
+
 
 ::: {.callout-note}
 Note that in the early days of the 2020 pandemic there was a lot of uncertainty regarding the effectiveness of the rapid tests. This was an attempt at quantifying the performance of the different tests present in the market.

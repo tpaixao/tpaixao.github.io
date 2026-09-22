@@ -1,18 +1,35 @@
 ---
-title: "DAWN: a blockchain asset protocol from 2018"
-description: "An early homebrew NFT protocol built on Steem, written before ERC-721 tooling existed. Notes on what it did, what it got right, and what happened to the ecosystem it depended on."
-date: 2026-09-05
-categories: [Scientific Infrastructure]
+title: 'DAWN: a blockchain asset protocol from 2018'
+description: An early homebrew NFT protocol built on Steem, written before ERC-721 tooling existed. Notes on what it did, what it got right, and what happened to the ecosystem it depended on.
+date: '2026-09-05'
+categories:
+  - Scientific Infrastructure
 draft: true
+jupyter:
+  jupytext:
+    formats: ipynb,qmd
+    text_representation:
+      extension: .qmd
+      format_name: quarto
+      format_version: '1.0'
+      jupytext_version: 1.19.5
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
 ---
 
+
+
 While going through old repositories I found DAWN, short for Decentralized Asset Worldwide Network, a small project I built in April 2018 on the Steem blockchain. It is a minimal protocol for registering ownership of digital assets and transferring that ownership between accounts, which is to say it is an NFT protocol, written at a moment when the word had not yet been coined. Looking back at it now is instructive, both for what the design got right and for what the subsequent history of the ecosystem did to it.
+
 
 ## 1. The moment it was written
 
 The timing matters. CryptoKitties had launched in late 2017 and briefly clogged the Ethereum network, demonstrating that provably scarce digital collectibles had an audience. The ERC-721 standard was finalized in January 2018, and everything that would later be called an NFT was, in early 2018, still mostly confined to Ethereum experiments: CryptoPunks, a few trading card projects, and a long lineage reaching back to colored coins on Bitcoin and Counterparty's Rare Pepes. The term non-fungible token did not enter common usage until late that year.
 
 Steem was an odd but rational choice of platform at the time. Transactions were free, funded through a bandwidth allowance rather than gas fees, blocks confirmed in three seconds, and the chain natively supported a generic `custom_json` operation that any application could define and any node could replay. Steem Monsters, later Splinterlands and one of the more durable blockchain games, used exactly this mechanism. DAWN was the same idea applied to general asset ownership rather than game cards: use the chain as a public append-only log of signed claims, and nothing else.
+
 
 ## 2. What the protocol did
 
@@ -37,11 +54,13 @@ The identifier of an asset was a Steem permlink, `author/title`, which was conve
 
 Around this protocol sat a replay engine in Python that mirrored the chain into a local SQLite database with tables for assets, transfers, and users, resuming from the last parsed block, and a Flask API exposing queries such as the assets owned by an account and the transfer history of an asset. Browser clients and a Qt GUI were in progress; the TODO file shows a login form and a register-asset button that never quite shipped. The testnet deployment used a few generated accounts and a genesis block somewhere in the six-digit block numbers.
 
+
 ## 3. What the design got right
 
 Two choices in DAWN now look like early statements of ideas that became standard. The first is that ownership is a chain of signed claims rather than state in a program. There is no smart contract holding the asset; the asset exists only as an append-only sequence of authorizations, and validity is defined by who signed, not by what code runs. This is, structurally, the same model as a git history or an append-only log with verifiable signatures, and it makes the entire ownership record independently auditable by replay.
 
 The second is that the protocol does not require its own blockchain, its own token, or fees. It piggybacks on an existing public log, which keeps the cost of the whole system near zero. The corresponding weakness is equally clear in hindsight: Steem had no programmable asset state, so royalties, auctions, and composability, the things that later made ERC-721 an ecosystem rather than a format, had to be built application by application. A minimal ownership log is a foundation; it is not a marketplace.
+
 
 ## 4. What happened next
 
