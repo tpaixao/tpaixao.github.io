@@ -1,6 +1,6 @@
 ---
 title: DAWN
-description: 'An early blockchain asset protocol built on Steem in 2018: ownership as signed claims over a public append-only log, written before the word NFT existed.'
+description: 'An early blockchain asset protocol built on Steem in 2018: ownership as signed claims over a public append-only log, written when NFTs were just about cats.'
 date: '2026-09-05'
 categories:
   - Scientific Infrastructure
@@ -21,7 +21,10 @@ jupyter:
 
 
 
-DAWN, short for Decentralized Asset Worldwide Network, is a small protocol I built in April 2018 for registering and transferring ownership of digital assets on the Steem blockchain. It is the earliest example in my own work of a pattern that keeps recurring: verifiable claims over a public append-only log, with no central operator. The repository is at [github.com/tpaixao/DAWN](https://github.com/tpaixao/DAWN). The blog post [DAWN: a blockchain asset protocol from 2018](/blog/dawn-2018-asset-protocol.html) tells the story with historical context; this page is the technical summary.
+
+DAWN, short for Decentralized Asset Worldwide Network, is a small protocol I built in April 2018 for registering and transferring ownership of digital assets on the Steem blockchain. The Steem blockchain was unique at the time, because it used a consensus protocol that 1) didn't waste tons of energy, 2) transactions were free(ish) and 3) was blazing fast.
+
+It is the earliest example in my own work of a pattern that keeps recurring: verifiable claims over a public append-only log, with no central operator. The repository is at [github.com/tpaixao/DAWN](https://github.com/tpaixao/DAWN). The blog post [DAWN: a blockchain asset protocol from 2018](/blog/dawn-2018-asset-protocol.html) tells the story with historical context; this page is the technical summary.
 
 
 ## What it does
