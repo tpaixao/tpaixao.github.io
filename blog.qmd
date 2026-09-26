@@ -4,4 +4,5 @@ listing:
   contents: blog
   type: default
   sort: "date"
+  categories: true
 ---

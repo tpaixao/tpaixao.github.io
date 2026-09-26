@@ -17,14 +17,15 @@ website:
     foreground: dark
     pinned: true
     right:
-      - projects.qmd
       - blog.qmd
       - publications.qmd
       - href: about.qmd
         text: About
 format:
   html:
-    theme: journal
+    theme:
+      - litera
+      - theme-litera-custom.scss
     css: styles.css
     toc: false
 

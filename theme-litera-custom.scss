@@ -1,0 +1,90 @@
+/* Customized Litera theme for tiagopaixao.com
+   Layered on top of litera: muted teal accent, adjusted chrome */
+
+/*-- scss:defaults --*/
+
+// Accent: muted deep teal (replaces litera's default blue #4582ec)
+$primary: #2f5d62;
+$link-color: #2f5d62;
+
+// Typography
+$font-family-sans-serif: "Inter", "Segoe UI", system-ui, sans-serif;
+$font-family-monospace: "JetBrains Mono", "Fira Code", monospace;
+
+// Headings slightly tighter, dark charcoal instead of pure black
+$headings-color: #22292e;
+$headings-font-weight: 650;
+
+// Body text
+$body-color: #333a40;
+
+/*-- scss:rules --*/
+
+// Navbar: flat white with teal accents, subtle bottom border
+.navbar {
+  background: #ffffff;
+  border-bottom: 1px solid #e6e6e3;
+  box-shadow: none;
+}
+.navbar .nav-link {
+  color: #333a40;
+  font-weight: 500;
+}
+.navbar .nav-link:hover,
+.navbar .nav-link.active {
+  color: #2f5d62;
+}
+.navbar-brand {
+  font-weight: 650;
+  color: #22292e;
+}
+
+// Headings
+h1, h2, h3 {
+  letter-spacing: -0.01em;
+}
+
+// Blog post titles
+.quarto-post .title,
+.listing-title {
+  font-weight: 650;
+}
+
+// Links: underline on hover only, keeps prose clean
+main a:not(.navbar-brand) {
+  text-decoration: none;
+  border-bottom: 1px solid rgba(47, 93, 98, 0.35);
+}
+main a:not(.navbar-brand):hover {
+  border-bottom-color: #2f5d62;
+}
+
+// Code blocks: lighter chrome
+pre {
+  border: 1px solid #e6e6e3;
+  background: #fafaf8;
+}
+
+// Footer
+.nav-footer {
+  border-top: 1px solid #e6e6e3;
+}
+
+// Serif headings for blog posts and listing titles:
+// keeps a hint of the editorial feel on long-form content
+// while the rest of the site stays in the neutral sans shell.
+$serif-stack: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+
+.post-title,
+.listing-title,
+.quarto-post .listing-title {
+  font-family: $serif-stack;
+  letter-spacing: normal;
+  color: #22292e;
+}
+
+// Post header (single post pages)
+h1.title,
+.quarto-title h1.title {
+  font-family: $serif-stack;
+}

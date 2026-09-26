@@ -3,7 +3,7 @@ title: "Tiago Paixão"
 about:
   id: hero
   template: jolla
-  image: assets/tiago2.png
+  image: assets/tiago_bw2.jpg
   image-shape: round
   links:
     - icon: twitter
@@ -20,4 +20,4 @@ Grabbing reality by the data
 
 I lead the Advanced Data Analysis unit at the [Gulbenkian Institute for Molecular Medicine](https://www.gimm.pt), where my team brings statistical rigor and machine learning to biology: experimental design, Bayesian inference, multi-omics data integration, and the honest analysis of single-cell and spatial transcriptomics data.
 
-I am increasingly interested in how AI changes the practice of science itself: agentic systems for data analysis, foundation models for biology, and what it takes to make AI-generated analysis trustworthy rather than merely fast. I write about this on the [blog](blog.qmd), and build tools under [Projects](projects.qmd).
+I am increasingly interested in how AI changes the practice of science itself: agentic systems for data analysis, foundation models for biology, and what it takes to make AI-generated analysis trustworthy rather than merely fast. I write about this on the [blog](blog.qmd).
