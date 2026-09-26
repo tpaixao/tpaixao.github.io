@@ -1,0 +1,457 @@
+---
+title: When median-of-ratios normalization breaks
+description: DESeq2's median-of-ratios robustness needs DE genes to be a minority AND balanced in direction. A simulation-driven look at what happens when the biology is one-directional, and why the resulting bias masquerades as a testing problem.
+date: '2026-09-23'
+categories:
+  - Methods & Inference
+draft: true
+jupyter:
+  jupytext:
+    formats: ipynb,qmd
+    text_representation:
+      extension: .qmd
+      format_name: quarto
+      format_version: '1.0'
+      jupytext_version: 1.19.5
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
+---
+
+
+# When median-of-ratios normalization breaks: one-directional differential expression
+
+DESeq2 normalizes libraries with **median-of-ratios**, which is usually described as
+robust because "it assumes most genes are not differentially expressed." That phrasing
+is incomplete, and the missing half caused a real bug in this project's interaction
+power analysis.
+
+The full assumption is that the genes which *do* differ are both
+
+1. a **minority**, and
+2. roughly **balanced in direction** (as many down as up).
+
+This notebook shows what the second condition buys you, why violating it produces a
+bias that looks nothing like a normalization problem, and what you can actually do
+about it when the biology really is one-directional.
+
+The punchline is not the one you would guess: with a 10% minority of genes shifted
+in one direction, **the bias is exactly zero when the data are noiseless**. The
+failure is an interaction between asymmetric contamination and measurement noise.
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import norm
+
+# Validated categorical palette (dataviz reference instance, slots 1-3).
+BLUE, ORANGE, AQUA = "#2a78d6", "#eb6834", "#1baf7a"
+INK, INK2, MUTED, GRID = "#0b0b0b", "#52514e", "#898781", "#e1e0d9"
+
+plt.rcParams.update({
+    "figure.dpi": 120, "font.size": 9, "axes.titlesize": 10,
+    "axes.edgecolor": GRID, "axes.labelcolor": INK2, "text.color": INK,
+    "xtick.color": INK2, "ytick.color": INK2,
+    "axes.grid": True, "grid.color": GRID, "grid.linewidth": 0.6,
+    "axes.spines.top": False, "axes.spines.right": False,
+    "legend.frameon": False, "figure.facecolor": "white",
+})
+```
+
+## 1. The estimator, in six lines
+
+For each gene, form a pseudo-reference equal to its geometric mean across all samples.
+Each sample's size factor is then the **median across genes** of that sample's
+count divided by the reference. The median is what is supposed to provide the
+robustness.
+
+Working in log space makes the geometric mean an ordinary mean and the ratio a
+subtraction.
+
+```{python}
+def log2_size_factors(counts, gene_mask=None):
+    '''DESeq2 median-of-ratios, returned as log2 size factors.
+
+    counts    : (samples x genes) array
+    gene_mask : optional boolean gene mask -- restricts the estimate to a set of
+                control genes (this is DESeq2's `controlGenes` / pydeseq2's
+                `control_genes` argument).
+    '''
+    logc = np.log2(counts)
+    ref  = logc.mean(axis=0)                       # log2 geometric mean per gene
+    usable = (counts > 0).all(axis=0)              # ref is -inf if any sample is 0
+    use = usable if gene_mask is None else (usable & gene_mask)
+    return np.median(logc[:, use] - ref[use], axis=1)
+```
+
+## 2. A two-group simulation
+
+Two groups of `n` samples. A fraction `p` of genes is differentially expressed
+between them by `lfc` in log2 units; `up_frac` controls what share of those DE genes
+go **up** rather than down. Counts are negative binomial, as in RNA-seq.
+
+Every sample has a true library size factor of 1, so **any deviation of the estimated
+size factors from 1 is pure bias.** That makes the bias directly readable.
+
+```{python}
+def simulate(G=20000, n=6, p=0.10, lfc=1.0, up_frac=1.0,
+             mu0=200.0, disp=0.05, seed=0):
+    '''Returns (counts, is_de). True size factors are all exactly 1.'''
+    rng   = np.random.default_rng(seed)
+    is_de = rng.random(G) < p
+    sign  = np.where(rng.random(G) < up_frac, 1.0, -1.0)
+    mu_A  = np.full(G, mu0)
+    mu_B  = mu_A * 2.0 ** np.where(is_de, sign * lfc, 0.0)
+    size  = 1.0 / disp
+    rows  = ([rng.negative_binomial(size, size / (size + mu_A)) for _ in range(n)] +
+             [rng.negative_binomial(size, size / (size + mu_B)) for _ in range(n)])
+    return np.vstack(rows).astype(float), is_de
+
+
+def group_bias(counts, is_de, n):
+    '''log2 size-factor bias per group, and the bias absorbed into the B-vs-A contrast.
+
+    The reference is the estimate restricted to genuinely null genes -- i.e. the
+    answer a perfect control-gene set would give.
+    '''
+    biased = log2_size_factors(counts)
+    honest = log2_size_factors(counts, ~is_de)
+    d = biased - honest
+    return d[:n].mean(), d[n:].mean(), d[n:].mean() - d[:n].mean()
+```
+
+## 3. Sanity check: nothing is DE
+
+With `p = 0`, every sample should receive the **same** size factor. Note that size
+factors are only identified up to a global constant -- they are ratios against a
+shared pseudo-reference -- so the absolute level carries no meaning and cancels in
+any contrast. What matters is that the samples agree with each other, i.e. that the
+spread is essentially zero.
+
+```{python}
+n = 6
+counts, is_de = simulate(p=0.0, seed=1)
+sf = log2_size_factors(counts)
+print(f"no DE at all : mean log2 size factor = {sf.mean():+.4f}   spread = {sf.std():.4f}")
+```
+
+## 4. The surprise: noiseless, one-directional DE does *no* damage
+
+Now give 10% of genes a clean 2-fold **increase** in group B, with the counts set to
+their expectations exactly -- no sampling noise at all.
+
+Naively this is the pathological case: every DE gene pushes the same way. But the
+median just does not care.
+
+```{python}
+G, p = 20000, 0.10
+is_de_nf = np.random.default_rng(0).random(G) < p
+mu_A = np.full(G, 200.0)
+mu_B = mu_A * np.where(is_de_nf, 2.0, 1.0)
+noiseless = np.vstack([mu_A] * n + [mu_B] * n)
+
+sf = log2_size_factors(noiseless)
+print(f"group A log2 size factor = {sf[:n].mean():+.6f}")
+print(f"group B log2 size factor = {sf[n:].mean():+.6f}")
+print(f"bias absorbed into B-vs-A = {sf[n:].mean() - sf[:n].mean():+.6f}")
+```
+
+Exactly zero. With no noise the ratios take only two values -- 90% of genes sit at one
+number and 10% sit at another -- and a median simply cannot be dragged off the 90%
+spike by a 10% minority, no matter how far away that minority is or which side it is on.
+
+**This is the robustness the median is famous for, and it is real.** So where does the
+bias in the real analysis come from?
+
+## 5. Add noise, and the bias appears
+
+Same setup, now with negative-binomial counts.
+
+```{python}
+counts, is_de = simulate(up_frac=1.0, seed=0)
+bA, bB, delta = group_bias(counts, is_de, n)
+print(f"group A (unshifted)        bias = {bA:+.4f} log2")
+print(f"group B (10% of genes 2x up) bias = {bB:+.4f} log2")
+print(f"absorbed into the B-vs-A contrast = {delta:+.4f} log2  ({2**delta:.4f}x)")
+```
+
+The estimate is now wrong in both groups and in opposite directions. Group B's
+libraries are declared *larger* than they are, so dividing by that size factor pushes
+all of B's counts down -- partially cancelling the very increase we simulated.
+
+### Why noise changes everything
+
+Without noise, the null genes were a single spike. With noise they are a *distribution*,
+and the DE genes' mass all lands on one side of it. The median of the combined
+distribution is no longer the centre of the null bulk: it is the point where the
+combined CDF reaches 0.5.
+
+If a fraction `p` of genes sits entirely above the null bulk, the median falls at the
+null distribution's
+
+$q = \frac{0.5 - p}{1 - p}$
+
+quantile instead of its 50th. For `p = 0.10` that is the 44.4th percentile -- a shift
+of roughly $-\Phi^{-1}(q)\,\sigma$, where $\sigma$ is the spread of the null log-ratios.
+
+**The median is robust in that it never moves to the contaminating value -- but it
+still slides within the null bulk, by an amount proportional to the noise.**
+
+```{python}
+logc = np.log2(counts)
+ref  = logc.mean(axis=0)
+ok   = (counts > 0).all(axis=0)
+d    = logc[n] - ref                      # log2 ratios for one group-B sample
+
+sigma     = d[~is_de & ok].std()
+q         = (0.5 - p) / (1 - p)
+predicted = -norm.ppf(q) * sigma
+observed  = np.median(d[ok]) - np.median(d[~is_de & ok])
+
+print(f"spread of null log2 ratios, sigma = {sigma:.4f}")
+print(f"median falls at null quantile     = {q:.4f}  (not 0.5)")
+print(f"predicted shift = -Phi^-1(q)*sigma = {predicted:+.4f}")
+print(f"observed shift                     = {observed:+.4f}")
+```
+
+The Gaussian approximation is rough -- the null ratios are not exactly normal and the
+DE bulk overlaps them rather than sitting cleanly above -- but it gets the direction and
+magnitude right, which is what matters for understanding the mechanism.
+
+Seen directly, this is the whole problem in one picture:
+
+```{python}
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9.8, 3.6))
+
+dn, dd = d[~is_de & ok], d[is_de & ok]
+m_null, m_all = np.median(dn), np.median(d[ok])
+
+bins = np.linspace(-1.2, 1.6, 140)
+ax1.hist(dn, bins=bins, color=BLUE,   alpha=0.85, label="null genes (90%)")
+ax1.hist(dd, bins=bins, color=ORANGE, alpha=0.85, label="DE genes, all up (10%)")
+ax1.set_xlabel("log2 (count / reference), one group-B sample")
+ax1.set_ylabel("genes")
+ax1.set_title("The DE mass sits entirely on one side", color=INK)
+ax1.legend(loc="upper left", fontsize=8)
+ax1.set_ylim(0, 520)
+
+# The median IS the point where the CDF crosses 0.5 -- so plot that directly.
+def cdf(v):
+    v = np.sort(v)
+    return v, np.arange(1, v.size + 1) / v.size
+
+xa, ya = cdf(d[ok])
+xn, yn = cdf(dn)
+ax2.plot(xn, yn, lw=2, color=BLUE,   label="null genes only")
+ax2.plot(xa, ya, lw=2, color=ORANGE, label="all genes (what DESeq2 sees)")
+ax2.axhline(0.5, color=MUTED, lw=1.2, ls="--")
+ax2.plot([m_null], [0.5], "o", ms=7, color=BLUE,   mec="white", mew=1.5, zorder=5)
+ax2.plot([m_all],  [0.5], "o", ms=7, color=ORANGE, mec="white", mew=1.5, zorder=5)
+ax2.annotate("honest median", xy=(m_null, 0.5), xytext=(-8, -34), textcoords="offset points",
+             color=BLUE, fontsize=8, ha="right",
+             arrowprops=dict(arrowstyle="-", color=BLUE, lw=1))
+lbl = "size factor DESeq2 uses" + chr(10) + f"({m_all - m_null:+.3f} log2 off)"
+ax2.annotate(lbl, xy=(m_all, 0.5),
+             xytext=(10, 22), textcoords="offset points", color=ORANGE, fontsize=8, ha="left",
+             arrowprops=dict(arrowstyle="-", color=ORANGE, lw=1))
+ax2.annotate("CDF = 0.5", xy=(m_null - 0.16, 0.5), xytext=(0, 5), textcoords="offset points",
+             color=MUTED, fontsize=8)
+ax2.set_xlim(m_null - 0.17, m_all + 0.17)
+ax2.set_ylim(0.33, 0.67)
+ax2.set_xlabel("log2 (count / reference)")
+ax2.set_ylabel("cumulative fraction of genes")
+ax2.set_title("The median is where the CDF crosses 0.5", color=INK)
+ax2.legend(loc="lower right", fontsize=8)
+
+plt.tight_layout(); plt.show()
+```
+
+The orange mass is small, but it is *entirely on one side*. That is enough to slide the
+median a little to the right â and "a little" turns out to be plenty, as section 7 shows.
+
+## 6. What controls the size of the bias
+
+Two things: how one-sided the DE is, and how noisy the null ratios are.
+
+```{python}
+up_fracs = np.array([0.50, 0.60, 0.70, 0.80, 0.90, 1.00])
+p_levels = [0.05, 0.10, 0.20]
+colors   = {0.05: BLUE, 0.10: ORANGE, 0.20: AQUA}
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9.6, 3.5))
+
+for p_lvl in p_levels:
+    ys = [group_bias(*simulate(p=p_lvl, up_frac=u, seed=11), n)[2] for u in up_fracs]
+    ax1.plot(up_fracs * 100, ys, lw=2, color=colors[p_lvl], marker="o", ms=4,
+             label=f"{int(p_lvl*100)}% of genes DE")
+    ax1.annotate(f"{int(p_lvl*100)}% DE", xy=(100, ys[-1]), xytext=(4, 0),
+                 textcoords="offset points", color=colors[p_lvl], fontsize=8, va="center")
+ax1.axhline(0, color=MUTED, lw=1)
+ax1.set_xlabel("% of DE genes shifted UP")
+ax1.set_ylabel("log2 size-factor bias (B vs A)")
+ax1.set_title("Balanced direction is what saves you", color=INK)
+ax1.set_xlim(48, 112)
+ax1.legend(fontsize=8, loc="upper left")
+
+mus = [20, 50, 200, 800, 3200]
+ys  = [group_bias(*simulate(mu0=m, up_frac=1.0, seed=12), n)[2] for m in mus]
+ax2.plot(mus, ys, lw=2, color=BLUE, marker="o", ms=4)
+ax2.set_xscale("log")
+ax2.set_xticks(mus); ax2.set_xticklabels([str(m) for m in mus])
+ax2.minorticks_off()
+ax2.set_xlabel("baseline mean count per gene (log scale)")
+ax2.set_ylabel("log2 size-factor bias (B vs A)")
+ax2.set_title("Noisier genes -> wider null bulk -> more bias", color=INK)
+ax2.set_ylim(0, max(ys) * 1.25)
+
+plt.tight_layout(); plt.show()
+```
+
+The left panel is the operative one. At a 50/50 up/down split the bias vanishes **at
+every DE fraction**, including 20% -- the "minority" condition is not doing the work
+here, the balance condition is. The bias grows smoothly as the split becomes
+one-sided, and is worst when every DE gene moves the same way.
+
+The right panel explains why this never fully disappears in real data: the bias is
+driven by the width of the null ratio distribution, which shrinks with expression but
+is floored by biological dispersion.
+
+## 7. Why this is dangerous: the bias does not look like a bias
+
+A constant offset on every null gene is a *fixed effect size*. Standard errors shrink
+as $1/\sqrt{n}$. So the Wald statistic for a null gene grows like $\sqrt{n}$, and null
+genes progressively become "significant".
+
+**Realized FDR therefore climbs with sample size** -- which reads like a
+multiple-testing or test-calibration failure, not a normalization one. That is exactly
+what sent the original investigation chasing independent filtering, dispersion
+shrinkage, Wald-vs-LRT and shrinkage priors for a long time.
+
+This section fits real models with pydeseq2, so it takes a minute or two.
+
+```{python}
+import warnings
+warnings.filterwarnings("ignore")
+from pydeseq2.dds import DeseqDataSet
+from pydeseq2.ds import DeseqStats
+import pandas as pd
+
+def realized_fdr(n_per_group, up_frac, G=3000, p=0.10, seed=5, control_genes=None):
+    counts, is_de = simulate(G=G, n=n_per_group, p=p, up_frac=up_frac, seed=seed)
+    genes = [f"g{i}" for i in range(G)]
+    cdf   = pd.DataFrame(counts.astype(int), columns=genes,
+                         index=[f"s{i}" for i in range(2 * n_per_group)])
+    meta  = pd.DataFrame({"condition": ["A"] * n_per_group + ["B"] * n_per_group},
+                         index=cdf.index)
+    keep  = cdf.sum(axis=0) > 0
+    cdf, is_de = cdf.loc[:, keep], is_de[keep.values]
+
+    dds = DeseqDataSet(counts=cdf, metadata=meta, design="~condition",
+                       refit_cooks=False, quiet=True)
+    if control_genes is not None:
+        dds.fit_size_factors(control_genes=np.asarray(genes)[keep.values][control_genes[keep.values]])
+        dds.logmeans, dds.filtered_genes = None, None   # keep deseq2() from refitting them
+    dds.deseq2()
+    res = DeseqStats(dds, contrast=["condition", "B", "A"], quiet=True)
+    res.summary()
+    sig = (res.results_df["padj"] < 0.05).fillna(False).values
+    return (sig & ~is_de).sum() / sig.sum() if sig.sum() else 0.0
+
+ns = [4, 8, 16, 32]
+fdr_up  = [realized_fdr(k, up_frac=1.0) for k in ns]
+fdr_bal = [realized_fdr(k, up_frac=0.5) for k in ns]
+for k, a, b in zip(ns, fdr_up, fdr_bal):
+    print(f"n={k:3d}   all DE up: FDR={a:.3f}     balanced 50/50: FDR={b:.3f}")
+```
+
+```{python}
+fig, ax = plt.subplots(figsize=(6.4, 3.6))
+ax.plot(ns, fdr_up,  lw=2, color=ORANGE, marker="o", ms=5, label="all DE genes up")
+ax.plot(ns, fdr_bal, lw=2, color=BLUE,   marker="o", ms=5, label="DE balanced 50/50")
+ax.axhline(0.05, color=MUTED, lw=1.5, ls="--")
+ax.annotate("5% nominal target", xy=(ns[-1], 0.05), xytext=(-4, -14),
+            textcoords="offset points", color=MUTED, fontsize=8, ha="right")
+ax.annotate("all DE up", xy=(ns[-1], fdr_up[-1]), xytext=(6, 0), textcoords="offset points",
+            color=ORANGE, fontsize=8, va="center")
+ax.annotate("balanced", xy=(ns[-1], fdr_bal[-1]), xytext=(6, 0), textcoords="offset points",
+            color=BLUE, fontsize=8, va="center")
+ax.set_xscale("log"); ax.set_xticks(ns); ax.set_xticklabels(ns)
+ax.set_xlabel("replicates per group"); ax.set_ylabel("realized FDR")
+ax.set_title("More replicates make it worse, not better", color=INK)
+ax.set_xlim(3.5, 52); ax.set_ylim(0, max(fdr_up) * 1.2)
+ax.legend(fontsize=8, loc="upper left")
+plt.tight_layout(); plt.show()
+```
+
+Adding replicates *increases* the false discovery rate. Nothing about a correctly
+specified test does that -- which is the tell that the problem lies upstream, in the
+offsets the model was handed.
+
+## 8. What to do when the biology really is one-directional
+
+The balanced case above is the fix for a *simulation* that was unrealistically
+one-sided. But global one-directional shifts do occur for real -- Myc-driven
+transcriptional amplification, global shutdown under stress, large differences in RNA
+content per cell.
+
+**In that situation you cannot fix this from the count matrix alone.** If every gene
+in a group doubles, that is mathematically indistinguishable from that group's
+libraries having been sequenced twice as deep. The two scenarios produce identical
+data. No estimator can separate them, so switching to TMM, upper-quartile or RLE
+changes nothing -- they share the assumption.
+
+You have to inject **external information**. The cleanest source is a set of genes
+known a priori not to change -- in practice, **spike-ins** (ERCC) added in fixed
+quantity per cell. DESeq2 and pydeseq2 both accept these via `control_genes`.
+
+Below, the most extreme case: **100% of genes shifted up 2-fold**, which destroys the
+estimate completely -- and then the same data normalized on a 1,000-gene spike-in set.
+
+```{python}
+G = 20000
+counts_all_up, is_de_all = simulate(G=G, p=1.0, up_frac=1.0, seed=7)   # EVERY gene up 2x
+
+spike = np.zeros(G, dtype=bool)          # pretend the last 1,000 genes are spike-ins:
+spike[-1000:] = True                     # present in both groups at identical levels
+counts_all_up[:, spike] = simulate(G=G, p=0.0, seed=8)[0][:, spike]
+
+naive = log2_size_factors(counts_all_up)
+spiked = log2_size_factors(counts_all_up, spike)
+
+print("TRUE log2 fold change of the non-spike genes: +1.0000 (2-fold up in B)\n")
+print(f"naive size factors   : A={naive[:n].mean():+.4f}  B={naive[n:].mean():+.4f}"
+      f"   -> B-A = {naive[n:].mean()-naive[:n].mean():+.4f}")
+print(f"spike-in size factors: A={spiked[:n].mean():+.4f}  B={spiked[n:].mean():+.4f}"
+      f"   -> B-A = {spiked[n:].mean()-spiked[:n].mean():+.4f}")
+
+norm_naive  = np.log2(counts_all_up + 0.5) - naive[:, None]
+norm_spiked = np.log2(counts_all_up + 0.5) - spiked[:, None]
+rec_naive  = norm_naive[n:, ~spike].mean() - norm_naive[:n, ~spike].mean()
+rec_spiked = norm_spiked[n:, ~spike].mean() - norm_spiked[:n, ~spike].mean()
+print(f"\nrecovered log2FC, naive normalization    : {rec_naive:+.4f}   <- signal destroyed")
+print(f"recovered log2FC, spike-in normalization : {rec_spiked:+.4f}   <- signal preserved")
+```
+
+Naive normalization reports a fold change of about zero for a real, universal 2-fold
+increase: the entire biological signal has been reinterpreted as a library-size
+difference and divided out. Spike-in normalization recovers it.
+
+This is precisely the failure mode that made global transcriptional amplification hard
+to establish in the first place -- under standard normalization the effect simply is
+not there.
+
+## Summary
+
+| | |
+|---|---|
+| **The assumption** | DE genes are a minority **and** roughly balanced in direction |
+| **Noiseless, minority, one-sided** | No bias at all -- the median really is robust |
+| **With noise** | The median slides within the null bulk, to the $(0.5-p)/(1-p)$ quantile |
+| **Size of the bias** | Grows with one-sidedness and with noise; zero at a 50/50 split |
+| **How it shows up** | A constant log2 offset on every *null* gene |
+| **Why it fools you** | The offset is fixed while SE falls as $1/\sqrt n$, so **FDR rises with sample size** -- looking like a testing problem, not a normalization one |
+| **Fix, if DE is genuinely balanced** | Nothing needed; simulate it that way |
+| **Fix, if DE is genuinely one-sided** | Impossible from counts alone -- requires spike-ins or a trusted control-gene set (`control_genes=`) |
+
+
