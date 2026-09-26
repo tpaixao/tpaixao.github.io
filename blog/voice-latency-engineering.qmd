@@ -69,5 +69,4 @@ Every improvement I made came from decomposing time-to-first-audio into stages a
 
 ## References
 
-- Voice assistant implementation: github.com/tpaixao/voice_chat
-- Project page with design notes: /projects/voice_chat.html
+- Voice assistant implementation: [github.com/tpaixao/voice_chat](https://github.com/tpaixao/voice_chat)
