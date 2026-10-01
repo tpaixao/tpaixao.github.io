@@ -22,6 +22,8 @@ jupyter:
 
 # When median-of-ratios normalization breaks: one-directional differential expression
 
+Recently, I was doing some simulation for a power analysis of a RNAseq experiment and made a mistake: I was simulating 10% of differentially expressed genes but, by mistake, made them all go in the same direction, i.e., all overexpressed. This lead to some weird behavior that was a consequence of the way DESeq2 tries to compensate for differences in library size (depth).
+
 DESeq2 normalizes libraries with **median-of-ratios**, which is usually described as
 robust because "it assumes most genes are not differentially expressed." That phrasing
 is incomplete, and the missing half caused a real bug in this project's interaction
@@ -453,5 +455,3 @@ not there.
 | **Why it fools you** | The offset is fixed while SE falls as $1/\sqrt n$, so **FDR rises with sample size** -- looking like a testing problem, not a normalization one |
 | **Fix, if DE is genuinely balanced** | Nothing needed; simulate it that way |
 | **Fix, if DE is genuinely one-sided** | Impossible from counts alone -- requires spike-ins or a trusted control-gene set (`control_genes=`) |
-
-
