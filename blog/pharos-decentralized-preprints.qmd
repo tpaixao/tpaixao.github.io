@@ -5,6 +5,8 @@ date: '2026-09-03'
 categories:
   - Scientific Infrastructure
 draft: true
+image: cover_images/cover_pharos_lighthouse.jpg
+title-block-banner: cover_images/cover_pharos_lighthouse.jpg
 jupyter:
   jupytext:
     formats: ipynb,qmd

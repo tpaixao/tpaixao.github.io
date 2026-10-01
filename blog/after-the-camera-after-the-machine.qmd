@@ -5,6 +5,8 @@ date: '2026-09-27'
 categories:
   - AI & Knowledge Work
 draft: true
+image: cover_images/cover_camera_daguerreotype.jpg
+title-block-banner: cover_images/cover_camera_daguerreotype.jpg
 jupyter:
   jupytext:
     formats: ipynb,qmd

@@ -5,6 +5,8 @@ date: '2026-09-05'
 categories:
   - Scientific Infrastructure
 draft: true
+image: cover_images/cover_dawn_ledger.png
+title-block-banner: cover_images/cover_dawn_ledger.png
 jupyter:
   jupytext:
     formats: ipynb,qmd
