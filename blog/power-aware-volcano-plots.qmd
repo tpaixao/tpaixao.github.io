@@ -5,6 +5,8 @@ categories:
   - Methods & Inference
 date: May-2026
 draft: true
+image: cover_images/cover_power_aware_volcano.png
+title-block-banner: cover_images/cover_power_aware_volcano.png
 fig-cap-location: margin
 jupyter:
   jupytext:
