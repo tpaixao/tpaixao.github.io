@@ -3,20 +3,21 @@ title: A personal prehistory of decentralized apps
 description: Three half-finished projects from 2017 to 2019, an Ethereum dApp, a Steem protocol experiment, and a dat-powered lab notebook, and what they taught me before I came back to the same ideas in 2026.
 date: '2026-09-05'
 categories:
-  - Scientific Infrastructure
+  - Decentralized Infrastructure
 draft: true
+cap-location: margin
 jupyter:
   jupytext:
-    formats: ipynb,qmd
+    formats: qmd:quarto,ipynb
     text_representation:
       extension: .qmd
       format_name: quarto
       format_version: '1.0'
       jupytext_version: 1.19.5
   kernelspec:
-    display_name: Python 3
+    display_name: Python 3 (main)
     language: python
-    name: python3
+    name: main
 ---
 
 

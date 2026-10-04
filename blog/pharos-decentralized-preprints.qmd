@@ -3,22 +3,23 @@ title: Why preprints need decentralized infrastructure
 description: 'Centralized preprint servers have real failure modes: finances, outages, and content removal. What would it take to replace them with peer-to-peer infrastructure? Notes from building a prototype.'
 date: '2026-09-03'
 categories:
-  - Scientific Infrastructure
+  - Decentralized Infrastructure
 draft: true
+cap-location: margin
 image: cover_images/cover_pharos_lighthouse.jpg
 title-block-banner: cover_images/cover_pharos_lighthouse.jpg
 jupyter:
   jupytext:
-    formats: ipynb,qmd
+    formats: qmd:quarto,ipynb
     text_representation:
       extension: .qmd
       format_name: quarto
       format_version: '1.0'
       jupytext_version: 1.19.5
   kernelspec:
-    display_name: Python 3
+    display_name: Python 3 (main)
     language: python
-    name: python3
+    name: main
 ---
 
 

@@ -7,7 +7,7 @@ date: '2026-09-26'
 draft: true
 image: cover_images/cover_na_imputation_classes.png
 title-block-banner: cover_images/cover_na_imputation_classes.png
-fig-cap-location: margin
+cap-location: margin
 jupyter:
   jupytext:
     text_representation:
@@ -16,9 +16,9 @@ jupyter:
       format_version: '1.0'
       jupytext_version: 1.19.5
   kernelspec:
-    display_name: Python 3
+    display_name: Python 3 (main)
     language: python
-    name: python3
+    name: main
 ---
 
 A label-free proteomics matrix carries missing values by the tens of thousands, and the imputation step is usually one global switch: kNN or MinProb, flipped once in Perseus or in the downstream script, applied to every protein at once. The choice matters more than its one-line treatment in most pipelines suggests. kNN assumes values are missing at random and fills each gap with the distance-weighted mean of the most similar proteins; applied to a left-censored value, it fills in a *typical* value and erases the low end of the distribution. MinProb assumes censoring and draws from a narrow normal in each sample's left tail; applied to an abundant protein that dropped out at random, it manufactures a fake low outlier and, across a group comparison, a fake difference. Real matrices contain both kinds of missingness, often in the same protein: censored in the shallow runs, randomly absent in a deep one. A single global method is therefore wrong for part of the data no matter which one is chosen.

@@ -3,13 +3,14 @@ title: 'DAWN: a blockchain asset protocol from 2018'
 description: An early homebrew NFT protocol built on Steem, written before ERC-721 tooling existed. Notes on what it did, what it got right, and what happened to the ecosystem it depended on.
 date: '2026-09-05'
 categories:
-  - Scientific Infrastructure
+  - Decentralized Infrastructure
 draft: true
+cap-location: margin
 image: cover_images/cover_dawn_ledger.png
 title-block-banner: cover_images/cover_dawn_ledger.png
 jupyter:
   jupytext:
-    formats: ipynb,qmd
+    formats: qmd:quarto,ipynb
     text_representation:
       extension: .qmd
       format_name: quarto
@@ -68,6 +69,6 @@ The second is that the protocol does not require its own blockchain, its own tok
 
 The project stalled, as weekend projects do, and then the ground moved underneath it. Steem was acquired in 2020 by a new owner whose community disagreed with the direction, the community forked the chain into Hive, and both Steem and Hive spent the following years at marginal relevance while the NFT conversation moved entirely to Ethereum and its rollups. The 2021 boom validated the core idea at enormous scale, and also demonstrated the failure modes of putting it on fee-paying, energy-intensive infrastructure: speculation first, utility a distant second, and an environmental cost that took the wind out of the movement's sails.
 
-DAWN itself is now a curiosity, but a useful one. The pattern it implemented, minimal signed claims over a public append-only log with ownership defined by signature chains, is exactly the pattern I would find appealing in the hypercore framework, which I am now building  Pharos on. Pharos is a peer-to-peer preprint archive where publication, versioning, and authorship are verifiable claims rather than state in someone's database. The difference is the substrate: in 2018 the only affordable public log was a blockchain, whereas content-addressed p2p storage now provides the same integrity guarantees without the fee and energy overhead.
+DAWN itself is now a curiosity, but a useful one. The pattern it implemented, minimal signed claims over a public append-only log with ownership defined by signature chains, is exactly the pattern I would find appealing in the hypercore framework, which I am now building Pharos on. Pharos is a peer-to-peer preprint archive where publication, versioning, and authorship are verifiable claims rather than state in someone's database. The difference is the substrate: in 2018 the only affordable public log was a blockchain, whereas content-addressed p2p storage now provides the same integrity guarantees without the fee and energy overhead.
 
 The lesson I take from it is that the interesting part of these systems was never the token. It is the ability to make a claim, sign it, and have anyone verify the chain of custody years later without asking permission from whoever operates the infrastructure. That idea survived every hype cycle since 2018. It was simply waiting for better plumbing. Maybe there is something still in this idea, in the age of AI?

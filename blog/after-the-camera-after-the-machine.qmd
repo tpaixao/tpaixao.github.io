@@ -5,27 +5,26 @@ date: '2026-09-27'
 categories:
   - AI & Knowledge Work
 draft: true
+cap-location: margin
 image: cover_images/cover_camera_daguerreotype.jpg
 title-block-banner: cover_images/cover_camera_daguerreotype.jpg
 jupyter:
   jupytext:
-    formats: ipynb,qmd
+    formats: qmd:quarto,ipynb
     text_representation:
       extension: .qmd
       format_name: quarto
       format_version: '1.0'
       jupytext_version: 1.19.5
   kernelspec:
-    display_name: Python 3
+    display_name: Python 3 (main)
     language: python
-    name: python3
+    name: main
 ---
 
 The standard story goes like this. In 1839, when the daguerreotype was unveiled in Paris, the painter Paul Delaroche reportedly declared that painting was dead. Photography could record appearances faster, cheaper, and more faithfully than any trained hand, so painting had to find something else to do. What it found, eventually, was abstraction. Kandinsky's first non-representational watercolors date from around 1910, and within a decade Mondrian, Malevich, and the rest of the avant-garde had abandoned the depiction of the visible world entirely. Photography pushed painting out of representation, and painting answered by becoming modern art.
 
 It is a tidy story, and like most tidy stories it survives contact with the timeline only in modified form. Photography existed for seventy years before abstraction arrived. The daguerreotype of 1839 was a slow, studio-bound process, good for portraits and still lifes, and for decades its influence on painting ran the other way: photographers staged tableaux and softened focus to imitate the academic canvases of the day. Pictorialism, the school of photography that most wanted to be painting, peaked between 1885 and 1915, *after* the Kodak had made photography a mass consumer product. The two media spent decades circling each other before painting definitively jumped.
-
-![](assets/timeline.svg "Photography and the road to abstraction"){.timeline}
 
 ```mermaid
 gantt
