@@ -329,3 +329,112 @@ Note that there are five types of callouts: `note`, `tip`, `warning`,
 - **Code annotations** (pedagogical posts): end lines with `# <<` comments and set
   the document option `code-annotations: hover` (or `select`); renders numbered
   markers with the annotation text as tooltips. Set `code-annotations: none` to disable.
+
+## 11. Embedded images in notebooks (attachments vs outputs)
+
+Two distinct cases (tested empirically with jupytext 1.19.5, 2026-10-05):
+
+- **Cell outputs (`image/png` in display_data/execute_result): nothing to save.**
+  The `.qmd` twin carries the CODE; the Quarto render re-executes it and
+  regenerates the figure into its own figures dir. Outputs embedded in the
+  `.ipynb` are only consumed when rendering the `.ipynb` directly (Quarto
+  auto-extracts them at render time). This is the live-figure design:
+  "figures regenerate in ~20s".
+- **Markdown-cell attachments (`![cap](attachment:x.png)` + base64 in the
+  cell's `attachments` field): YES, they must be extracted.** Jupytext carries
+  the `attachment:` link verbatim into the `.qmd` and does NOT extract the
+  image; plain Quarto markdown cannot resolve `attachment:` URLs, so the twin
+  renders a broken image. Fix: save the attachment to `blog/images/`, rewrite
+  the markdown link to a normal relative path, re-sync, and (optionally) drop
+  the now-redundant base64 attachment from the notebook to slim it.
+
+Recipe:
+```bash
+python3 -c "import json,base64,pathlib; nb=json.load(open('post.ipynb')); \
+[pathlib.Path('images/'+n).write_bytes(base64.b64decode(list(m.values())[0])) \
+ for c in nb['cells'] for n,m in c.get('attachments',{}).items()]"
+```
+Then rewrite `attachment:<name>` → `images/<name>` in the .qmd and sync.
+
+Rule of thumb: **paste-screenshots in notebooks are attachments (need saving);
+matplotlib/plot output is not (regenerates).** As of 2026-10-05 none of the
+notebook-only posts contain attachments — all their images are outputs.
+
+## 12. Rendering WITHOUT re-executing the code (verified 2026-10-05)
+
+A `.qmd` twin carries code only, never outputs. Three verified ways to get
+figures without re-executing:
+
+1. **`freeze` (recommended, zero extra deps).** `execute: freeze: auto`. Applied
+   SITE-WIDE in `_quarto.yml` (2026-10-05): `execute:\n  freeze: auto` at top
+   level. Any render that executes records outputs in
+   `.quarto/project-cache/` (project root; already gitignored via `/.quarto/`).
+   Subsequent renders serve the frozen outputs: **no kernel starts at all**
+   (DM-simulation post: 6.6s vs 27.6s cold). `auto` re-executes when the file's
+   content changes (or on first render); `true` never re-executes in site
+   renders. Sentinel test: rendered timestamp identical across replays.
+2. **`cache: true` (jupyter-cache layer).** Requires the `jupyter-cache` pip
+   package in the jupyter env (installed 2026-10-05). First render executes and
+   seeds `blog/.jupyter_cache/` (cell-granular DB); later renders log
+   "(Notebook read from cache)" (~9.5s, kernel start but no execution). Useful
+   while editing one cell of a big notebook: only new cells run.
+   `--cache-refresh` / `cache-refresh` forces re-seed. Gitignored.
+3. **Render the `.ipynb` directly.** Quarto does NOT execute ipynbs by default
+   and uses the embedded saved outputs (figures auto-extracted to
+   `*_files/figure-html/`). For the website to render notebook-only posts,
+   extend `project.render` in `_quarto.yml` with `*.ipynb` (currently
+   `*.qmd`/`*.md` only).
+
+Verification protocol (sentinel): append a cell `print('SENTINEL', time.time())`,
+render twice, compare the rendered value: equal = replay, changed = re-execution.
+
+Confounds that fooled timing measurements: the Jupyter **kernel daemon** keeps
+a warm kernel ~300s (re-execution on warm kernel looks deceptively fast);
+`draft: true` posts render to a **90-byte stub** (no figures in the HTML) but
+their code STILL EXECUTES during renders (verified 2026-10-05: seed cache was
+populated by a draft render; missing deps abort full site renders) — so audit
+visibility via a temp copy, and remember drafts burn compute each site render
+until their freeze entries exist.
+
+## 13. Execution environment control (conda) — verified 2026-10-05
+
+Model: Quarto does not execute "in a conda env"; it executes in a **Jupyter
+kernel**, whose `argv[0]` is the env's python. On this machine (Quarto
+1.10.18) `jupyter:` values are **kernel names only** — no interpreter paths,
+no `python-path`; `QUARTO_JUPYTER` also takes kernel names.
+
+Verified state (2026-10-05):
+- Kernels quarto sees: `python3`, `main` (check with `quarto check jupyter`,
+  full list: `mamba run -n jupyter jupyter kernelspec list`).
+- Kernel `main` = `~/.local/share/jupyter/kernels/main/kernel.json` →
+  `/home/tiago/miniforge3/envs/main/bin/python` ("Python 3 (main)").
+- Two-level dispatch: `mamba run -n jupyter quarto render ...` only supplies
+  TOOLING (quarto, jupytext, nbformat, jupyter-cache — none live in `main`);
+  the kernel chooses the ANALYSIS env. The outer env never runs post code.
+
+Control points, in order of preference:
+1. **Per post**: `jupyter: main` (shorthand) or the full
+   `jupyter: {jupytext: ..., kernelspec: {name: main}}` block (what the
+   skeleton carries; must match its `.ipynb` twin's metadata).
+2. **Whole site**: `jupyter: main` at top level of `_quarto.yml`.
+3. **CLI**: `QUARTO_JUPYTER=main quarto render ...` (env var).
+
+Registering a NEW analysis env so quarto can use it:
+```bash
+mamba install -n <env> ipykernel          # kernel machinery inside the env
+~/miniforge3/envs/<env>/bin/python -m ipykernel install --user --name <env>
+jupyter: <env>                            # in post or site YAML
+```
+Install the kernelspec to the USER dir (--user): kernelspecs placed inside a
+conda env prefix get re-labeled by nb_conda_kernels by LOCATION (trap hit
+2026-09-13); user-dir specs pass through as-is and quarto finds them.
+
+Traps (all previously hit):
+- `conda-env-<env>-py` kernels (nb_conda_kernels, JupyterLab UI picks) are
+  invisible to quarto — never let a post carry one.
+- `python3` is ambiguous (both `jupyter` and `main` envs would answer); prefer
+  named kernelspecs.
+- JupyterLab SAVE rewrites the notebook kernelspec to the currently selected
+  kernel — after editing in JupyterLab, verify the kernelspec says `main`.
+- Sanity check inside a post: a scratch cell with
+  `import sys; print(sys.executable)` shows who actually executed.

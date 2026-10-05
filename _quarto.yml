@@ -7,6 +7,9 @@ project:
   post-render:
     - _post_render.py
 
+execute:
+  freeze: auto
+
 website:
   title: "Tiago Paixão"
   site-url: https://tiagopaixao.com
