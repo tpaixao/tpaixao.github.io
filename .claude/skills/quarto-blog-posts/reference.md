@@ -375,10 +375,18 @@ figures without re-executing:
    renders. Sentinel test: rendered timestamp identical across replays.
 2. **`cache: true` (jupyter-cache layer).** Requires the `jupyter-cache` pip
    package in the jupyter env (installed 2026-10-05). First render executes and
-   seeds `blog/.jupyter_cache/` (cell-granular DB); later renders log
-   "(Notebook read from cache)" (~9.5s, kernel start but no execution). Useful
-   while editing one cell of a big notebook: only new cells run.
-   `--cache-refresh` / `cache-refresh` forces re-seed. Gitignored.
+   seeds `blog/.jupyter_cache/`; later renders log "(Notebook read from
+   cache)" (~10-11 s; no re-execution). **Applied site-wide 2026-10-07**
+   alongside `freeze: auto` (`execute: cache: true` in `_quarto.yml`).
+   Sentinel-verified (DM post, temp non-draft copy): cold render 24.5 s
+   (executes, seeds cache); prose-only edit → cache replay 10.9 s, sentinel
+   timestamp UNCHANGED (no re-execution); code-cell change → re-execution
+   23.2 s, timestamp updated. Grain is the NOTEBOOK, not the cell: any
+   code-cell change re-runs the whole notebook. Full site render with
+   freeze+cache: exit 0, 16 s, zero kernel starts (freeze replayed all; cache
+   absorbs prose-only changes when a file does re-render). Net effect:
+   prose editing never re-executes code. `--cache-refresh` / `cache-refresh`
+   forces re-seed. Gitignored.
 3. **Render the `.ipynb` directly.** Quarto does NOT execute ipynbs by default
    and uses the embedded saved outputs (figures auto-extracted to
    `*_files/figure-html/`). For the website to render notebook-only posts,
@@ -395,6 +403,18 @@ their code STILL EXECUTES during renders (verified 2026-10-05: seed cache was
 populated by a draft render; missing deps abort full site renders) — so audit
 visibility via a temp copy, and remember drafts burn compute each site render
 until their freeze entries exist.
+
+**Standalone-render trap (found 2026-10-07):** explicitly rendering a file
+EXCLUDED from `project.render` (e.g. an underscore-prefixed `_scratch.qmd`)
+runs it as a STANDALONE document — no project execute options (no freeze,
+no cache) and the output lands NEXT TO the source, not in `_site/`. Sentinel
+and cache tests must use a normally named temp copy in `blog/` (delete after).
+
+**Prose-editing loop (verified 2026-10-07):** `mamba run -n jupyter quarto
+render blog/<post>.qmd` — first render executes and seeds the cache; every
+subsequent prose-only save replays from cache (no re-execution). `--execute`
+forces fresh outputs. `quarto preview` hot-reloads on save with the same
+replay semantics, so it is safe to keep open while writing.
 
 ## 13. Execution environment control (conda) — verified 2026-10-05
 
@@ -438,3 +458,29 @@ Traps (all previously hit):
   kernel — after editing in JupyterLab, verify the kernelspec says `main`.
 - Sanity check inside a post: a scratch cell with
   `import sys; print(sys.executable)` shows who actually executed.
+
+## 14. Making the site live (deploy) — per Tiago, 2026-10-05
+
+**The deploy step is `quarto publish`** (easiest way to make the blog live; it
+supersedes manual gh-pages branch surgery). For this site:
+
+```bash
+mamba run -n jupyter quarto publish gh-pages        # or plain `quarto publish` (interactive provider pick)
+```
+
+Verified interface (Quarto 1.10.18): providers `gh-pages`, `netlify`,
+`quarto-pub`, ...; options `--no-render` (skip the render — useful right after
+a site render with freeze), `--no-prompt`, `--no-browser`, `--id`, `--token`.
+`gh-pages` = renders (unless `--no-render`), then builds the site onto the
+gh-pages branch and pushes it. The root `CNAME` (custom domain
+tiagopaixao.com) is carried into the deploy automatically.
+
+Preconditions and standing rule:
+- Working tree must be **clean and pushed** on its branch (currently true:
+  blogify-methods-projects @ 2581495 pushed, gh-pages untouched).
+- **Deploy = gh-pages update = site goes live. This step ONLY runs when Tiago
+  explicitly asks to make posts live** (his rule from 2026-10-05; pushes to
+  working branches never deploy). All listing-relevant state lives on the
+  working branch until then.
+- Draft posts render as stubs and are excluded from the listing even on a
+  deploy; flipping `draft: false` + publishing is how a new post goes out.
