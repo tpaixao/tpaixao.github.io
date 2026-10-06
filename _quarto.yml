@@ -14,6 +14,10 @@ execute:
 website:
   title: "Tiago Paixão"
   site-url: https://tiagopaixao.com
+  # Render draft: true posts with full content + a Draft banner instead of the
+  # default blank stub; drafts stay unlinked (excluded from listing, search,
+  # sitemap, navbar) so they are only reachable by direct URL.
+  draft-mode: unlinked
   favicon: assets/favicon.png
   search: true
   navbar:

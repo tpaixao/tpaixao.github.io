@@ -398,11 +398,20 @@ render twice, compare the rendered value: equal = replay, changed = re-execution
 
 Confounds that fooled timing measurements: the Jupyter **kernel daemon** keeps
 a warm kernel ~300s (re-execution on warm kernel looks deceptively fast);
-`draft: true` posts render to a **90-byte stub** (no figures in the HTML) but
-their code STILL EXECUTES during renders (verified 2026-10-05: seed cache was
+`draft: true` posts used to render to a **90-byte stub** (verified 2026-10-05).
+Their code STILL EXECUTES during renders (verified 2026-10-05: seed cache was
 populated by a draft render; missing deps abort full site renders) — so audit
 visibility via a temp copy, and remember drafts burn compute each site render
 until their freeze entries exist.
+
+**Draft behavior changed 2026-10-07:** `_quarto.yml` now sets
+`website.draft-mode: unlinked`, so drafts render in FULL with a yellow
+`#quarto-draft-alert` "Draft" banner (e.g. health-data-pipeline went from 90 B
+to 28 KB) and a `<meta name="quarto:status" content="draft">` tag. Drafts stay
+UNLINKED: excluded from the listing, navbar, search.json, and sitemap.xml,
+reachable only by direct URL — including on the deployed site (full draft
+text is publicly readable at its URL once deployed). The execute/freeze rules
+above are unchanged; rendering a draft still runs its code until frozen.
 
 **Standalone-render trap (found 2026-10-07):** explicitly rendering a file
 EXCLUDED from `project.render` (e.g. an underscore-prefixed `_scratch.qmd`)
@@ -482,5 +491,8 @@ Preconditions and standing rule:
   explicitly asks to make posts live** (his rule from 2026-10-05; pushes to
   working branches never deploy). All listing-relevant state lives on the
   working branch until then.
-- Draft posts render as stubs and are excluded from the listing even on a
-  deploy; flipping `draft: false` + publishing is how a new post goes out.
+- Draft posts render in full with a Draft banner (`website.draft-mode:
+  unlinked`, since 2026-10-07) and stay excluded from the listing, search, and
+  sitemap even on a deploy; they are reachable only by direct URL. A new post
+  still goes public by flipping `draft: false` (or removing the flag) + then
+  deploying — which removes the banner and adds it to the listing.

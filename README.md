@@ -16,7 +16,7 @@ From the repo root:
 quarto publish gh-pages
 ```
 
-This renders the site, commits the output to `gh-pages`, and pushes in one step. Use `--no-prompt` for non-interactive runs. Posts with `draft: true` are skipped automatically. Code chunks use `eval: false`, so no R or Jupyter installation is needed to render.
+This renders the site, commits the output to `gh-pages`, and pushes in one step. Use `--no-prompt` for non-interactive runs. Posts with `draft: true` render in full (with a Draft banner) but are excluded from the listing, search, and sitemap on the deployed site (`draft-mode: unlinked`). Code chunks use `eval: false`, so no R or Jupyter installation is needed to render.
 
 Do not deploy by manually checking out `gh-pages` and copying files; `quarto publish` force-updates that branch by design, and any hand edits there will be lost.
 
