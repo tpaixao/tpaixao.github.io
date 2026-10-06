@@ -68,3 +68,15 @@ If both changed (rare), it errors instead of guessing — resolve manually.
 
 The static kernelspec is a plain folder — safe to delete/recreate at
 `~/.local/share/jupyter/kernels/main`.
+## Auto-sync on commit (2026-10-07)
+
+`.githooks/pre-commit` (active via `git config core.hooksPath .githooks`) syncs
+every staged `blog/*.qmd` / `blog/*.ipynb` pair with `jupytext --sync` and
+re-stages both sides, so twins never drift in a commit. Manual sync is only
+needed outside git commits (or to inspect a twin mid-edit). After a fresh
+clone, re-run: `git config core.hooksPath .githooks`.
+
+Note: with the site-wide `execute: freeze: auto` + `cache: true`, the twins
+are off the render path entirely (outputs come from the freeze store /
+`.jupyter_cache`), so they only matter for Jupyter editing and notebook
+publishing.
