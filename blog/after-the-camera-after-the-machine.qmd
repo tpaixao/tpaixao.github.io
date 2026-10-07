@@ -31,20 +31,21 @@ It is a tidy story, and like most tidy stories it survives contact with the time
 
 ```{python}
 #| label: fig-timeline
-#| fig-cap: Landmarks of photography (blue) and painting (red) on one timeline, 1839 to 1915.
-#| fig-alt: 'Timeline with photography (blue) and painting (red) landmarks: Daguerreotype (1839), Impressionism and Cézanne (1870), Pictorialism (1885), Kodak (1888), Kandinsky (1908), and Mondrian and Malevich (1915).'
+#| fig-cap: 'Landmarks of photography (blue) and painting (red) on one timeline, 1839 to 1915. Hilma af Klint, hollow: fully abstract by 1906, kept private, unseen by the avant-garde.'
+#| fig-alt: 'Timeline with photography (blue) and painting (red) landmarks: Daguerreotype (1839), Impressionism and Cézanne (1870), Pictorialism (1885), Kodak (1888), Hilma af Klint (1906, hollow), Kandinsky (1908), and Mondrian and Malevich (1915).'
 #| fig-dpi: 96
 import matplotlib.pyplot as plt
 
-BLUE, RED = "#4477AA", "#EE6677"
+BLUE, RED, GRAY = "#4477AA", "#EE6677", "0.40"
 
 events = [
-    (1839, "Daguerreotype", BLUE, 1),
-    (1870, "Impressionism and\nCézanne", RED, -1),
-    (1885, "Pictorialism", BLUE, 2),
-    (1888, "Kodak", BLUE, -2),
-    (1908, "Kandinsky", RED, 1),
-    (1915, "Mondrian and\nMalevich", RED, -1),
+    (1839, "Daguerreotype", BLUE, 1, ""),
+    (1870, "Impressionism and\nCézanne", RED, -1, ""),
+    (1885, "Pictorialism", BLUE, 2, ""),
+    (1888, "Kodak", BLUE, -2, ""),
+    (1906, "Hilma af Klint", GRAY, -2, "ghost"),
+    (1908, "Kandinsky", RED, 1, ""),
+    (1915, "Mondrian and\nMalevich", RED, -1, ""),
 ]
 
 fig, ax = plt.subplots(figsize=(7.2, 1.9))
@@ -53,15 +54,23 @@ ax.set_ylim(-3.2, 3.4)
 ax.axhline(0, color="0.15", lw=1.2, zorder=1)
 
 BASE = 1.30  # data units per tier
-for year, name, color, tier in events:
+NAME_DX = {1915: 4.0}                    # nudge a crowded label right of its stem
+YEAR_X = {1906: 1903.5, 1908: 1911.0}    # reposition years between neighboring stems
+for year, name, color, tier, style in events:
+    ghost = style == "ghost"
     y = tier * BASE
-    ax.vlines(year, 0, y, color=color, lw=1.1, zorder=2)
-    ax.plot(year, 0, "o", color=color, ms=5.5, mec="white", mew=0.9, zorder=3)
-    ax.annotate(name, (year, y), ha="center",
+    ax.vlines(year, 0, y, color=color, lw=1.1,
+              ls=(0, (3, 2)) if ghost else "-", zorder=2)
+    if ghost:
+        ax.plot(year, 0, "o", ms=5.5, mec=color, mfc="white", mew=1.0, zorder=3)
+    else:
+        ax.plot(year, 0, "o", color=color, ms=5.5, mec="white", mew=0.9, zorder=3)
+    ax.annotate(name, (year + NAME_DX.get(year, 0.0), y), ha="center",
                 va="bottom" if y > 0 else "top",
                 fontsize=9, color=color,
+                style="italic" if ghost else "normal",
                 xytext=(0, 2 if y > 0 else -2), textcoords="offset points")
-    ax.annotate(str(year), (year, 0), ha="center",
+    ax.annotate(str(year), (YEAR_X.get(year, year), 0), ha="center",
                 va="top" if y > 0 else "bottom", fontsize=7.5, color="0.25",
                 xytext=(0, -2.5 if y > 0 else 2.5), textcoords="offset points")
 
