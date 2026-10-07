@@ -56,6 +56,10 @@ Fixes, in order of preference:
   an additive emphasis genuinely serves the sentence; the `also` is welcome.
   Rules 1–2 are never a license to strip it: only the em-dashes and the
   corrective-denials go.
+- `Photography did not make abstraction possible. It made abstraction urgent.`
+  (2026-10-07, `after-the-camera-after-the-machine`) — sanctioned exception to
+  rule 2, load-bearing thesis sentence Tiago restored after it was rewritten.
+  Do not apply rule 2 to it in future passes.
 
 ## Self-check before showing any prose to Tiago
 

@@ -159,10 +159,14 @@ cd ~/projects/tpaixao.github.io/blog
 mamba run -n jupyter quarto render <post>.qmd     # needs jupyter on PATH; quarto 1.10+ also at /usr/local/bin/quarto
 ```
 
-- Draft posts render as empty stubs — to eyeball figures, copy the post to a temp
-  file with `draft: false`, render, then delete.
-- Notebook cells are NOT re-executed on render by default (saved outputs are used);
-  pass `--execute` only if needed.
+- Draft posts render FULLY since `draft-mode: unlinked` (2026-10-07): ~30KB page
+  + draft alert banner, still unlinked from listing/search/sitemap; the old
+  empty-stub behavior is gone. Render drafts directly; Tiago usually keeps
+  `quarto preview` running, which live-reloads saved edits (edit in place, no
+  temp draft-copies needed).
+- Notebook cells are NOT re-executed when the source is unchanged (freeze reuses
+  `_freeze/.../execute-results/html.json`); `freeze: auto` re-executes changed
+  docs on the next render, including draft posts.
 
 ## Gotchas baked in from experience & docs
 
