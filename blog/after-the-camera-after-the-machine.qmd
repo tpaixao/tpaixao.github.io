@@ -6,6 +6,9 @@ categories:
   - AI & Knowledge Work
 draft: true
 cap-location: margin
+format:
+  html:
+    code-fold: true
 image: cover_images/cover_camera_daguerreotype.jpg
 title-block-banner: cover_images/cover_camera_daguerreotype.jpg
 jupyter:
@@ -24,24 +27,56 @@ jupyter:
 
 The standard story goes like this. In 1839, when the daguerreotype was unveiled in Paris, the painter Paul Delaroche reportedly declared that painting was dead. Photography could record appearances faster, cheaper, and more faithfully than any trained hand, so painting had to find something else to do. What it found, eventually, was abstraction. Kandinsky's first non-representational watercolors date from around 1910, and within a decade Mondrian, Malevich, and the rest of the avant-garde had abandoned the depiction of the visible world entirely. Photography pushed painting out of representation, and painting answered by becoming modern art.
 
-It is a tidy story, and like most tidy stories it survives contact with the timeline only in modified form. Photography existed for seventy years before abstraction arrived. The daguerreotype of 1839 was a slow, studio-bound process, good for portraits and still lifes, and for decades its influence on painting ran the other way: photographers staged tableaux and softened focus to imitate the academic canvases of the day. Pictorialism, the school of photography that most wanted to be painting, peaked between 1885 and 1915, *after* the Kodak had made photography a mass consumer product. The two media spent decades circling each other before painting definitively jumped.
+It is a tidy story, and like most tidy stories it survives contact with the timeline only in modified form. Photography existed for seventy years before abstraction arrived. The daguerreotype of 1839 was a slow, studio-bound process, good for portraits and still lifes, and for decades its influence on painting ran the other way: photographers staged tableaux and softened focus to imitate the academic canvases of the day. Pictorialism, the school of photography that most wanted to be painting, peaked between 1885 and 1915, *after* the Kodak had made photography a mass consumer product (@fig-timeline). The two media spent decades circling each other before painting definitively jumped.
 
-```mermaid
-gantt
-    title Photography and the road to abstraction
-    dateFormat YYYY
-    axisFormat %Y
-    section Photography
-    Daguerreotype, a slow studio process :1839, 1888
-    Kodak, image-making for everyone :1888, 1930
-    Pictorialism, photography imitating painting :1885, 1915
-    section Painting
-    Impressionism and Cezanne, the conceptual groundwork :1870, 1910
-    Kandinsky, first fully abstract works :1908, 1920
-    Mondrian, Malevich, and the avant-garde :1915, 1930
-    section Knowledge work
-    Transformer architecture, the daguerreotype moment :2017, 2022
-    Generative models default consumer behavior, the Kodak moment :2022, 2046
+```{python}
+#| label: fig-timeline
+#| fig-cap: Landmarks of photography (blue) and painting (red) on one timeline, 1839 to 1915.
+#| fig-alt: 'Timeline with photography (blue) and painting (red) landmarks: Daguerreotype (1839), Impressionism and Cézanne (1870), Pictorialism (1885), Kodak (1888), Kandinsky (1908), and Mondrian and Malevich (1915).'
+#| fig-dpi: 96
+import matplotlib.pyplot as plt
+
+BLUE, RED = "#4477AA", "#EE6677"
+
+events = [
+    (1839, "Daguerreotype", BLUE, 1),
+    (1870, "Impressionism and\nCézanne", RED, -1),
+    (1885, "Pictorialism", BLUE, 2),
+    (1888, "Kodak", BLUE, -2),
+    (1908, "Kandinsky", RED, 1),
+    (1915, "Mondrian and\nMalevich", RED, -1),
+]
+
+fig, ax = plt.subplots(figsize=(7.2, 1.9))
+ax.set_xlim(1827, 1975)
+ax.set_ylim(-3.2, 3.4)
+ax.axhline(0, color="0.15", lw=1.2, zorder=1)
+
+BASE = 1.30  # data units per tier
+for year, name, color, tier in events:
+    y = tier * BASE
+    ax.vlines(year, 0, y, color=color, lw=1.1, zorder=2)
+    ax.plot(year, 0, "o", color=color, ms=5.5, mec="white", mew=0.9, zorder=3)
+    ax.annotate(name, (year, y), ha="center",
+                va="bottom" if y > 0 else "top",
+                fontsize=9, color=color,
+                xytext=(0, 2 if y > 0 else -2), textcoords="offset points")
+    ax.annotate(str(year), (year, 0), ha="center",
+                va="top" if y > 0 else "bottom", fontsize=7.5, color="0.25",
+                xytext=(0, -2.5 if y > 0 else 2.5), textcoords="offset points")
+
+ax.legend(
+    handles=[
+        plt.Line2D([], [], color=BLUE, marker="o", lw=1.1, ms=5, label="Photography"),
+        plt.Line2D([], [], color=RED, marker="o", lw=1.1, ms=5, label="Painting"),
+    ],
+    loc="upper left", bbox_to_anchor=(0.0, 1.16), ncols=2, frameon=False, fontsize=8,
+)
+
+for s in ax.spines.values():
+    s.set_visible(False)
+ax.set_yticks([])
+ax.set_xticks([])
 ```
 
 The decisive alignment is much tighter than the seventy-year gap suggests. Impressionism and Cézanne, the conceptual groundwork for abstraction, matured in the period when photography was still a novelty, a portrait tool, a reference aid that Degas and Delacroix used without anxiety. What changed around 1888 was not what photography could do but who could do it. The Kodak, with its slogan "You press the button, we do the rest," turned image-making into something anyone could do without skill. Twenty years later, painting had produced its first fully abstract works. Abstraction arrived not when photography appeared, but when it became the default way of making pictures.
