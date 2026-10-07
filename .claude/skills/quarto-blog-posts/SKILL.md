@@ -177,6 +177,14 @@ mamba run -n jupyter quarto render <post>.qmd     # needs jupyter on PATH; quart
 - Markdown-cell image captions show correctly in Quarto output, but the Jupyter UI
   only shows alt text (by design, not a bug).
 - Shortcodes (`{{< ... >}}`) don't work inside grid tables.
+- Jupyter-cell figures get a hard `width` attribute = `figsize × fig-dpi`
+  (default `fig-dpi` 160) and **no** `img-fluid` class — at defaults a ~7.8in
+  figure renders ~1250px wide and overflows the ~500–800px content column.
+  Since 2026-10-07 the site `styles.css` clamps all figures
+  (`max-width: 100%; height: auto`), but in code cells prefer
+  `#| fig-dpi: 96` so text renders at true point size instead of being
+  shrunk by the clamp. PNG is saved retina (dpi × 2) and cropped tight
+  (`bbox_inches='tight'`), so attr tracks content, not canvas.
 
 Prose extras — footnotes (`reference-location: margin` pairs with the margin
 captions), citations (`bibliography:` paths are relative to the POST, i.e.
