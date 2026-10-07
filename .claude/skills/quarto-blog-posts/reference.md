@@ -25,8 +25,12 @@ Jupyter Notebook Options) and quarto-dev/quarto-cli issue #4435 (ipynb caption b
   (included files conventionally underscore-prefixed).
 
 ### .ipynb (Jupyter)
-- **First cell must be a Raw cell** holding the YAML header (title, format,
-  jupyter/jupytext block, etc.).
+- **First cell must hold the YAML header** — a Raw cell or a markdown cell
+  starting with `---` both work (Quarto reads either; our posts use both
+  forms). Contents: title, date, categories, format, etc. **No
+  `jupyter: jupytext:` stamp** — that was the jupytext pairing era, retired
+  2026-10-08. A `jupyter: {kernelspec: {name: main}}` block is optional (the
+  notebook's own kernelspec metadata is what Quarto actually uses).
 - Markdown cells accept any Quarto/Pandoc markdown (callout divs, cross-refs, math).
 - Code-cell options: `#|` comment lines at the very top of the cell, OR in the
   cell's `metadata` (JSON); `#|` values win over metadata. Tag shortcuts exist:
@@ -226,8 +230,9 @@ computed inline values via the div syntax (`Caption: {python} len(x)` observatio
   captions survive in Quarto output but not in the raw Jupyter notebook display.
 - Prefer the figure-div pattern, or file-referenced (not attachment) images, for
   caption-critical notebooks.
-- When syncing pairs with jupytext, `#|` options in the .qmd map to notebook cell
-  metadata (keyed `quarto` options) — don't hand-edit both sides.
+- When switching a post between `.qmd` and `.ipynb`, use `quarto convert`
+  (both directions); delete the source file you are moving away from — never
+  keep both.
 ## 7. Footnotes
 
 ```markdown
@@ -321,7 +326,7 @@ Note that there are five types of callouts: `note`, `tip`, `warning`,
   tags). `title-block-banner:` only controls the in-post banner, not the card.
 - **Preserving links after renames/slug changes**: `aliases: ["/blog/old-slug.html"]`
   (site-URL-relative path ending in `.html`) — keeps old links working via redirect.
-- **Pulling content from a notebook twin or other posts**:
+- **Embedding another notebook's output in a post**:
   `{{< embed notebook.ipynb#fig-my-plot >}}` renders a labelled cell's output
   (caption included) inside another post; `{{< embed ... echo=true >}}` also shows
   the code. Cell matching order: cell `id` → `label` → tag. Source-notebook links
@@ -332,21 +337,19 @@ Note that there are five types of callouts: `note`, `tip`, `warning`,
 
 ## 11. Embedded images in notebooks (attachments vs outputs)
 
-Two distinct cases (tested empirically with jupytext 1.19.5, 2026-10-05):
+Two distinct cases (tested empirically 2026-10-05; notebooks are now the
+single source of truth, qmd twins deleted 2026-10-08):
 
-- **Cell outputs (`image/png` in display_data/execute_result): nothing to save.**
-  The `.qmd` twin carries the CODE; the Quarto render re-executes it and
-  regenerates the figure into its own figures dir. Outputs embedded in the
-  `.ipynb` are only consumed when rendering the `.ipynb` directly (Quarto
-  auto-extracts them at render time). This is the live-figure design:
-  "figures regenerate in ~20s".
+- **Cell outputs (`image/png` in display_data/execute_result): nothing to
+  save.** Quarto re-executes changed notebooks and regenerates figures into
+  its own figures dir; for unchanged notebooks it replays frozen outputs.
+  Outputs embedded in the `.ipynb` are consumed when rendering unchanged
+  notebooks from the freeze store.
 - **Markdown-cell attachments (`![cap](attachment:x.png)` + base64 in the
-  cell's `attachments` field): YES, they must be extracted.** Jupytext carries
-  the `attachment:` link verbatim into the `.qmd` and does NOT extract the
-  image; plain Quarto markdown cannot resolve `attachment:` URLs, so the twin
-  renders a broken image. Fix: save the attachment to `blog/images/`, rewrite
-  the markdown link to a normal relative path, re-sync, and (optionally) drop
-  the now-redundant base64 attachment from the notebook to slim it.
+  cell's `attachments` field): avoid.** Quarto markdown elsewhere in the site
+  cannot resolve `attachment:` URLs, and the base64 blobs bloat the notebook.
+  Fix: save the attachment to `blog/images/`, rewrite the markdown link to a
+  normal relative path, and drop the base64 attachment from the notebook.
 
 Recipe:
 ```bash
@@ -354,16 +357,18 @@ python3 -c "import json,base64,pathlib; nb=json.load(open('post.ipynb')); \
 [pathlib.Path('images/'+n).write_bytes(base64.b64decode(list(m.values())[0])) \
  for c in nb['cells'] for n,m in c.get('attachments',{}).items()]"
 ```
-Then rewrite `attachment:<name>` → `images/<name>` in the .qmd and sync.
+Then rewrite `attachment:<name>` → `images/<name>` in cells.
 
-Rule of thumb: **paste-screenshots in notebooks are attachments (need saving);
-matplotlib/plot output is not (regenerates).** As of 2026-10-05 none of the
-notebook-only posts contain attachments — all their images are outputs.
+Rule of thumb: **paste-screenshots in notebooks should be saved to
+`blog/images/` and referenced normally (attachments removed)
+; matplotlib/plot output is fine as output (regenerates).** As of 2026-10-08
+none of the posts contain attachments — all their images are outputs or
+plain file references.
 
 ## 12. Rendering WITHOUT re-executing the code (verified 2026-10-05)
 
-A `.qmd` twin carries code only, never outputs. Three verified ways to get
-figures without re-executing:
+A notebook carries its own code AND its last saved outputs. Three verified
+ways to get figures without re-executing:
 
 1. **`freeze` (recommended, zero extra deps).** `execute: freeze: auto`. Applied
    SITE-WIDE in `_quarto.yml` (2026-10-05): `execute:\n  freeze: auto` at top
@@ -387,11 +392,12 @@ figures without re-executing:
    absorbs prose-only changes when a file does re-render). Net effect:
    prose editing never re-executes code. `--cache-refresh` / `cache-refresh`
    forces re-seed. Gitignored.
-3. **Render the `.ipynb` directly.** Quarto does NOT execute ipynbs by default
-   and uses the embedded saved outputs (figures auto-extracted to
-   `*_files/figure-html/`). For the website to render notebook-only posts,
-   extend `project.render` in `_quarto.yml` with `*.ipynb` (currently
-   `*.qmd`/`*.md` only).
+3. **Render the `.ipynb` directly without execution.** Quarto does NOT
+   execute ipynbs by default and normally uses the embedded saved outputs.
+   For this SITE it is simpler: `*.ipynb` is in `project.render` (added
+   2026-10-08), and site-wide `freeze: auto`/`cache: true` mean unchanged
+   notebooks replay frozen outputs while changed ones re-execute on the next
+   render, exactly like qmd posts did.
 
 Verification protocol (sentinel): append a cell `print('SENTINEL', time.time())`,
 render twice, compare the rendered value: equal = replay, changed = re-execution.
@@ -442,9 +448,10 @@ Verified state (2026-10-05):
   the kernel chooses the ANALYSIS env. The outer env never runs post code.
 
 Control points, in order of preference:
-1. **Per post**: `jupyter: main` (shorthand) or the full
-   `jupyter: {jupytext: ..., kernelspec: {name: main}}` block (what the
-   skeleton carries; must match its `.ipynb` twin's metadata).
+1. **Per post**: the notebook's kernelspec metadata — `kernelspec: name:
+   "main"` in the `.ipynb` (checked/kept consistent across all 19 notebooks
+   on 2026-10-08). In a `.qmd` post: `jupyter: main`, or a
+   `jupyter: {kernelspec: {name: main}}` YAML block.
 2. **Whole site**: `jupyter: main` at top level of `_quarto.yml`.
 3. **CLI**: `QUARTO_JUPYTER=main quarto render ...` (env var).
 
