@@ -1,58 +1,37 @@
-# Jupytext cheat sheet
+# Jupytext notes (post-migration reference)
 
 Not rendered by Quarto (files starting with `_` are ignored by project renders).
 
-## The setup (what exists where)
+## State of play (2026-10-08, commit 3ec02ae)
 
-- **jupytext engine** 1.19.5 — installed in conda env `jupyter` (`~/miniforge3/envs/jupyter/bin/jupytext`)
-- **JupyterLab integration** (`jupyterlab_jupytext` + `jupyterlab-jupytext` UI) — in the same env
-- Paired files (formats `ipynb,qmd`):
-  - `projects/`: `dawn`, `pharos`, `voice_chat`
-  - `blog/`: all 8 posts (Bayes_EvolveResequence, dawn-2018-asset-protocol,
-    decentralized-prehistory-2017-2019, health-data-pipeline,
-    pharos-decentralized-preprints, scientific-commons-sovereignty,
-    serobayes, voice-latency-engineering)
-- The site renders **only** `*.qmd` / `*.md` (see `_quarto.yml`) — the `.ipynb` twins are ignored
+- **Blog and project sources are ipynb-only.** The jupytext pairing
+  (`ipynb,qmd`, formats `qmd:quarto,ipynb`) was retired: all notebooks were
+  unpaired, all `.qmd` twins in `blog/` and `projects/` deleted, and every
+  jupytext metadata trace removed (nb metadata + front-matter stamps).
+- **`_quarto.yml` renders `*.qmd`, `*.md` and `*.ipynb`**; notebooks carry their
+  YAML front matter in the first cell and work exactly like qmd posts did.
+- One format per post. If a future post is easier in qmd, just write a `.qmd`.
+  Never keep both. (`migrate-to-ipynb.sh` at the repo root documents the
+  migration; safe to delete.)
+- **`.githooks/pre-commit` is now a no-op** — it used to jupytext-sync pairs at
+  commit time.
+- jupytext itself (1.19.5, conda env `jupyter`, plus the JupyterLab UI plugins)
+  is still installed but unused. Uninstall freely:
+  `pip uninstall jupytext` in the `jupyter` env (also `jupyterlab_jupytext`).
 
-## Pairing in JupyterLab (do once per notebook)
+## Gotchas that still apply (these were jupytext-era but matter for Quarto-rendered notebooks)
 
-1. Open the `.ipynb` in JupyterLab
-2. Menu **Jupytext → Pair with → Quarto Markdown** (or `Ctrl+Shift+C`, type "pair quarto")
-   - writes `"jupytext": {"formats": "ipynb,qmd"}` into the notebook metadata
-3. `Ctrl+S` → both `.ipynb` and `.qmd` are written, always in sync
-
-## CLI (bulk pairing + edits made outside JupyterLab)
-
-```bash
-J=~/miniforge3/envs/jupyter/bin
-
-# pair once (per notebook):
-$J/jupytext --set-formats ipynb,qmd projects/dawn.ipynb
-
-# reconcile after external edits (newest file's mtime wins):
-$J/jupytext --sync projects/*.ipynb
-```
-
-`--sync` picks whichever side has the newer timestamp as the source.
-If both changed (rare), it errors instead of guessing — resolve manually.
-
-## Gotchas
-
-- **First paired save rewrites the `.qmd`**: YAML gets re-serialized (`title: DAWN` unquoted,
-  `categories` as list), a `jupyter: jupytext: ...` stamp block is added, blank lines
-  normalized. ~27 lines of cosmetic diff on dawn.qmd, zero content change.
-  Review the git diff once, commit, stable afterwards.
 - **Kernel for code cells**: pick **"Python 3 (main)"** so JupyterLab and Quarto
   agree on the interpreter (`~/miniforge3/envs/main/bin/python`).
 - **Quarto only sees *static* kernelspecs** — nb_conda_kernels kernels
   (`conda-env-main-py`, …) are invisible to `quarto render --execute`.
   The static spec lives at `~/.local/share/jupyter/kernels/main`.
-- `.qmd` execution needs `jupyter: main` in the front matter; `.ipynb` needs
-  kernelspec name `main`. Kernel name `python3` is ambiguous (both envs have one).
-- Quarto 1.10.18 rejects python paths in `jupyter:` — kernel names only.
-- **Saving in JupyterLab rewrites the kernelspec to the selected kernel.** If you
-  select "Python [conda env:main]" the file gets `name: conda-env-main-py`, which
-  Quarto cannot resolve → the whole site render fails. (This happened on
+- Notebook kernelspec must be `name: main`. Kernel name `python3` is ambiguous
+  (both envs have one) and silently breaks execution — this bit `pharos.ipynb`
+  and `voice_chat.ipynb` on 2026-10-08; both were rewritten to `main`.
+- **Saving in JupyterLab rewrites the kernelspec to the selected kernel.** If
+  you select "Python [conda env:main]" the file gets `name: conda-env-main-py`,
+  which Quarto cannot resolve → the whole site render fails). (Happened
   2026-09-14 with dawn.ipynb and blog/serobayes.qmd.) Always select
   **"Python 3 (main)"** for anything Quarto executes.
 
@@ -68,15 +47,19 @@ If both changed (rare), it errors instead of guessing — resolve manually.
 
 The static kernelspec is a plain folder — safe to delete/recreate at
 `~/.local/share/jupyter/kernels/main`.
-## Auto-sync on commit (2026-10-07)
 
-`.githooks/pre-commit` (active via `git config core.hooksPath .githooks`) syncs
-every staged `blog/*.qmd` / `blog/*.ipynb` pair with `jupytext --sync` and
-re-stages both sides, so twins never drift in a commit. Manual sync is only
-needed outside git commits (or to inspect a twin mid-edit). After a fresh
-clone, re-run: `git config core.hooksPath .githooks`.
+## What `draft: true` means on this site (unchanged by the migration)
 
-Note: with the site-wide `execute: freeze: auto` + `cache: true`, the twins
-are off the render path entirely (outputs come from the freeze store /
-`.jupyter_cache`), so they only matter for Jupyter editing and notebook
-publishing.
+`draft-mode: unlinked` in `_quarto.yml`: drafts render with full content + a
+Draft banner at their direct URL but stay out of the listing, search, sitemap
+and navbar. `serobayes` (Jun-2020) and `Bayes_EvolveResequence` (Jan-2021) are
+the only published posts (no `draft` field).
+
+## Historical record
+
+- Pairing setup, CLI sync commands and the auto-sync pre-commit hook that used
+  to live here are documented in git history: see commits before 3ec02ae
+  (e.g. `git show 0ddf263:...`/`5d5ca8e`) or `git log _jupytext.md`.
+- Note: with `execute: freeze: auto` + `cache: true`, changed-notebook
+  re-execution happens on the next render; unchanged docs reuse the freeze
+  store / `.jupyter_cache`.

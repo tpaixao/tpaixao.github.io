@@ -1,26 +1,10 @@
 #!/usr/bin/env bash
-# Sync jupytext pairs for staged blog files, then re-stage both sides.
-# Activated once per clone with: git config core.hooksPath .githooks
-# (set on the ThinkPad 2026-10-07; re-run that line after a fresh clone)
+# No-op. Previously this hook jupytext-synced every staged blog/*.qmd+*.ipynb
+# pair. That pairing was retired on 2026-10-08 (commit 3ec02ae): notebooks are
+# now the single source of truth, qmd twins were deleted, and all jupytext
+# pairing metadata was stripped. Kept as an executable no-op so clones that set
+# `git config core.hooksPath .githooks` do not fail on a missing hook.
+# If no other hook logic returns here, you can instead clean up completely with:
+#   git config --unset core.hooksPath
 set -euo pipefail
-
-mapfile -t staged < <(git diff --cached --name-only --diff-filter=ACMR | grep -E '^blog/.*\.(qmd|ipynb)$' || true)
-
-if [ ${#staged[@]} -eq 0 ]; then
-  exit 0
-fi
-
-echo "[pre-commit] jupytext sync: ${staged[*]}"
-mamba run -n jupyter jupytext --sync "${staged[@]}"
-
-for f in "${staged[@]}"; do
-  case "$f" in
-    *.qmd) twin="${f%.qmd}.ipynb" ;;
-    *)     twin="${f%.ipynb}.qmd" ;;
-  esac
-  git add "$f"
-  if [ -f "$twin" ]; then
-    git add "$twin"
-    echo "[pre-commit] staged twin: $twin"
-  fi
-done
+exit 0
