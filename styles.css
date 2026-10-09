@@ -33,3 +33,23 @@ div.quarto-about-trestles .about-entity .about-link span.about-link-text {
    unlike markdown images, get no img-fluid class — clamp them to the column. */
 .quarto-figure img,
 .cell-output-display img { max-width: 100%; height: auto; }
+
+/* Title banner readability: cover images set via `title-block-banner` render
+   behind the title/description text. Put a translucent wash of the banner's
+   own background color between the image and the text so the text is always
+   readable, while the figure remains faintly visible as texture. */
+.quarto-title-banner {
+  isolation: isolate;       /* keep the ::before z-index -1 within the banner */
+}
+.quarto-title-banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(248, 249, 250, 0.85);
+  z-index: -1;
+}
+/* Quarto pins background images with default top-left positioning; center
+   them so `cover` crops evenly when the banner is flatter than the image. */
+.quarto-title-banner {
+  background-position: center;
+}
