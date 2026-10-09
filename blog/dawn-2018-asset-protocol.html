@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2026-09-05">
+<meta name="dcterms.date" content="2025-09-05">
 <meta name="description" content="An early homebrew NFT protocol built on Steem, written before ERC-721 tooling existed. Notes on what it did, what it got right, and what happened to the ecosystem it depended on.">
 
 <title>DAWN: a blockchain asset protocol from 2018 – Tiago Paixão</title>
@@ -27,6 +27,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -82,7 +117,6 @@ ul.task-list li input[type="checkbox"] {
 background-size: cover;
       }
 </style>
-<meta name="quarto:status" content="draft">
 
 
 <link rel="stylesheet" href="../styles.css">
@@ -91,7 +125,7 @@ background-size: cover;
 <body class="nav-fixed fullcontent quarto-light">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top quarto-banner"><div id="quarto-draft-alert" class="alert alert-warning"><i class="bi bi-pencil-square"></i>Draft</div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
@@ -147,7 +181,7 @@ background-size: cover;
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">September 5, 2026</p>
+        <p class="date">September 5, 2025</p>
       </div>
     </div>
     
@@ -166,9 +200,43 @@ background-size: cover;
 
 
 
-<p>—title: ’DAWN: a blockchain asset protocol from 2018’description: An early homebrew NFT protocol built on Steem, written before ERC-721 tooling existed. Notes on what it did, what it got right, and what happened to the ecosystem it depended on.date: ’2026-09-05’categories:- Decentralized Infrastructuredraft: truecap-location: marginimage: cover_images/cover_dawn_ledger.pngtitle-block-banner: cover_images/cover_dawn_ledger.pngjupyter: kernelspec: display_name: Python 3 (main) language: python name: main—While going through old repositories I found DAWN, short for Decentralized Asset Worldwide Network, a small project I built in April 2018 on the Steem blockchain. It is a minimal protocol for registering ownership of digital assets and transferring that ownership between accounts, which is to say it is an NFT protocol, written at a moment when the word had not yet been coined. Looking back at it now is instructive, both for what the design got right and for what the subsequent history of the ecosystem did to it.## 1. The moment it was writtenThe timing matters. CryptoKitties had launched in late 2017 and briefly clogged the Ethereum network, demonstrating that provably scarce digital collectibles had an audience. The ERC-721 standard was finalized in January 2018, and everything that would later be called an NFT was, in early 2018, still mostly confined to Ethereum experiments: CryptoPunks, a few trading card projects, and a long lineage reaching back to colored coins on Bitcoin and Counterparty’s Rare Pepes. The term non-fungible token did not enter common usage until late that year.Steem was an odd but rational choice of platform at the time. Transactions were free, funded through a bandwidth allowance rather than gas fees, blocks confirmed in three seconds, and the chain natively supported a generic <code>custom_json</code> operation that any application could define and any node could replay. Steem Monsters, later Splinterlands and one of the more durable blockchain games, used exactly this mechanism. DAWN was the same idea applied to general asset ownership rather than game cards: use the chain as a public append-only log of signed claims, and nothing else.## 2. What the protocol didThe protocol had two operations, broadcast as custom JSON with the identifier <code>DAWN</code>:<code>json["register_asset", {    "permlink": "author/title",    "title": "title",    "author": "author",    "owner": "author",    "data": {}}]["transfer_asset", {    "permlink": "author/title",    "new_owner": "new_account"}]</code>The identifier of an asset was a Steem permlink, <code>author/title</code>, which was convenient because the chain already used that format for posts. Registration embedded arbitrary asset data alongside the ownership claim. Transfer named a new owner. The rules of validity were simple and did the real work: a registration was accepted only if the transaction was signed by the stated author, and a transfer only if signed by the current owner. Forgeries were therefore impossible by construction, and anyone could reconstruct the complete ownership history of any asset by replaying the chain from the genesis block and checking signatures.Around this protocol sat a replay engine in Python that mirrored the chain into a local SQLite database with tables for assets, transfers, and users, resuming from the last parsed block, and a Flask API exposing queries such as the assets owned by an account and the transfer history of an asset. Browser clients and a Qt GUI (I used to be a big fan of Qt) were in progress; the TODO file shows a login form and a register-asset button that never quite shipped. The testnet deployment used a few generated accounts and a genesis block somewhere in the six-digit block numbers.## 3. What the design got rightTwo choices in DAWN now look like early statements of ideas that became standard. The first is that ownership is a chain of signed claims rather than state in a program. There is no smart contract holding the asset; the asset exists only as an append-only sequence of authorizations, and validity is defined by who signed, not by what code runs. This is, structurally, the same model as a git history or an append-only log with verifiable signatures, and it makes the entire ownership record independently auditable by replay. You could see it as the smart contract sitting outside of the network.The second is that the protocol does not require its own blockchain, its own token, or fees. It piggybacks on an existing public log, which keeps the cost of the whole system near zero. The corresponding weakness is equally clear in hindsight: Steem had no programmable asset state, so royalties, auctions, and composability, the things that later made ERC-721 an ecosystem rather than a format, had to be built application by application. A minimal ownership log is a foundation; it is not a marketplace.## 4. What happened nextThe project stalled, as weekend projects do, and then the ground moved underneath it. Steem was acquired in 2020 by a new owner whose community disagreed with the direction, the community forked the chain into Hive, and both Steem and Hive spent the following years at marginal relevance while the NFT conversation moved entirely to Ethereum and its rollups. The 2021 boom validated the core idea at enormous scale, and also demonstrated the failure modes of putting it on fee-paying, energy-intensive infrastructure: speculation first, utility a distant second, and an environmental cost that took the wind out of the movement’s sails.DAWN itself is now a curiosity, but a useful one. The pattern it implemented, minimal signed claims over a public append-only log with ownership defined by signature chains, is exactly the pattern I would find appealing in the hypercore framework, which I am now building Pharos on. Pharos is a peer-to-peer preprint archive where publication, versioning, and authorship are verifiable claims rather than state in someone’s database. The difference is the substrate: in 2018 the only affordable public log was a blockchain, whereas content-addressed p2p storage now provides the same integrity guarantees without the fee and energy overhead.The lesson I take from it is that the interesting part of these systems was never the token. It is the ability to make a claim, sign it, and have anyone verify the chain of custody years later without asking permission from whoever operates the infrastructure. That idea survived every hype cycle since 2018. It was simply waiting for better plumbing. Maybe there is something still in this idea, in the age of AI?</p>
+<p>While going through old repositories I found DAWN, short for Decentralized Asset Worldwide Network, a small project I built in April 2018 on the Steem blockchain. It is a minimal protocol for registering ownership of digital assets and transferring that ownership between accounts, which is to say it is an NFT protocol, written at a moment when the word had not yet been coined. Looking back at it now is instructive, both for what the design got right and for what the subsequent history of the ecosystem did to it.</p>
+<section id="a-bit-of-history" class="level2">
+<h2 class="anchored" data-anchor-id="a-bit-of-history">1. A bit of history</h2>
+<p>The timing matters. CryptoKitties had launched in late 2017 and briefly clogged the Ethereum network, demonstrating that provably scarce digital collectibles had an audience. The ERC-721 standard was finalized in January 2018, and everything that would later be called an NFT was, in early 2018, still mostly confined to Ethereum experiments: CryptoPunks, a few trading card projects, and a long lineage reaching back to colored coins on Bitcoin and Counterparty’s Rare Pepes. The term non-fungible token did not enter common usage until late that year.</p>
+<p>Steem was an odd but rational choice of platform at the time. Transactions were free, funded through a bandwidth allowance rather than gas fees, blocks confirmed in three seconds, and the chain natively supported a generic <code>custom_json</code> operation that any application could define and any node could replay. Steem Monsters, later Splinterlands and one of the more durable blockchain games, used exactly this mechanism. DAWN was the same idea applied to general asset ownership rather than game cards: use the chain as a public append-only log of signed claims, and nothing else.</p>
+</section>
+<section id="the-protocol" class="level2">
+<h2 class="anchored" data-anchor-id="the-protocol">2. The protocol</h2>
+<p>The protocol had two operations, broadcast as custom JSON with the identifier <code>DAWN</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">[</span><span class="st">"register_asset"</span><span class="ot">,</span> <span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"permlink"</span><span class="fu">:</span> <span class="st">"author/title"</span><span class="fu">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"title"</span><span class="fu">:</span> <span class="st">"title"</span><span class="fu">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"author"</span><span class="fu">:</span> <span class="st">"author"</span><span class="fu">,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"owner"</span><span class="fu">:</span> <span class="st">"author"</span><span class="fu">,</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"data"</span><span class="fu">:</span> <span class="fu">{}</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span><span class="ot">]</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ot">[</span><span class="st">"transfer_asset"</span><span class="ot">,</span> <span class="fu">{</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"permlink"</span><span class="fu">:</span> <span class="st">"author/title"</span><span class="fu">,</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"new_owner"</span><span class="fu">:</span> <span class="st">"new_account"</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span><span class="ot">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The identifier of an asset was a Steem permlink, <code>author/title</code>, which was convenient because the chain already used that format for posts. Registration embedded arbitrary asset data alongside the ownership claim. Transfer named a new owner. The rules of validity were simple and did the real work: a registration was accepted only if the transaction was signed by the stated author, and a transfer only if signed by the current owner. Forgeries were therefore impossible by construction, and anyone could reconstruct the complete ownership history of any asset by replaying the chain from the genesis block and checking signatures.</p>
+<p>Around this protocol sat a replay engine in Python that mirrored the chain into a local SQLite database with tables for assets, transfers, and users, resuming from the last parsed block, and a Flask API exposing queries such as the assets owned by an account and the transfer history of an asset. Browser clients and a Qt GUI (I used to be a big fan of Qt) were in progress; the TODO file shows a login form and a register-asset button that never quite shipped. The testnet deployment used a few generated accounts and a genesis block somewhere in the six-digit block numbers.</p>
+</section>
+<section id="what-the-design-got-right" class="level2">
+<h2 class="anchored" data-anchor-id="what-the-design-got-right">3. What the design got right</h2>
+<p>Two choices in DAWN now look like early statements of ideas that became standard. The first is that ownership is a chain of signed claims rather than state in a program. There is no smart contract holding the asset; the asset exists only as an append-only sequence of authorizations, and validity is defined by who signed, not by what code runs. This is, structurally, the same model as a git history or an append-only log with verifiable signatures, and it makes the entire ownership record independently auditable by replay. You could see it as the smart contract sitting outside of the network.</p>
+<p>The second is that the protocol does not require its own blockchain, its own token, or fees. It piggybacks on an existing public log, which keeps the cost of the whole system near zero. The corresponding weakness is equally clear in hindsight: Steem had no programmable asset state, so royalties, auctions, and composability, the things that later made ERC-721 an ecosystem rather than a format, had to be built application by application. A minimal ownership log is a foundation; it is not a marketplace.</p>
+</section>
+<section id="what-happened-next" class="level2">
+<h2 class="anchored" data-anchor-id="what-happened-next">4. What happened next</h2>
+<p>The project stalled, as weekend projects do, and then the ground moved underneath it. Steem was acquired in 2020 by a new owner whose community disagreed with the direction, the community forked the chain into Hive, and both Steem and Hive spent the following years at marginal relevance while the NFT conversation moved entirely to Ethereum and its rollups. The 2021 boom validated the core idea at enormous scale, and also demonstrated the failure modes of putting it on fee-paying, energy-intensive infrastructure: speculation first, utility a distant second, and an environmental cost that took the wind out of the movement’s sails.</p>
+<p>DAWN itself is now a curiosity, but a useful one. The pattern it implemented, minimal signed claims over a public append-only log with ownership defined by signature chains, is exactly the pattern I would find appealing in the hypercore framework, which I am now building Pharos on. Pharos is a peer-to-peer preprint archive where publication, versioning, and authorship are verifiable claims rather than state in someone’s database. The difference is the substrate: in 2018 the only affordable public log was a blockchain, whereas content-addressed p2p storage now provides the same integrity guarantees without the fee and energy overhead.</p>
+<p>The lesson I take from it is that the interesting part of these systems was never the token. It is the ability to make a claim, sign it, and have anyone verify the chain of custody years later without asking permission from whoever operates the infrastructure. That idea survived every hype cycle since 2018. It was simply waiting for better plumbing. Maybe there is something still in this idea, in the age of AI?</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

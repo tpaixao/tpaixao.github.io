@@ -195,13 +195,6 @@ window.Quarto = {
 
 
 
-<style>
-/* Center the banner crop: Quarto's default background-position is top-left,
-   which shows only the top strip of a background image with `cover`. */
-#title-block-header.quarto-title-block .quarto-title-banner {
-  background-position: center;
-}
-</style>
 <p>Every high-throughput differential expression analysis ends the same way: a volcano plot, with the adjusted p-value on the y-axis and the fold change on the x-axis, and a vertical line at some fold-change cutoff deciding which genes are interesting. However, this fold-change cutoff is typically arbitrary; there is simply no reason why that value was chosen.</p>
 <p>The traditional volcano plot is honest about two things, statistical significance and effect size, but it is silent about the one quantity that determines how much either of them is worth in a typical experiment: statistical power. Running an underpowered experiment has two consequences:</p>
 <ol type="1">
