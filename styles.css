@@ -29,3 +29,7 @@ div.quarto-about-trestles .about-entity .about-link i.bi {
 div.quarto-about-trestles .about-entity .about-link span.about-link-text {
   display: none;
 }
+/* Jupyter-cell figures carry explicit width attributes (figsize x fig-dpi) and,
+   unlike markdown images, get no img-fluid class — clamp them to the column. */
+.quarto-figure img,
+.cell-output-display img { max-width: 100%; height: auto; }

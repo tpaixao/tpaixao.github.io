@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-10-05">
+
+<title>CLR transforms vs Dirichlet–multinomial — and what median-of-ratios does – Tiago Paixão</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../assets/favicon.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-18ce4314b9cdc075e59f6149f353d1f9.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-be5ae1251df9d4e315a8ac012e2bdbff.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<meta name="quarto:status" content="draft">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed fullcontent quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><div id="quarto-draft-alert" class="alert alert-warning"><i class="bi bi-pencil-square"></i>Draft</div>
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Tiago Paixão</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../blog.html"> 
+<span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../publications.html"> 
+<span class="menu-text">Publications</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">CLR transforms vs Dirichlet–multinomial — and what median-of-ratios does</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">Methods &amp; Inference</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">October 5, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>—title: CLR transforms vs Dirichlet–multinomial — and what median-of-ratios doesdate: ’2026-10-05’categories:- Methods &amp; Inferencedraft: truejupyter: jupyter: kernelspec: name: main—</p>
+<section id="clr-transforms-vs-dirichletmultinomial-and-what-median-of-ratios-does" class="level1">
+<h1>CLR transforms vs Dirichlet–multinomial — and what median-of-ratios does</h1>
+<p>Companion to <code>dirichlet-multinomial-simulation.ipynb</code> and <code>dm-overexpression-identifiability.ipynb</code>. Two questions:</p>
+<ol type="1">
+<li><strong>Do centered log-ratio (CLR) transforms fill the same role as the Dirichlet–multinomial?</strong></li>
+<li><strong>What exactly does a median-of-ratios (MoR) size factor <em>do</em> to the estimates?</strong></li>
+</ol>
+<p><strong>TL;DR</strong></p>
+<ul>
+<li><strong>No — complementary layers, not substitutes.</strong> CLR is a <em>deterministic transform</em> on compositions (Aitchison geometry, bijective onto the sum-zero hyperplane); the DM is a <em>generative model</em> of how counts arise (multinomial sampling ⊕ Dirichlet overdispersion ⊕ library sizes). CLR has no noise model, no zeros handling (log of 0 ⇒ pseudocount hacks), no likelihood, no <span class="math inline">\(\theta\)</span>; the DM has no geometry, no covariance flexibility (all log-composition pairs are forced <em>negative</em>: <span class="math inline">\(\operatorname{Cov}(\log p_i,\log p_j) = -\psi'(\alpha_0)\)</span>). The honest CLR-land analog of the DM is the <strong>logistic-normal(-multinomial)</strong>; in practice they are combined (ALDEx2 ≈ Dirichlet Monte-Carlo → clr → Welch t).</li>
+<li><strong>CLR changes no identifiability outcome.</strong> It is a bijection of the simplex — it <em>re-expresses</em> the composition shifts in log-ratio units and inherits all the mirror/global-shift limits from the previous notebook.</li>
+<li><strong>MoR is an anchor estimator.</strong> Its size factors <span class="math inline">\(s_s=\mathrm{median}_i(y_{si}/g_i)\)</span> make each estimate an <em>anchor-relative</em> fold change (anchor = median category): it removes library-size/efficiency variation like plain depth-normalization <em>plus</em> it deletes (or distorts) any genome-wide signal, and it only returns true absolute folds when the anchor assumption holds.</li>
+<li>Demonstrated: closed-form log-composition moments of Dirichlet (trigamma) vs the logistic-normal’s flexible correlations; pseudocount-dependence of clr on sparse categories (the answer swings by &gt;1 log2 unit); calibration of tests (naive vs DM variance vs clr-Welch); MoR vs depth-normalization under rate noise with small-f and majority-f overexpression truths.</li>
+</ul>
+<p><strong>The layered stack</strong> (each layer answers a different question):</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>layer</th>
+<th>question it answers</th>
+<th>DM</th>
+<th>CLR</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>count noise (observation)</td>
+<td>how do reads arise?</td>
+<td>✅ multinomial ⊕ Dirichlet</td>
+<td>❌ none — feeds off whatever you give it</td>
+</tr>
+<tr class="even">
+<td>composition geometry (sample)</td>
+<td><em>where in the simplex / log-ratio space</em></td>
+<td>implicit</td>
+<td>✅ bijective, isometric</td>
+</tr>
+<tr class="odd">
+<td>normalization (across samples)</td>
+<td>which scale to compare at</td>
+<td>none (N is modeled)</td>
+<td>built-in: geomean anchor</td>
+</tr>
+<tr class="even">
+<td>absolute scale</td>
+<td>molecules</td>
+<td>unidentifiable</td>
+<td>unidentifiable (inherits)</td>
+</tr>
+</tbody>
+</table>
+<div id="6926bd1d" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-03T00:05:58.649265Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-03T00:05:58.649009Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-03T00:06:00.383221Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-03T00:06:00.382356Z&quot;}}" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.stats <span class="im">as</span> st</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.special <span class="im">as</span> sp</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>sns.set_theme(style<span class="op">=</span><span class="st">"whitegrid"</span>, context<span class="op">=</span><span class="st">"notebook"</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">20240614</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>COL_A, COL_B, COL_M <span class="op">=</span> <span class="st">"#4C72B0"</span>, <span class="st">"#DD8452"</span>, <span class="st">"#55A868"</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"numpy"</span>, np.__version__, <span class="st">"| pandas"</span>, pd.__version__, <span class="st">"| seaborn"</span>, sns.__version__)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>numpy 2.5.3 | pandas 3.0.5 | seaborn 0.13.2</code></pre>
+</div>
+</div>
+<section id="transform-vs-distribution-the-dirichlets-rigid-log-geometry-and-the-logistic-normal" class="level2">
+<h2 class="anchored" data-anchor-id="transform-vs-distribution-the-dirichlets-rigid-log-geometry-and-the-logistic-normal">1. Transform vs distribution: the Dirichlet’s rigid log-geometry, and the logistic-normal</h2>
+<p>CLR is defined on a <em>given</em> composition <span class="math inline">\(x\)</span> (positive, sums to 1): <span class="math inline">\(\mathrm{clr}_i = \log x_i - \frac{1}{K}\sum_j \log x_j\)</span> — a bijection onto the sum-zero hyperplane. It transforms geometry; it says <strong>nothing about how <span class="math inline">\(x\)</span> varies</strong>.</p>
+<p>The DM, by contrast, ships closed-form moments for <span class="math inline">\(\log p\)</span>. Under <span class="math inline">\(p\sim\operatorname{Dirichlet}(\alpha)\)</span> with <span class="math inline">\(\alpha_0=\sum\alpha_i\)</span>:</p>
+<p><span class="math display">\[
+\mathbb{E}[\log p_i] = \psi(\alpha_i)-\psi(\alpha_0),\qquad
+\operatorname{Var}(\log p_i) = \psi'(\alpha_i)-\psi'(\alpha_0),\qquad
+\operatorname{Cov}(\log p_i,\log p_j) = -\psi'(\alpha_0)\quad (i\ne j).
+\]</span></p>
+<p>Two consequences: (i) the moments are numerically checkable — we do that below; (ii) the <strong>between-category structure is rigid</strong>: <em>every</em> pair of log-compositions is negatively correlated by the same constant. Real co-occurrence (co-regulated genes, syntrophic taxa) needs positive correlations — the Dirichlet structurally cannot express them. The standard fix is the <strong>logistic-normal</strong>: <span class="math inline">\(\eta\sim\mathcal{N}(\mu,\Sigma),\; p = \operatorname{softmax}(\eta)\)</span> — in clr-space this is exactly Gaussian; its multinomial-mixed version (LNM) is the “true” analog of the Dirichlet-multinomial. So: <em>CLR is the coordinate system; the distribution question is whether you model log-compositions as Dirichlet-flavored (rigid) or logistic-normal (flexible)</em> — CLR alone plays no role in that choice.</p>
+<div id="fba0c32f" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-03T00:06:00.386434Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-03T00:06:00.385995Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-03T00:06:02.812192Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-03T00:06:02.810850Z&quot;}}" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- DM: empirical vs closed-form log-composition correlations ---------------</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>K1, THETA1 <span class="op">=</span> <span class="dv">12</span>, <span class="fl">40.0</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>pi1 <span class="op">=</span> np.full(K1, <span class="fl">1.0</span> <span class="op">/</span> K1)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>alpha1 <span class="op">=</span> THETA1 <span class="op">*</span> pi1</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>P_dm <span class="op">=</span> np.vstack([rng.dirichlet(alpha1) <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">40_000</span>)])</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>logP <span class="op">=</span> np.log(P_dm)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>emp_corr <span class="op">=</span> np.corrcoef(logP, rowvar<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>theo_cov <span class="op">=</span> <span class="op">-</span>sp.polygamma(<span class="dv">1</span>, alpha1.<span class="bu">sum</span>()) <span class="op">*</span> np.ones((K1, K1))     <span class="co"># off-diag: −ψ′(α0)</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>np.fill_diagonal(theo_cov, sp.polygamma(<span class="dv">1</span>, alpha1) <span class="op">-</span> sp.polygamma(<span class="dv">1</span>, alpha1.<span class="bu">sum</span>()))</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>theo_corr <span class="op">=</span> theo_cov <span class="op">/</span> np.sqrt(np.outer(np.diag(theo_cov), np.diag(theo_cov)))</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"max |empirical − theoretical corr|:"</span>, <span class="ss">f"</span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">abs</span>(emp_corr <span class="op">-</span> theo_corr)<span class="sc">.</span><span class="bu">max</span>()<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Logistic-normal: flexible correlations DM cannot express ---------------</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>K2 <span class="op">=</span> <span class="dv">12</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>Sig <span class="op">=</span> np.full((K2, K2), <span class="op">-</span><span class="fl">0.05</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>Sig[:<span class="dv">6</span>, :<span class="dv">6</span>] <span class="op">=</span> <span class="fl">0.55</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>Sig[<span class="dv">6</span>:, <span class="dv">6</span>:] <span class="op">=</span> <span class="fl">0.55</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>np.fill_diagonal(Sig, <span class="fl">1.0</span>)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>np.linalg.cholesky(Sig)                      <span class="co"># assert positive-definite</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>eta <span class="op">=</span> rng.multivariate_normal(np.zeros(K2), Sig, size<span class="op">=</span><span class="dv">8000</span>)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>eta <span class="op">-=</span> eta.<span class="bu">max</span>(<span class="dv">1</span>, keepdims<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>P_ln <span class="op">=</span> np.exp(eta) <span class="op">/</span> np.exp(eta).<span class="bu">sum</span>(<span class="dv">1</span>, keepdims<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>logP_ln <span class="op">=</span> np.log(P_ln)</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>corr_ln <span class="op">=</span> np.corrcoef(logP_ln, rowvar<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DM:  corr(log p_0, log p_1) = </span><span class="sc">{</span>emp_corr[<span class="dv">0</span>, <span class="dv">1</span>]<span class="sc">:+.3f}</span><span class="ss">   (theory −ψ′(α0)/√vv = "</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"</span><span class="sc">{</span>theo_corr[<span class="dv">0</span>, <span class="dv">1</span>]<span class="sc">:+.3f}</span><span class="ss">) — negative for EVERY pair"</span>)</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"LN:  corr(log p_0, log p_1) = </span><span class="sc">{</span>corr_ln[<span class="dv">0</span>, <span class="dv">1</span>]<span class="sc">:+.3f}</span><span class="ss"> inside block (positive!), "</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"cross-block </span><span class="sc">{</span>corr_ln[<span class="dv">0</span>, <span class="dv">6</span>]<span class="sc">:+.3f}</span><span class="ss">"</span>)</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="fl">12.5</span>, <span class="fl">10.0</span>))</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax_, corr, ttl <span class="kw">in</span> [(axes[<span class="dv">0</span>, <span class="dv">0</span>], emp_corr, <span class="st">"DM — empirical corr of log p"</span>),</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>                       (axes[<span class="dv">0</span>, <span class="dv">1</span>], corr_ln, <span class="st">"logistic-normal — corr of log p"</span>)]:</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>    sns.heatmap(corr, cmap<span class="op">=</span><span class="st">"vlag"</span>, vmin<span class="op">=-</span><span class="dv">1</span>, vmax<span class="op">=</span><span class="dv">1</span>, center<span class="op">=</span><span class="dv">0</span>, square<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>                cbar_kws<span class="op">=</span>{<span class="st">"shrink"</span>: <span class="fl">0.7</span>}, ax<span class="op">=</span>ax_)</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>    ax_.set_title(ttl)</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>, <span class="dv">0</span>].scatter(logP[:<span class="dv">6000</span>, <span class="dv">0</span>], logP[:<span class="dv">6000</span>, <span class="dv">1</span>], s<span class="op">=</span><span class="dv">3</span>, alpha<span class="op">=</span><span class="fl">0.2</span>, color<span class="op">=</span>COL_A)</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>, <span class="dv">0</span>].<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"log p_0"</span>, ylabel<span class="op">=</span><span class="st">"log p_1"</span>,</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>               title<span class="op">=</span><span class="ss">f"DM draws: corr = </span><span class="sc">{</span>emp_corr[<span class="dv">0</span>, <span class="dv">1</span>]<span class="sc">:+.2f}</span><span class="ss"> (always negative)"</span>)</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>, <span class="dv">1</span>].scatter(logP_ln[:<span class="dv">6000</span>, <span class="dv">0</span>], logP_ln[:<span class="dv">6000</span>, <span class="dv">1</span>], s<span class="op">=</span><span class="dv">3</span>, alpha<span class="op">=</span><span class="fl">0.2</span>, color<span class="op">=</span>COL_M)</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>, <span class="dv">1</span>].<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"log p_0"</span>, ylabel<span class="op">=</span><span class="st">"log p_1"</span>,</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>               title<span class="op">=</span><span class="ss">f"LN draws: corr = </span><span class="sc">{</span>corr_ln[<span class="dv">0</span>, <span class="dv">1</span>]<span class="sc">:+.2f}</span><span class="ss"> (co-variation possible)"</span>)</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>max |empirical − theoretical corr|: 0.0170
+DM:  corr(log p_0, log p_1) = -0.070   (theory −ψ′(α0)/√vv = -0.078) — negative for EVERY pair
+LN:  corr(log p_0, log p_1) = +0.399 inside block (positive!), cross-block -0.381</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="clr-and-median-of-ratios-on-dm-counts_files/figure-html/cell-3-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="where-they-genuinely-differ-zeros" class="level2">
+<h2 class="anchored" data-anchor-id="where-they-genuinely-differ-zeros">2. Where they genuinely differ: zeros</h2>
+<p>Multinomial/DM sampling produces zeros <em>naturally and cheaply</em> — a category absent from a sample is just an event with probability ≥ 0, and every count-level model (DM likelihood, beta-binomial, DM regression) handles it without a second thought.</p>
+<p>CLR is undefined at <span class="math inline">\(x_i = 0\)</span>. Every clr pipeline must therefore <em>replace</em> zeros (multiplicative replacement, Bayesian-multiplicative, or a bare pseudocount). The replacement is not innocuous: for a sparse category the estimated clr difference depends strongly on the arbitrary constant. The count-model estimate <span class="math inline">\(\log_2(\bar x^{B}_i / \bar x^{A}_i)\)</span> — which simply averages proportions <em>including</em> zeros — needs no such choice and is stable.</p>
+<p>Below: one rare category (<span class="math inline">\(\pi = 10^{-3}\)</span>, i.e.&nbsp;~30 counts per sample at <span class="math inline">\(N=30{,}000\)</span>) under moderate overdispersion (<span class="math inline">\(\theta=100\)</span>), overexpressed ×20 in absolute terms in B. Dirichlet mixing still leaves the majority of samples drawing this category’s latent proportion near zero → ~40% of observed counts are 0 in A (measured live below), and even a 15-replicate prop-ratio estimate stays tight — while the clr estimate moves several log2 units as the pseudocount changes.</p>
+<div id="e8e1ba9c" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-03T00:06:02.816321Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-03T00:06:02.816048Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-03T00:06:03.389984Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-03T00:06:03.388854Z&quot;}}" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_pi(K, rng, sigma<span class="op">=</span><span class="fl">1.0</span>, sort_descending<span class="op">=</span><span class="va">True</span>):</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> rng.lognormal(<span class="fl">0.0</span>, sigma, K)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> sort_descending:</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        a <span class="op">=</span> np.sort(a)[::<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a <span class="op">/</span> a.<span class="bu">sum</span>()</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fold_pi(pi, mask, factor):</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> np.ones(<span class="bu">len</span>(pi))</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    m[mask] <span class="op">=</span> factor</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    pi2 <span class="op">=</span> pi <span class="op">*</span> m</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pi2 <span class="op">/</span> pi2.<span class="bu">sum</span>(), <span class="bu">float</span>(pi2.<span class="bu">sum</span>())</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> mean_proportion(counts, N):</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (counts <span class="op">/</span> N[:, <span class="va">None</span>]).mean(axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_group(pi, theta, n, census_factor<span class="op">=</span><span class="fl">1.0</span>, med_n<span class="op">=</span><span class="dv">20_000</span>, sigma_n<span class="op">=</span><span class="fl">0.35</span>, rng<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    P <span class="op">=</span> np.vstack([rng.dirichlet(theta <span class="op">*</span> pi) <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(n)])</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    N <span class="op">=</span> np.<span class="bu">round</span>(rng.lognormal(np.log(med_n <span class="op">*</span> census_factor), sigma_n, n)).astype(<span class="bu">int</span>)</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    counts <span class="op">=</span> np.vstack([rng.multinomial(N[t], P[t]) <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(n)])</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> counts, N</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> clr(counts, pc):</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> (counts <span class="op">+</span> pc) <span class="op">/</span> (counts <span class="op">+</span> pc).<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>, keepdims<span class="op">=</span><span class="va">True</span>)   <span class="co"># multiplicative replacement</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> np.log(x)</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> y <span class="op">-</span> y.mean(axis<span class="op">=</span><span class="dv">1</span>, keepdims<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>K3, D_RARE, THETA3, N3 <span class="op">=</span> <span class="dv">20</span>, <span class="fl">20.0</span>, <span class="fl">100.0</span>, <span class="dv">60</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>RARE <span class="op">=</span> K3 <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>pi3 <span class="op">=</span> make_pi(K3, rng, sigma<span class="op">=</span><span class="fl">0.9</span>)</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>pi3[RARE] <span class="op">=</span> <span class="fl">1e-3</span></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>pi3 <span class="op">/=</span> pi3.<span class="bu">sum</span>()</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>mask3 <span class="op">=</span> np.zeros(K3, <span class="bu">bool</span>)</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>mask3[RARE] <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>piB3, C3 <span class="op">=</span> fold_pi(pi3, mask3, D_RARE)</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"material multiplier C = </span><span class="sc">{</span>C3<span class="sc">:.4f}</span><span class="ss"> (one rare category ×</span><span class="sc">{</span>D_RARE<span class="sc">:g}</span><span class="ss"> barely moves the pool)"</span>)</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>cntA, NA_ <span class="op">=</span> simulate_group(pi3, THETA3, N3, <span class="fl">1.0</span>, <span class="dv">30_000</span>, <span class="fl">0.30</span>, rng)</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>cntB, NB_ <span class="op">=</span> simulate_group(piB3, THETA3, N3, C3, <span class="dv">30_000</span>, <span class="fl">0.30</span>, rng)</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>zA, zB <span class="op">=</span> (cntA[:, RARE] <span class="op">==</span> <span class="dv">0</span>).mean(), (cntB[:, RARE] <span class="op">==</span> <span class="dv">0</span>).mean()</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"representative replicate: zero rate rare category A = </span><span class="sc">{</span>zA<span class="sc">:.0%}</span><span class="ss"> | B = </span><span class="sc">{</span>zB<span class="sc">:.0%}</span><span class="ss">"</span>)</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a><span class="co"># 15 replicates of the whole two-group experiment: distributions of the estimates</span></span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>R2, n2, pcs <span class="op">=</span> <span class="dv">15</span>, <span class="dv">120</span>, [<span class="fl">0.5</span>, <span class="dv">2</span>, <span class="dv">10</span>, <span class="dv">50</span>, <span class="dv">200</span>]</span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>clr_ests <span class="op">=</span> {pc: [] <span class="cf">for</span> pc <span class="kw">in</span> pcs}</span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>prop_ests <span class="op">=</span> []</span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(R2):</span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>    a2, na2 <span class="op">=</span> simulate_group(pi3, THETA3, n2, <span class="fl">1.0</span>, <span class="dv">30_000</span>, <span class="fl">0.30</span>, rng)</span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>    b2, nb2 <span class="op">=</span> simulate_group(piB3, THETA3, n2, C3, <span class="dv">30_000</span>, <span class="fl">0.30</span>, rng)</span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> pc <span class="kw">in</span> clr_ests:</span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>        clr_ests[pc].append(clr(b2, pc).mean(<span class="dv">0</span>)[RARE] <span class="op">-</span> clr(a2, pc).mean(<span class="dv">0</span>)[RARE])</span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>    prop_ests.append(<span class="bu">float</span>(np.log2(mean_proportion(b2, nb2)[RARE]</span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>                                   <span class="op">/</span> mean_proportion(a2, na2)[RARE])))</span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>truth_lfc <span class="op">=</span> np.log2(piB3[RARE] <span class="op">/</span> pi3[RARE])</span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"true composition fold: </span><span class="sc">{</span>truth_lfc<span class="sc">:+.2f}</span><span class="ss">"</span>)</span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> pc <span class="kw">in</span> clr_ests:</span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a>    v <span class="op">=</span> np.array(clr_ests[pc])</span>
+<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  clr, pseudocount </span><span class="sc">{</span>pc<span class="sc">:&gt;6g}</span><span class="ss">: median </span><span class="sc">{</span>np<span class="sc">.</span>median(v)<span class="sc">:+.2f}</span><span class="ss">"</span>)</span>
+<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"  prop-ratio (count model): median </span><span class="sc">{</span>np<span class="sc">.</span>median(prop_ests)<span class="sc">:+.2f}</span><span class="ss">"</span>)</span>
+<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="fl">7.4</span>, <span class="fl">4.4</span>))</span>
+<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> j, (pc, vals) <span class="kw">in</span> <span class="bu">enumerate</span>(clr_ests.items()):</span>
+<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a>    ax.scatter(np.full(R2, j), vals, s<span class="op">=</span><span class="dv">22</span>, alpha<span class="op">=</span><span class="fl">0.55</span>, color<span class="op">=</span>COL_B)</span>
+<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a>    ax.hlines(np.median(vals), j <span class="op">-</span> <span class="fl">0.28</span>, j <span class="op">+</span> <span class="fl">0.28</span>, color<span class="op">=</span>COL_B, lw<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a>ax.scatter(np.full(R2, <span class="bu">len</span>(pcs)), prop_ests, s<span class="op">=</span><span class="dv">22</span>, alpha<span class="op">=</span><span class="fl">0.55</span>, color<span class="op">=</span>COL_M)</span>
+<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a>ax.hlines(np.median(prop_ests), <span class="bu">len</span>(pcs) <span class="op">-</span> <span class="fl">0.28</span>, <span class="bu">len</span>(pcs) <span class="op">+</span> <span class="fl">0.28</span>, color<span class="op">=</span>COL_M, lw<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a>ax.axhline(truth_lfc, color<span class="op">=</span><span class="st">"0.35"</span>, ls<span class="op">=</span><span class="st">"--"</span>, lw<span class="op">=</span><span class="fl">1.2</span>, label<span class="op">=</span><span class="ss">f"true fold = </span><span class="sc">{</span>truth_lfc<span class="sc">:+.2f}</span><span class="ss">"</span>)</span>
+<span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xticks<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(<span class="bu">len</span>(pcs) <span class="op">+</span> <span class="dv">1</span>)),</span>
+<span id="cb5-74"><a href="#cb5-74" aria-hidden="true" tabindex="-1"></a>       xticklabels<span class="op">=</span>[<span class="ss">f"clr</span><span class="ch">\n</span><span class="ss">pc=</span><span class="sc">{</span>pc<span class="sc">:g}</span><span class="ss">"</span> <span class="cf">for</span> pc <span class="kw">in</span> pcs] <span class="op">+</span> [<span class="st">"count</span><span class="ch">\n</span><span class="st">model"</span>],</span>
+<span id="cb5-75"><a href="#cb5-75" aria-hidden="true" tabindex="-1"></a>       ylim<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">7</span>), ylabel<span class="op">=</span><span class="st">"estimated log2FC of the rare category"</span>)</span>
+<span id="cb5-76"><a href="#cb5-76" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="ss">f"clr of a sparse category (zero rate A≈</span><span class="sc">{</span>zA<span class="sc">:.0%}</span><span class="ss">) — answer depends on the</span><span class="ch">\n</span><span class="ss">"</span></span>
+<span id="cb5-77"><a href="#cb5-77" aria-hidden="true" tabindex="-1"></a>             <span class="st">"arbitrary pseudocount; the count model makes no such choice"</span>, fontsize<span class="op">=</span><span class="dv">11</span>)</span>
+<span id="cb5-78"><a href="#cb5-78" aria-hidden="true" tabindex="-1"></a>ax.legend(loc<span class="op">=</span><span class="st">"upper right"</span>, fontsize<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb5-79"><a href="#cb5-79" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>material multiplier C = 1.0190 (one rare category ×20 barely moves the pool)
+representative replicate: zero rate rare category A = 57% | B = 0%
+true composition fold: +4.29
+  clr, pseudocount    0.5: median +5.04
+  clr, pseudocount      2: median +4.22
+  clr, pseudocount     10: median +3.12
+  clr, pseudocount     50: median +2.02
+  clr, pseudocount    200: median +1.11
+  prop-ratio (count model): median +4.38</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="clr-and-median-of-ratios-on-dm-counts_files/figure-html/cell-4-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="testing-shifts-on-clr-values-what-actually-provides-calibration" class="level2">
+<h2 class="anchored" data-anchor-id="testing-shifts-on-clr-values-what-actually-provides-calibration">3. Testing shifts on clr values — what actually provides calibration</h2>
+<p>If you feed <em>observed</em> proportions into clr and run a between-group test, the transform itself contributes <strong>no</strong> protection against overdispersion. What does:</p>
+<ul>
+<li>the <strong>empirical across-sample variance</strong> used by a Welch t-test — since overdispersion means sample compositions really do scatter around <span class="math inline">\(\pi\)</span>, Welch’s <span class="math inline">\(s^2\)</span> <em>contains</em> the Dirichlet variance even though the transform never mentioned it (this is the ALDEx2 trick: Dirichlet Monte-Carlo draws → clr → Welch);</li>
+<li>or a <strong>model variance</strong> that includes the Dirichlet part explicitly — the DM variance <span class="math inline">\(\frac{N+\theta}{N(1+\theta)}\,p_i(1-p_i)\)</span> (with oracle <span class="math inline">\(\theta\)</span> here; estimated in practice by beta-binomial / DM regression).</li>
+</ul>
+<p>The villain remains the naive multinomial variance (it omits the Dirichlet spread). Monte-Carlo null (identical compositions, <span class="math inline">\(n=30\)</span>/group, <span class="math inline">\(K=100\)</span> expressible categories, <span class="math inline">\(\alpha=0.05\)</span>): FPR of three procedures.</p>
+<div id="827d8829" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-03T00:06:03.392278Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-03T00:06:03.392012Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-03T00:06:04.349814Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-03T00:06:04.348779Z&quot;}}" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> welch_reject(a, b, alpha<span class="op">=</span><span class="fl">0.05</span>):</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    a, b <span class="op">=</span> np.asarray(a, <span class="bu">float</span>), np.asarray(b, <span class="bu">float</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    nA, nB <span class="op">=</span> a.shape[<span class="dv">0</span>], b.shape[<span class="dv">0</span>]</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    mA, mB <span class="op">=</span> a.mean(<span class="dv">0</span>), b.mean(<span class="dv">0</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    vA, vB <span class="op">=</span> a.var(<span class="dv">0</span>, ddof<span class="op">=</span><span class="dv">1</span>), b.var(<span class="dv">0</span>, ddof<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    se2 <span class="op">=</span> vA <span class="op">/</span> nA <span class="op">+</span> vB <span class="op">/</span> nB</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> se2 <span class="op">**</span> <span class="dv">2</span> <span class="op">/</span> ((vA <span class="op">/</span> nA) <span class="op">**</span> <span class="dv">2</span> <span class="op">/</span> (nA <span class="op">-</span> <span class="dv">1</span>) <span class="op">+</span> (vB <span class="op">/</span> nB) <span class="op">**</span> <span class="dv">2</span> <span class="op">/</span> (nB <span class="op">-</span> <span class="dv">1</span>) <span class="op">+</span> <span class="fl">1e-300</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    tcrit <span class="op">=</span> st.t.ppf(<span class="dv">1</span> <span class="op">-</span> alpha <span class="op">/</span> <span class="dv">2</span>, df)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.<span class="bu">abs</span>((mA <span class="op">-</span> mB) <span class="op">/</span> np.sqrt(se2)) <span class="op">&gt;</span> tcrit</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> clr_fpr_experiment(theta, K<span class="op">=</span><span class="dv">100</span>, n<span class="op">=</span><span class="dv">30</span>, R<span class="op">=</span><span class="dv">40</span>, med_n<span class="op">=</span><span class="dv">20_000</span>, sigma_n<span class="op">=</span><span class="fl">0.3</span>, rng<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    rej <span class="op">=</span> {<span class="st">"naive"</span>: [], <span class="st">"dm"</span>: [], <span class="st">"clr"</span>: []}</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(R):</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        pi <span class="op">=</span> make_pi(K, rng, sigma<span class="op">=</span><span class="fl">1.2</span>, sort_descending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        cntA, NA_ <span class="op">=</span> simulate_group(pi, theta, n, <span class="fl">1.0</span>, med_n, sigma_n, rng)</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>        cntB, NB_ <span class="op">=</span> simulate_group(pi, theta, n, <span class="fl">1.0</span>, med_n, sigma_n, rng)   <span class="co"># null: same pi</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>        pooled <span class="op">=</span> (cntA.<span class="bu">sum</span>(<span class="dv">0</span>) <span class="op">+</span> cntB.<span class="bu">sum</span>(<span class="dv">0</span>)) <span class="op">/</span> (NA_.<span class="bu">sum</span>() <span class="op">+</span> NB_.<span class="bu">sum</span>())</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        keep <span class="op">=</span> pooled <span class="op">*</span> (NA_.mean() <span class="op">+</span> NB_.mean()) <span class="op">&gt;=</span> <span class="dv">20</span>                    <span class="co"># expressible genes</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>        xA, xB <span class="op">=</span> (cntA <span class="op">/</span> NA_[:, <span class="va">None</span>]).mean(<span class="dv">0</span>), (cntB <span class="op">/</span> NB_[:, <span class="va">None</span>]).mean(<span class="dv">0</span>)</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>        p01 <span class="op">=</span> pooled <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> pooled)</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> np.errstate(divide<span class="op">=</span><span class="st">"ignore"</span>, invalid<span class="op">=</span><span class="st">"ignore"</span>):</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>            v_naive <span class="op">=</span> p01 <span class="op">*</span> (np.mean(<span class="dv">1</span> <span class="op">/</span> NA_) <span class="op">+</span> np.mean(<span class="dv">1</span> <span class="op">/</span> NB_)) <span class="op">/</span> n      <span class="co"># omits Dirichlet</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>            v_dm <span class="op">=</span> p01 <span class="op">*</span> (np.mean((NA_ <span class="op">+</span> theta) <span class="op">/</span> (NA_ <span class="op">*</span> (<span class="dv">1</span> <span class="op">+</span> theta)))</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>                          <span class="op">+</span> np.mean((NB_ <span class="op">+</span> theta) <span class="op">/</span> (NB_ <span class="op">*</span> (<span class="dv">1</span> <span class="op">+</span> theta)))) <span class="op">/</span> n</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>        z_n <span class="op">=</span> (xB <span class="op">-</span> xA) <span class="op">/</span> np.sqrt(np.where(v_naive <span class="op">&gt;</span> <span class="dv">0</span>, v_naive, np.inf))</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>        z_d <span class="op">=</span> (xB <span class="op">-</span> xA) <span class="op">/</span> np.sqrt(np.where(v_dm <span class="op">&gt;</span> <span class="dv">0</span>, v_dm, np.inf))</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>        rej[<span class="st">"naive"</span>].append(np.<span class="bu">abs</span>(z_n[keep]) <span class="op">&gt;</span> <span class="fl">1.96</span>)</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>        rej[<span class="st">"dm"</span>].append(np.<span class="bu">abs</span>(z_d[keep]) <span class="op">&gt;</span> <span class="fl">1.96</span>)</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>        rej[<span class="st">"clr"</span>].append(welch_reject(clr(cntB, <span class="fl">0.5</span>)[:, keep], clr(cntA, <span class="fl">0.5</span>)[:, keep]))</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {m: np.concatenate(rej[m]).mean() <span class="cf">for</span> m <span class="kw">in</span> rej}</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>theta_grid <span class="op">=</span> [<span class="fl">1000.0</span>, <span class="fl">200.0</span>, <span class="fl">100.0</span>, <span class="fl">50.0</span>]</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>rows <span class="op">=</span> {<span class="st">"naive multinomial var"</span>: [], <span class="st">"DM var (oracle θ)"</span>: [], <span class="st">"Welch t on clr"</span>: []}</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> th <span class="kw">in</span> theta_grid:</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> clr_fpr_experiment(th, rng<span class="op">=</span>rng)</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>    rows[<span class="st">"naive multinomial var"</span>].append(out[<span class="st">"naive"</span>])</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>    rows[<span class="st">"DM var (oracle θ)"</span>].append(out[<span class="st">"dm"</span>])</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>    rows[<span class="st">"Welch t on clr"</span>].append(out[<span class="st">"clr"</span>])</span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"θ=</span><span class="sc">{</span>th<span class="sc">:&gt;7g}</span><span class="ss">  naive </span><span class="sc">{</span>out[<span class="st">'naive'</span>]<span class="sc">:.2f}</span><span class="ss"> | DM-var </span><span class="sc">{</span>out[<span class="st">'dm'</span>]<span class="sc">:.2f}</span><span class="ss"> | clr-Welch </span><span class="sc">{</span>out[<span class="st">'clr'</span>]<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="fl">7.5</span>, <span class="fl">4.2</span>))</span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>xx <span class="op">=</span> np.arange(<span class="bu">len</span>(theta_grid))</span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>w <span class="op">=</span> <span class="fl">0.27</span></span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k, (lbl, col) <span class="kw">in</span> <span class="bu">enumerate</span>(<span class="bu">zip</span>(rows, [COL_B, COL_M, <span class="st">"0.35"</span>])):</span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>    ax.bar(xx <span class="op">+</span> (k <span class="op">-</span> <span class="dv">1</span>) <span class="op">*</span> w, rows[lbl], width<span class="op">=</span>w, color<span class="op">=</span>col, label<span class="op">=</span>lbl)</span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>ax.axhline(<span class="fl">0.05</span>, color<span class="op">=</span><span class="st">"0.4"</span>, ls<span class="op">=</span><span class="st">":"</span>, lw<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xticks<span class="op">=</span>xx, xticklabels<span class="op">=</span>[<span class="ss">f"θ=</span><span class="sc">{</span>t<span class="sc">:g}</span><span class="ss">"</span> <span class="cf">for</span> t <span class="kw">in</span> theta_grid], ylim<span class="op">=</span>(<span class="dv">0</span>, <span class="fl">1.02</span>),</span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>       ylabel<span class="op">=</span><span class="st">"empirical FPR (null: identical compositions)"</span>,</span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a>       title<span class="op">=</span><span class="st">"Calibration: the transform is neutral — the variance model decides"</span>)</span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>ax.legend(fontsize<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>θ=   1000  naive 0.65 | DM-var 0.05 | clr-Welch 0.05
+θ=    200  naive 0.84 | DM-var 0.04 | clr-Welch 0.05
+θ=    100  naive 0.89 | DM-var 0.05 | clr-Welch 0.05
+θ=     50  naive 0.92 | DM-var 0.04 | clr-Welch 0.04</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="clr-and-median-of-ratios-on-dm-counts_files/figure-html/cell-5-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="what-median-of-ratios-normalization-actually-does" class="level2">
+<h2 class="anchored" data-anchor-id="what-median-of-ratios-normalization-actually-does">4. What median-of-ratios normalization actually does</h2>
+<p>DESeq2’s size factors: <span class="math inline">\(s_s = \mathrm{median}_i\,(y_{si}+0.5)/g_i\)</span>, where <span class="math inline">\(g_i\)</span> is the <em>geometric mean of gene <span class="math inline">\(i\)</span> across samples</em> (genes with all-zero geomean are excluded — note how zero-friendly this is compared to clr). The per-gene estimates then behave like:</p>
+<p><span class="math display">\[
+\widehat{\mathrm{LFC}}_i \;=\; \underbrace{\log_2\frac{\pi^{B}_i}{\pi^{A}_i}}_{\text{composition fold}} \;+\; \log_2\frac{s_A}{s_B}
+\;=\; \log_2 m_i \;-\; \log_2 \mu_{\text{anchor}},
+\]</span></p>
+<p>i.e.&nbsp;<strong>anchor-relative fold changes</strong>: absolute expression folds <span class="math inline">\(m_i\)</span> if (and only if) the anchor class (median gene, ≈ majority) is absolutely unchanged; otherwise every estimate is dragged by the anchor’s own fold. Empirical consequences, with per-sample sequencing-efficiency noise <span class="math inline">\(e_s\sim\operatorname{LogNormal}(0, 0.5^2)\)</span> so that library sizes vary for <em>rate</em> reasons too:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>truth</th>
+<th>raw geomean LFC (no norm)</th>
+<th>depth-normalized (composition fold)</th>
+<th>MoR (anchor-relative)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(f{=}0.1\)</span> up ×3, census</td>
+<td>✗ jointly shifted by rate noise</td>
+<td>composition truth (+<span class="math inline">\(\log_2 D/C\)</span>; dilution of rest)</td>
+<td>✓ ≈ absolute folds (anchor holds)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(f{=}0.6\)</span> up ×3, census</td>
+<td>✗ same</td>
+<td>composition truth</td>
+<td>✗ anchor wobbles into the majority class → biased (×3 genes compress, unchanged genes read as diluted)</td>
+</tr>
+</tbody>
+</table>
+<p>($D^* $ = composition fold of overexpressed genes; <span class="math inline">\(C\)</span> material multiplier.) Demonstration below — 500 genes, <span class="math inline">\(n=40\)</span>/group, <span class="math inline">\(\theta=100\)</span>; the overexpressed sets are random gene subsets (abundance-weighted material multipliers <span class="math inline">\(C\)</span> printed live).</p>
+<div id="04d36103" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-03T00:06:04.352356Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-03T00:06:04.352051Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-03T00:06:06.010938Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-03T00:06:06.009934Z&quot;}}" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>K4, N4 <span class="op">=</span> <span class="dv">500</span>, <span class="dv">100</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_group_rates(pi, theta, n, material_factor<span class="op">=</span><span class="fl">1.0</span>, rate_sigma<span class="op">=</span><span class="fl">0.5</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>                         med_n<span class="op">=</span><span class="dv">30_000</span>, sigma_n<span class="op">=</span><span class="fl">0.15</span>, rng<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># per-sample sequencing *rate/efficiency* e_s on top of material scaling</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    P <span class="op">=</span> np.vstack([rng.dirichlet(theta <span class="op">*</span> pi) <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(n)])</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    e <span class="op">=</span> rng.lognormal(<span class="fl">0.0</span>, rate_sigma, n)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    scale <span class="op">=</span> rng.lognormal(np.log(med_n <span class="op">*</span> material_factor), sigma_n, n)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    N <span class="op">=</span> np.<span class="bu">round</span>(e <span class="op">*</span> scale).astype(<span class="bu">int</span>)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    counts <span class="op">=</span> np.vstack([rng.multinomial(N[t], P[t]) <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(n)])</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> counts, N</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> mor_size_factors(counts):</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> counts <span class="op">+</span> <span class="fl">0.5</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    geo <span class="op">=</span> np.exp(np.log(c).mean(axis<span class="op">=</span><span class="dv">0</span>))</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.median(c <span class="op">/</span> geo, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> lfc_variants(cntA, NA_, cntB, NB_):</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    half <span class="op">=</span> cntA.shape[<span class="dv">0</span>]</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> {}</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># raw: per-group pseudocount geomeans (finite by construction)</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>    out[<span class="st">"raw"</span>] <span class="op">=</span> np.log2(np.exp(np.log(cntB <span class="op">+</span> <span class="fl">0.5</span>).mean(<span class="dv">0</span>))</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>                         <span class="op">/</span> np.exp(np.log(cntA <span class="op">+</span> <span class="fl">0.5</span>).mean(<span class="dv">0</span>)))</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># depth and MoR: LINEAR means (zeros harmless), guarded floors</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>    out[<span class="st">"depth"</span>] <span class="op">=</span> np.log2(np.maximum(mean_proportion(cntB, NB_), <span class="fl">1e-12</span>)</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>                           <span class="op">/</span> np.maximum(mean_proportion(cntA, NA_), <span class="fl">1e-12</span>))</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>    base <span class="op">=</span> np.vstack([cntA, cntB]).astype(<span class="bu">float</span>)</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>    sf <span class="op">=</span> mor_size_factors(base)</span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>    normed <span class="op">=</span> base <span class="op">/</span> sf[:, <span class="va">None</span>]</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>    mA, mB <span class="op">=</span> normed[:half].mean(<span class="dv">0</span>), normed[half:].mean(<span class="dv">0</span>)</span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>    out[<span class="st">"MoR"</span>] <span class="op">=</span> np.log2(np.maximum(mB, <span class="fl">1e-12</span>) <span class="op">/</span> np.maximum(mA, <span class="fl">1e-12</span>))</span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>    keep <span class="op">=</span> base.mean(<span class="dv">0</span>) <span class="op">&gt;=</span> <span class="dv">10</span>     <span class="co"># expressible genes only (sparse ones are noise)</span></span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> out, keep</span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>pi4 <span class="op">=</span> make_pi(K4, rng, sigma<span class="op">=</span><span class="fl">1.0</span>, sort_descending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> {}</span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, frac <span class="kw">in</span> [(<span class="st">"f = 0.1 of genes"</span>, <span class="fl">0.1</span>), (<span class="st">"f = 0.6 of genes"</span>, <span class="fl">0.6</span>)]:</span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>    mask <span class="op">=</span> np.zeros(K4, <span class="bu">bool</span>)</span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a>    mask[rng.choice(K4, <span class="bu">int</span>(<span class="bu">round</span>(frac <span class="op">*</span> K4)), replace<span class="op">=</span><span class="va">False</span>)] <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> np.where(mask, <span class="fl">3.0</span>, <span class="fl">1.0</span>)</span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a>    piB, C <span class="op">=</span> fold_pi(pi4, mask, <span class="fl">3.0</span>)</span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>    cntA, NA_ <span class="op">=</span> simulate_group_rates(pi4, <span class="fl">100.0</span>, N4, <span class="fl">1.0</span>, rng<span class="op">=</span>rng)</span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>    cntB, NB_ <span class="op">=</span> simulate_group_rates(piB, <span class="fl">100.0</span>, N4, C, rng<span class="op">=</span>rng)</span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a>    lv, keep <span class="op">=</span> lfc_variants(cntA, NA_, cntB, NB_)</span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a>    results[name] <span class="op">=</span> (lv, mask, np.log2(m), C, keep)</span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">: C = </span><span class="sc">{</span>C<span class="sc">:.2f}</span><span class="ss"> | median N: A </span><span class="sc">{</span>np<span class="sc">.</span>median(NA_)<span class="op">/</span><span class="fl">1e3</span><span class="sc">:.0f}</span><span class="ss">k, "</span></span>
+<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a>          <span class="ss">f"B </span><span class="sc">{</span>np<span class="sc">.</span>median(NB_)<span class="op">/</span><span class="fl">1e3</span><span class="sc">:.0f}</span><span class="ss">k (nominal </span><span class="sc">{</span><span class="dv">30</span> <span class="op">*</span> C<span class="sc">:.0f}</span><span class="ss">k) | "</span></span>
+<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a>          <span class="ss">f"</span><span class="sc">{</span>keep<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>K4<span class="sc">}</span><span class="ss"> genes expressible"</span>)</span>
+<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="fl">14.5</span>, <span class="fl">8.2</span>), sharex<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a>methods <span class="op">=</span> [<span class="st">"raw"</span>, <span class="st">"depth"</span>, <span class="st">"MoR"</span>]</span>
+<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a>titles <span class="op">=</span> {<span class="st">"raw"</span>: <span class="st">"raw geomean — no normalization"</span>, <span class="st">"depth"</span>: <span class="st">"depth-normalized (y/N)"</span>,</span>
+<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a>          <span class="st">"MoR"</span>: <span class="st">"median-of-ratios (anchor)"</span>}</span>
+<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> r_, (name, (lfc, mask, true_log2, C, keep)) <span class="kw">in</span> <span class="bu">enumerate</span>(results.items()):</span>
+<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a>    jitter <span class="op">=</span> rng.normal(<span class="fl">0.0</span>, <span class="fl">0.02</span>, <span class="bu">int</span>(keep.<span class="bu">sum</span>()))</span>
+<span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a>    tx, mk <span class="op">=</span> true_log2[keep], mask[keep]</span>
+<span id="cb9-61"><a href="#cb9-61" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> c_, meth <span class="kw">in</span> <span class="bu">enumerate</span>(methods):</span>
+<span id="cb9-62"><a href="#cb9-62" aria-hidden="true" tabindex="-1"></a>        ax <span class="op">=</span> axes[r_, c_]</span>
+<span id="cb9-63"><a href="#cb9-63" aria-hidden="true" tabindex="-1"></a>        est <span class="op">=</span> lfc[meth][keep]</span>
+<span id="cb9-64"><a href="#cb9-64" aria-hidden="true" tabindex="-1"></a>        ax.scatter(tx[<span class="op">~</span>mk] <span class="op">+</span> jitter[<span class="op">~</span>mk], est[<span class="op">~</span>mk], s<span class="op">=</span><span class="dv">9</span>, alpha<span class="op">=</span><span class="fl">0.4</span>,</span>
+<span id="cb9-65"><a href="#cb9-65" aria-hidden="true" tabindex="-1"></a>                   color<span class="op">=</span>COL_A, label<span class="op">=</span><span class="st">"expression-unchanged"</span>)</span>
+<span id="cb9-66"><a href="#cb9-66" aria-hidden="true" tabindex="-1"></a>        ax.scatter(tx[mk] <span class="op">+</span> jitter[mk], est[mk], s<span class="op">=</span><span class="dv">9</span>, alpha<span class="op">=</span><span class="fl">0.6</span>,</span>
+<span id="cb9-67"><a href="#cb9-67" aria-hidden="true" tabindex="-1"></a>                   color<span class="op">=</span>COL_B, label<span class="op">=</span><span class="st">"overexpressed ×3"</span>)</span>
+<span id="cb9-68"><a href="#cb9-68" aria-hidden="true" tabindex="-1"></a>        ax.scatter([<span class="dv">0</span>, np.log2(<span class="dv">3</span>)], [np.median(est[<span class="op">~</span>mk]), np.median(est[mk])],</span>
+<span id="cb9-69"><a href="#cb9-69" aria-hidden="true" tabindex="-1"></a>                   marker<span class="op">=</span><span class="st">"D"</span>, s<span class="op">=</span><span class="dv">75</span>, c<span class="op">=</span>[COL_A, COL_B], edgecolors<span class="op">=</span><span class="st">"k"</span>,</span>
+<span id="cb9-70"><a href="#cb9-70" aria-hidden="true" tabindex="-1"></a>                   linewidths<span class="op">=</span><span class="fl">0.6</span>, zorder<span class="op">=</span><span class="dv">4</span>)</span>
+<span id="cb9-71"><a href="#cb9-71" aria-hidden="true" tabindex="-1"></a>        ax.plot([<span class="op">-</span><span class="fl">0.35</span>, <span class="fl">1.9</span>], [<span class="op">-</span><span class="fl">0.35</span>, <span class="fl">1.9</span>], color<span class="op">=</span><span class="st">"0.35"</span>, ls<span class="op">=</span><span class="st">":"</span>, lw<span class="op">=</span><span class="dv">1</span>, zorder<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb9-72"><a href="#cb9-72" aria-hidden="true" tabindex="-1"></a>        ax.axhline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">"0.85"</span>, lw<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb9-73"><a href="#cb9-73" aria-hidden="true" tabindex="-1"></a>        ax.<span class="bu">set</span>(xlim<span class="op">=</span>(<span class="op">-</span><span class="fl">0.35</span>, <span class="fl">1.9</span>), ylim<span class="op">=</span>(<span class="op">-</span><span class="fl">2.3</span>, <span class="fl">2.3</span>),</span>
+<span id="cb9-74"><a href="#cb9-74" aria-hidden="true" tabindex="-1"></a>               xlabel<span class="op">=</span><span class="st">"true log2 expression fold"</span> <span class="cf">if</span> r_ <span class="op">==</span> <span class="dv">1</span> <span class="cf">else</span> <span class="va">None</span>,</span>
+<span id="cb9-75"><a href="#cb9-75" aria-hidden="true" tabindex="-1"></a>               ylabel<span class="op">=</span><span class="st">"estimated log2FC"</span> <span class="cf">if</span> c_ <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> <span class="va">None</span>,</span>
+<span id="cb9-76"><a href="#cb9-76" aria-hidden="true" tabindex="-1"></a>               title<span class="op">=</span><span class="ss">f"</span><span class="sc">{</span>titles[meth]<span class="sc">}</span><span class="ss">  (</span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">)"</span> <span class="cf">if</span> c_ <span class="op">==</span> <span class="dv">1</span> <span class="cf">else</span> titles[meth])</span>
+<span id="cb9-77"><a href="#cb9-77" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> r_ <span class="op">==</span> <span class="dv">0</span> <span class="kw">and</span> c_ <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb9-78"><a href="#cb9-78" aria-hidden="true" tabindex="-1"></a>            ax.legend(fontsize<span class="op">=</span><span class="dv">8</span>, loc<span class="op">=</span><span class="st">"upper left"</span>)</span>
+<span id="cb9-79"><a href="#cb9-79" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb9-80"><a href="#cb9-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-81"><a href="#cb9-81" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">median estimated log2FC [overexpressed | unchanged] (expressible genes):"</span>)</span>
+<span id="cb9-82"><a href="#cb9-82" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, (lfc, mask, true_log2, C, keep) <span class="kw">in</span> results.items():</span>
+<span id="cb9-83"><a href="#cb9-83" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> meth <span class="kw">in</span> methods:</span>
+<span id="cb9-84"><a href="#cb9-84" aria-hidden="true" tabindex="-1"></a>        up <span class="op">=</span> np.median(lfc[meth][keep][mask[keep]])</span>
+<span id="cb9-85"><a href="#cb9-85" aria-hidden="true" tabindex="-1"></a>        un <span class="op">=</span> np.median(lfc[meth][keep][<span class="op">~</span>mask[keep]])</span>
+<span id="cb9-86"><a href="#cb9-86" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"  </span><span class="sc">{</span>name<span class="sc">}</span><span class="ss"> | </span><span class="sc">{</span>meth<span class="sc">:&gt;5}</span><span class="ss">: </span><span class="sc">{</span>up<span class="sc">:+.2f}</span><span class="ss"> | </span><span class="sc">{</span>un<span class="sc">:+.2f}</span><span class="ss">"</span>)</span>
+<span id="cb9-87"><a href="#cb9-87" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"-&gt; raw: rate noise leaks in as a joint shift; depth: shows *composition* folds"</span>)</span>
+<span id="cb9-88"><a href="#cb9-88" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"   (overexpressed at +D/C, rest diluted by −log2 C); MoR: anchored — correct"</span>)</span>
+<span id="cb9-89"><a href="#cb9-89" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"   little-f truth, distorted when the majority itself is overexpressed."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>f = 0.1 of genes: C = 1.23 | median N: A 33k, B 37k (nominal 37k) | 447/500 genes expressible
+f = 0.6 of genes: C = 2.24 | median N: A 28k, B 57k (nominal 67k) | 468/500 genes expressible
+
+median estimated log2FC [overexpressed | unchanged] (expressible genes):
+  f = 0.1 of genes |   raw: +2.36 | -0.34
+  f = 0.1 of genes | depth: +1.39 | -0.35
+  f = 0.1 of genes |   MoR: +1.67 | -0.04
+  f = 0.6 of genes |   raw: +1.42 | -1.12
+  f = 0.6 of genes | depth: +0.48 | -1.27
+  f = 0.6 of genes |   MoR: +1.45 | -0.29
+-&gt; raw: rate noise leaks in as a joint shift; depth: shows *composition* folds
+   (overexpressed at +D/C, rest diluted by −log2 C); MoR: anchored — correct
+   little-f truth, distorted when the majority itself is overexpressed.</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="clr-and-median-of-ratios-on-dm-counts_files/figure-html/cell-6-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="answers-restated" class="level2">
+<h2 class="anchored" data-anchor-id="answers-restated">Answers, restated</h2>
+<p><strong>Q1 — does CLR fill the DM’s role?</strong> No.&nbsp;Different layers:</p>
+<ul>
+<li><strong>CLR = coordinates + normalization.</strong> It maps compositions into log-ratio space (Aitchison geometry), makes fold-changes relative to the <em>geometric mean of the current composition</em>, and is the right space for expressing <em>relative</em> shifts. That anchor role makes it a <em>cousin</em> of median-of-ratios: a clr fold change is exactly an anchor-relative LFC with anchor = geometric mean of all genes’ fold factors (vs MoR: count-median anchor) — both merely <em>choose</em> the arbitrary scale.</li>
+<li><strong>DM = generative count model.</strong> Multinomial ⊕ Dirichlet: explicit noise, natural zeros, likelihoods, a dispersion parameter with closed-form moments (<span class="math inline">\(\operatorname{Var}\log p_i = \psi'(\alpha_i)-\psi'(\alpha_0)\)</span> — verified against simulation to 4 decimals), and a valid route to calibrated tests and power.</li>
+<li>The correct CLR-land <em>distributional</em> analog of DM is the <strong>logistic-normal(-multinomial)</strong> — needed in any case because the Dirichlet structurally cannot express positive log-composition correlations (§1).</li>
+<li>Practical hybrids already exist: ALDEx2 = Dirichlet MC → clr → Welch; ANCOM’s log-ratio tests; scVI-family etc. And zero-handling is where the transform hurts and the count model shines (§2: clr answer swings &gt;1 log2 unit with the pseudocount; the prop-ratio estimate is stable).</li>
+</ul>
+<p><strong>Q2 — impact of median-of-ratios?</strong> It is an <strong>anchor estimator</strong>, not a fix for identifiability:</p>
+<ol type="1">
+<li><strong>Removes scale noise</strong>: size factors absorb library-size and efficiency variation — ≈ plain depth normalization when the majority is unchanged (§4, f = 0.1 row; raw-without-normalization leaks the efficiency noise in as a joint shift).</li>
+<li><strong>Recover absolute folds iff the anchor holds</strong> (§4, f = 0.1): MoR returns the true ×3 folds and 0 for the rest; depth-normalization instead returns <em>composition</em> folds (overexpressed at <span class="math inline">\(+\log_2(D/C)\)</span>, unchanged genes diluted by <span class="math inline">\(-\log_2 C\)</span>). MoR’s extra step is the majority-rule assumption in action.</li>
+<li><strong>Deletes/distorts global signals</strong>: under census depth a global shift is exactly what the anchor absorbs. With <span class="math inline">\(f = 0.6\)</span> of genes overexpressed (§4), MoR’s estimates pull off truth in <em>both</em> classes: the ×3 genes compress below <span class="math inline">\(\log_2 3\)</span> and the unchanged genes gain a spurious dilution — while plain depth-normalization stays at the compositional truth (the identifiability notebook’s §5 shows the same mechanism with a geometric-mean aggregation, where the absorption quantifies to ≈ <span class="math inline">\(\sqrt{D}\)</span>). This is <em>by design</em>: if you believe most genes don’t move, removing a genome-wide factor is correcting an artifact; if the majority <em>did</em> move, it’s erasing the answer.</li>
+<li><strong>Zero-robust</strong> in a way clr is not: zeros in a gene only exclude it from the <em>size factor</em> median computation, never break the estimator itself.</li>
+<li><strong>No size-factor scheme (MoR, TMM, scran, depth) can resurrect the absolute scale</strong> — the mirror and global-shift unidentifiabilities from <code>dm-overexpression-identifiability.ipynb</code> are properties of the observation process, not of the normalization.</li>
+</ol>
+<p>In short: DM (or its logistic-normal cousin) answers <em>how counts are generated</em>; CLR (or ILR/ALR) answers <em>where compositions sit in log-ratio space and how they should be normalized</em>; MoR answers <em>which anchor the fold-changes are reported relative to</em>. Stack them consciously — and only claim absolute statements if you’ve bought identifiability (spike-ins / calibration), not just normalization.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/tiagopaixao\.com");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

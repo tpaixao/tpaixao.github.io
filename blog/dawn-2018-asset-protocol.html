@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2026-09-05">
+<meta name="description" content="An early homebrew NFT protocol built on Steem, written before ERC-721 tooling existed. Notes on what it did, what it got right, and what happened to the ecosystem it depended on.">
 
-<title>Projects – Tiago Paixão</title>
+<title>DAWN: a blockchain asset protocol from 2018 – Tiago Paixão</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -29,25 +31,23 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<link href="./assets/favicon.png" rel="icon" type="image/png">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-2509606372cd5e8cdac7b219c213e0ff.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../assets/favicon.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-18ce4314b9cdc075e59f6149f353d1f9.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-be5ae1251df9d4e315a8ac012e2bdbff.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -75,77 +75,27 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
+<style>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-title','listing-author','listing-date','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description","listing-categories"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
+      .quarto-title-block .quarto-title-banner {
+        background-image: url(cover_images/cover_dawn_ledger.png);
+background-size: cover;
       }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
+</style>
+<meta name="quarto:status" content="draft">
 
-<link rel="stylesheet" href="styles.css">
+
+<link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="nav-fixed fullcontent quarto-light">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner"><div id="quarto-draft-alert" class="alert alert-warning"><i class="bi bi-pencil-square"></i>Draft</div>
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">Tiago Paixão</span>
     </a>
   </div>
@@ -156,19 +106,15 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./projects.html" aria-current="page"> 
-<span class="menu-text">Projects</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="./blog.html"> 
+    <a class="nav-link" href="../blog.html"> 
 <span class="menu-text">Blog</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./publications.html"> 
+    <a class="nav-link" href="../publications.html"> 
 <span class="menu-text">Publications</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
@@ -179,100 +125,52 @@ window.Quarto = {
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">DAWN: a blockchain asset protocol from 2018</h1>
+                  <div>
+        <div class="description">
+          An early homebrew NFT protocol built on Steem, written before ERC-721 tooling existed. Notes on what it did, what it got right, and what happened to the ecosystem it depended on.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">Decentralized Infrastructure</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">September 5, 2026</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(2)</span></div><div class="category" data-category="TWV0aG9kcyUyMCUyNiUyMEluZmVyZW5jZQ==">Methods &amp; Inference <span class="quarto-category-count">(2)</span></div></div></div>
+    
 <!-- main -->
-<main class="content" id="quarto-document-content">
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Projects</h1>
-</div>
-
-
-
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
-
-
-</header>
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
 
 
 
 
+<p>—title: ’DAWN: a blockchain asset protocol from 2018’description: An early homebrew NFT protocol built on Steem, written before ERC-721 tooling existed. Notes on what it did, what it got right, and what happened to the ecosystem it depended on.date: ’2026-09-05’categories:- Decentralized Infrastructuredraft: truecap-location: marginimage: cover_images/cover_dawn_ledger.pngtitle-block-banner: cover_images/cover_dawn_ledger.pngjupyter: kernelspec: display_name: Python 3 (main) language: python name: main—While going through old repositories I found DAWN, short for Decentralized Asset Worldwide Network, a small project I built in April 2018 on the Steem blockchain. It is a minimal protocol for registering ownership of digital assets and transferring that ownership between accounts, which is to say it is an NFT protocol, written at a moment when the word had not yet been coined. Looking back at it now is instructive, both for what the design got right and for what the subsequent history of the ecosystem did to it.## 1. The moment it was writtenThe timing matters. CryptoKitties had launched in late 2017 and briefly clogged the Ethereum network, demonstrating that provably scarce digital collectibles had an audience. The ERC-721 standard was finalized in January 2018, and everything that would later be called an NFT was, in early 2018, still mostly confined to Ethereum experiments: CryptoPunks, a few trading card projects, and a long lineage reaching back to colored coins on Bitcoin and Counterparty’s Rare Pepes. The term non-fungible token did not enter common usage until late that year.Steem was an odd but rational choice of platform at the time. Transactions were free, funded through a bandwidth allowance rather than gas fees, blocks confirmed in three seconds, and the chain natively supported a generic <code>custom_json</code> operation that any application could define and any node could replay. Steem Monsters, later Splinterlands and one of the more durable blockchain games, used exactly this mechanism. DAWN was the same idea applied to general asset ownership rather than game cards: use the chain as a public append-only log of signed claims, and nothing else.## 2. What the protocol didThe protocol had two operations, broadcast as custom JSON with the identifier <code>DAWN</code>:<code>json["register_asset", {    "permlink": "author/title",    "title": "title",    "author": "author",    "owner": "author",    "data": {}}]["transfer_asset", {    "permlink": "author/title",    "new_owner": "new_account"}]</code>The identifier of an asset was a Steem permlink, <code>author/title</code>, which was convenient because the chain already used that format for posts. Registration embedded arbitrary asset data alongside the ownership claim. Transfer named a new owner. The rules of validity were simple and did the real work: a registration was accepted only if the transaction was signed by the stated author, and a transfer only if signed by the current owner. Forgeries were therefore impossible by construction, and anyone could reconstruct the complete ownership history of any asset by replaying the chain from the genesis block and checking signatures.Around this protocol sat a replay engine in Python that mirrored the chain into a local SQLite database with tables for assets, transfers, and users, resuming from the last parsed block, and a Flask API exposing queries such as the assets owned by an account and the transfer history of an asset. Browser clients and a Qt GUI (I used to be a big fan of Qt) were in progress; the TODO file shows a login form and a register-asset button that never quite shipped. The testnet deployment used a few generated accounts and a genesis block somewhere in the six-digit block numbers.## 3. What the design got rightTwo choices in DAWN now look like early statements of ideas that became standard. The first is that ownership is a chain of signed claims rather than state in a program. There is no smart contract holding the asset; the asset exists only as an append-only sequence of authorizations, and validity is defined by who signed, not by what code runs. This is, structurally, the same model as a git history or an append-only log with verifiable signatures, and it makes the entire ownership record independently auditable by replay. You could see it as the smart contract sitting outside of the network.The second is that the protocol does not require its own blockchain, its own token, or fees. It piggybacks on an existing public log, which keeps the cost of the whole system near zero. The corresponding weakness is equally clear in hindsight: Steem had no programmable asset state, so royalties, auctions, and composability, the things that later made ERC-721 an ecosystem rather than a format, had to be built application by application. A minimal ownership log is a foundation; it is not a marketplace.## 4. What happened nextThe project stalled, as weekend projects do, and then the ground moved underneath it. Steem was acquired in 2020 by a new owner whose community disagreed with the direction, the community forked the chain into Hive, and both Steem and Hive spent the following years at marginal relevance while the NFT conversation moved entirely to Ethereum and its rollups. The 2021 boom validated the core idea at enormous scale, and also demonstrated the failure modes of putting it on fee-paying, energy-intensive infrastructure: speculation first, utility a distant second, and an environmental cost that took the wind out of the movement’s sails.DAWN itself is now a curiosity, but a useful one. The pattern it implemented, minimal signed claims over a public append-only log with ownership defined by signature chains, is exactly the pattern I would find appealing in the hypercore framework, which I am now building Pharos on. Pharos is a peer-to-peer preprint archive where publication, versioning, and authorship are verifiable claims rather than state in someone’s database. The difference is the substrate: in 2018 the only affordable public log was a blockchain, whereas content-addressed p2p storage now provides the same integrity guarantees without the fee and energy overhead.The lesson I take from it is that the interesting part of these systems was never the token. It is the ability to make a claim, sign it, and have anyone verify the chain of custody years later without asking permission from whoever operates the infrastructure. That idea survived every hype cycle since 2018. It was simply waiting for better plumbing. Maybe there is something still in this idea, in the age of AI?</p>
 
-<div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
-<div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-categories="TWV0aG9kcyUyMCUyNiUyMEluZmVyZW5jZQ==" data-listing-date-sort="1609459200000" data-listing-file-modified-sort="1788561894046" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="335">
-<a href="./projects/Bayes_EvolveResequence.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./projects/cover_images/BayesEvolveResequence.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Estimating allelic trajectories from PooledSeq
-</h5>
-<div class="listing-categories">
 
-<div class="listing-category" onclick="window.quartoListingCategory('TWV0aG9kcyUyMCUyNiUyMEluZmVyZW5jZQ=='); return false;">Methods &amp; Inference</div>
 
-</div>
-<div class="card-text listing-description delink">
-<p>Using SDEs to estimate allelic trajectories and associated evolutionary parameters from PooledSeq</p>
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-
-</div>
-<div class="listing-date">
-Jan 1, 2021
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="1" data-categories="TWV0aG9kcyUyMCUyNiUyMEluZmVyZW5jZQ==" data-listing-date-sort="1590966000000" data-listing-file-modified-sort="1788561894050" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="332">
-<a href="./projects/serobayes.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img loading="lazy" src="./projects/cover_images/sero_bayes.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Evaluating the performance of COVID-19 rapid tests
-</h5>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('TWV0aG9kcyUyMCUyNiUyMEluZmVyZW5jZQ=='); return false;">Methods &amp; Inference</div>
-
-</div>
-<div class="card-text listing-description delink">
-<p>A Bayesian framework for diagnostic tests</p>
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-
-</div>
-<div class="listing-date">
-Jun 1, 2020
-</div>
-</div>
-</div>
-</div></a>
-</div>
-</div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

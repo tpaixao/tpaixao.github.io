@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://tiagopaixao.com/publications.html</loc>
-    <lastmod>2026-09-04T22:44:53.978Z</lastmod>
-  </url>
-  <url>
-    <loc>https://tiagopaixao.com/projects/serobayes.html</loc>
-    <lastmod>2026-09-04T22:44:54.050Z</lastmod>
-  </url>
-  <url>
-    <loc>https://tiagopaixao.com/projects/Bayes_EvolveResequence.html</loc>
-    <lastmod>2026-09-04T22:44:54.046Z</lastmod>
+    <loc>https://tiagopaixao.com/blog/Bayes_EvolveResequence.html</loc>
+    <lastmod>2026-10-09T23:00:42.919Z</lastmod>
   </url>
   <url>
     <loc>https://tiagopaixao.com/index.html</loc>
-    <lastmod>2026-09-04T22:44:54.046Z</lastmod>
-  </url>
-  <url>
-    <loc>https://tiagopaixao.com/about.html</loc>
-    <lastmod>2026-09-04T22:44:53.942Z</lastmod>
+    <lastmod>2026-10-09T23:00:43.152Z</lastmod>
   </url>
   <url>
     <loc>https://tiagopaixao.com/blog.html</loc>
-    <lastmod>2026-09-04T22:44:54.046Z</lastmod>
+    <lastmod>2026-10-09T23:00:42.919Z</lastmod>
+  </url>
+  <url>
+    <loc>https://tiagopaixao.com/about.html</loc>
+    <lastmod>2026-09-09T21:08:41.254Z</lastmod>
   </url>
   <url>
     <loc>https://tiagopaixao.com/cv.html</loc>
-    <lastmod>2026-09-04T22:44:53.978Z</lastmod>
+    <lastmod>2026-09-09T21:08:41.269Z</lastmod>
   </url>
   <url>
-    <loc>https://tiagopaixao.com/projects.html</loc>
-    <lastmod>2026-09-04T22:44:54.046Z</lastmod>
+    <loc>https://tiagopaixao.com/publications.html</loc>
+    <lastmod>2026-10-09T23:00:43.169Z</lastmod>
+  </url>
+  <url>
+    <loc>https://tiagopaixao.com/blog/power-aware-volcano-plots.html</loc>
+    <lastmod>2026-10-09T23:00:43.110Z</lastmod>
+  </url>
+  <url>
+    <loc>https://tiagopaixao.com/blog/serobayes.html</loc>
+    <lastmod>2026-10-09T23:00:43.111Z</lastmod>
   </url>
 </urlset>

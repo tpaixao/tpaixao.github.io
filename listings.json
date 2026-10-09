@@ -1,13 +1,10 @@
 [
   {
     "listing": "/blog.html",
-    "items": []
-  },
-  {
-    "listing": "/projects.html",
     "items": [
-      "/projects/Bayes_EvolveResequence.html",
-      "/projects/serobayes.html"
+      "/blog/serobayes.html",
+      "/blog/Bayes_EvolveResequence.html",
+      "/blog/power-aware-volcano-plots.html"
     ]
   }
 ]

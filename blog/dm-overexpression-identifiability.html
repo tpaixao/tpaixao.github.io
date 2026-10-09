@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-10-05">
+
+<title>Can we tell that “a fraction of genes is overexpressed”? – Tiago Paixão</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../assets/favicon.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-18ce4314b9cdc075e59f6149f353d1f9.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-be5ae1251df9d4e315a8ac012e2bdbff.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<meta name="quarto:status" content="draft">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed fullcontent quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><div id="quarto-draft-alert" class="alert alert-warning"><i class="bi bi-pencil-square"></i>Draft</div>
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Tiago Paixão</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../blog.html"> 
+<span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../publications.html"> 
+<span class="menu-text">Publications</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Can we tell that “a fraction of genes is overexpressed”?</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">Methods &amp; Inference</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">October 5, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>—title: Can we tell that “a fraction of genes is overexpressed”?date: ’2026-10-05’categories:- Methods &amp; Inferencedraft: truejupyter: jupyter: kernelspec: name: main—</p>
+<section id="can-we-tell-that-a-fraction-of-genes-is-overexpressed" class="level1">
+<h1>Can we tell that “a fraction of genes is overexpressed”?</h1>
+<p>Companion to <code>dirichlet-multinomial-simulation.ipynb</code>. Same setup — counts from a Dirichlet–multinomial with overdispersion <span class="math inline">\(\theta\)</span> and library sizes <span class="math inline">\(N_s\)</span> — but now the question is an <strong>identifiability</strong> one. Suppose condition B arises from a generative <em>absolute</em> process: some fraction <span class="math inline">\(f\)</span> of categories (genes/taxa) has its absolute abundance multiplied by <span class="math inline">\(D\)</span>. What can the observed counts <span class="math inline">\((y_s, N_s)\)</span> actually tell us?</p>
+<p><strong>TL;DR — three layers of identifiability</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>question</th>
+<th>answer from counts alone</th>
+<th>why</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Did <em>anything</em> shift in composition?</td>
+<td>✅ yes (with overdispersion-aware tests)</td>
+<td>compositions <span class="math inline">\(\pi_g\)</span> are identified by the data</td>
+</tr>
+<tr class="even">
+<td>Which categories shifted, by how much (composition units)?</td>
+<td>✅ yes</td>
+<td>same</td>
+</tr>
+<tr class="odd">
+<td>Is that shift due to <strong>absolute overexpression</strong> of those <span class="math inline">\(f\)</span> categories?</td>
+<td>❌ no</td>
+<td>the <strong>mirror</strong> scenario — <em>complement</em> ×<span class="math inline">\(1/D\)</span> — produces <strong>identical</strong> compositions</td>
+</tr>
+<tr class="even">
+<td>Can the <strong>total counts</strong> <span class="math inline">\(N\)</span> break the mirror tie?</td>
+<td>⚠️ only under the assumption <em>reads ∝ molecules</em></td>
+<td>otherwise an <span class="math inline">\(N\)</span> shift is indistinguishable from a sequencing-rate change</td>
+</tr>
+<tr class="odd">
+<td>Can we see a <strong>global</strong> ×<span class="math inline">\(c\)</span> overexpression of <em>everything</em>?</td>
+<td>⚠️ composition: no; <span class="math inline">\(N\)</span>: yes, but then indistinguishable from “no change + deeper sequencing”</td>
+<td>a global factor cancels in composition</td>
+</tr>
+<tr class="even">
+<td>Recover <strong>absolute</strong> fold changes?</td>
+<td>❌ not without an anchor</td>
+<td>spike-ins / housekeeping genes / majority rule — all <em>assumptions</em>, and each can fail</td>
+</tr>
+</tbody>
+</table>
+<p>Roadmap: §1 absolute-abundance model + mirror construction → §2 the mirror experiment → §3 the global-shift experiment → §4 what “detectable” costs (overdispersion &amp; false positives) → §5 anchors: what median-ratio normalization actually buys you.</p>
+<div id="d3767a9f" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-02T23:39:33.465175Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-02T23:39:33.464907Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-02T23:39:35.131315Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-02T23:39:35.130179Z&quot;}}" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.stats <span class="im">as</span> st</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>sns.set_theme(style<span class="op">=</span><span class="st">"whitegrid"</span>, context<span class="op">=</span><span class="st">"notebook"</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">20240614</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"numpy"</span>, np.__version__, <span class="st">"| pandas"</span>, pd.__version__, <span class="st">"| seaborn"</span>, sns.__version__)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>numpy 2.5.3 | pandas 3.0.5 | seaborn 0.13.2</code></pre>
+</div>
+</div>
+<section id="from-compositions-to-an-absolute-story-and-the-mirror-identity" class="level2">
+<h2 class="anchored" data-anchor-id="from-compositions-to-an-absolute-story-and-the-mirror-identity">1. From compositions to an absolute story — and the mirror identity</h2>
+<p>Give categories base absolute abundances <span class="math inline">\(a_i\)</span> (proportions <span class="math inline">\(\pi_i = a_i/\sum_j a_j\)</span>). Condition B multiplies a subset <span class="math inline">\(U\)</span> (a fraction <span class="math inline">\(f\)</span> of categories) by an overexpression factor <span class="math inline">\(D\)</span>:</p>
+<p><span class="math display">\[
+\pi^{B}_i \;=\; \frac{\pi_i\,D^{\mathbb{1}[i\in U]}}{C},
+\qquad C \;=\; \sum_i \pi_i\,D^{\mathbb{1}[i\in U]} \;=\; 1 + \mu\,(D-1),
+\]</span></p>
+<p>where <span class="math inline">\(C\)</span> is the <strong>material multiplier</strong> — the absolute pool of molecules grows by <span class="math inline">\(C\)</span> in B — and <span class="math inline">\(\mu = \sum_{i\in U}\pi_i\)</span> is the <strong>abundance-weighted</strong> mass of the overexpressed set. (Weighting matters: choosing the <em>most abundant</em> 20% of categories moves far more than 20% of the material.)</p>
+<p>The <strong>mirror</strong> scenario multiplies the <em>complement</em> by <span class="math inline">\(1/D\)</span> (material multiplier <span class="math inline">\((1-\mu) + \mu/D\)</span>). Renormalizing shows the two give <em>the same composition</em>:</p>
+<p><span class="math display">\[
+\frac{\pi_i/D}{(1-\mu) + \mu/D} \;=\; \frac{D\,\pi_i}{1 + \mu(D-1)} \qquad (i \in U).
+\]</span></p>
+<p>So “a fraction of genes overexpressed ×3” and “its complement underexpressed ×⅓” are <strong>observationally identical compositions</strong>. The only quantities that could separate them live outside the composition: the total-count distribution <span class="math inline">\(N_s\)</span> (and only if we treat <span class="math inline">\(N\)</span> as a census of molecules), or an external anchor (§5).</p>
+<p>I simulate with the DM sampler of the previous notebook (<span class="math inline">\(\theta=100\)</span>, mild overdispersion) under two depth regimes:</p>
+<ul>
+<li><strong>census</strong> — reads ∝ molecules: <span class="math inline">\(N_s \sim \operatorname{LogNormal}(\log(\bar N \cdot C_g), \sigma^2)\)</span>,</li>
+<li><strong>capped</strong> — the sequencer always reaches the same depth: same law with <span class="math inline">\(C_g = 1\)</span> for both groups.</li>
+</ul>
+<div id="ea6bdcf8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-02T23:39:35.134300Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-02T23:39:35.133898Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-02T23:39:35.149883Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-02T23:39:35.148854Z&quot;}}" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ------------------------------------------------------------- helpers ----</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>D_EX <span class="op">=</span> <span class="fl">3.0</span>            <span class="co"># overexpression factor</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>K0 <span class="op">=</span> <span class="dv">50</span>               <span class="co"># categories</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>N_SAMPLES0 <span class="op">=</span> <span class="dv">40</span>       <span class="co"># per group</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>MED_N0, SIGMA_N0 <span class="op">=</span> <span class="dv">20_000</span>, <span class="fl">0.35</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>THETA0 <span class="op">=</span> <span class="fl">100.0</span>        <span class="co"># Dirichlet concentration (mild overdispersion)</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>COL_A, COL_B, COL_M <span class="op">=</span> <span class="st">"#4C72B0"</span>, <span class="st">"#DD8452"</span>, <span class="st">"#55A868"</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_pi(K, rng, sigma<span class="op">=</span><span class="fl">1.2</span>, sort_descending<span class="op">=</span><span class="va">True</span>):</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># base absolute abundances ~ lognormal</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    a <span class="op">=</span> rng.lognormal(<span class="fl">0.0</span>, sigma, K)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> sort_descending:</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        a <span class="op">=</span> np.sort(a)[::<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a <span class="op">/</span> a.<span class="bu">sum</span>()</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fold_pi(pi, mask, factor):</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># multiply masked categories' absolute abundance by `factor`, renormalize</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># returns (composition, material multiplier)</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> np.ones(<span class="bu">len</span>(pi))</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    m[mask] <span class="op">=</span> factor</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    pi2 <span class="op">=</span> pi <span class="op">*</span> m</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pi2 <span class="op">/</span> pi2.<span class="bu">sum</span>(), <span class="bu">float</span>(pi2.<span class="bu">sum</span>())</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_group(pi, theta, n, census_factor<span class="op">=</span><span class="fl">1.0</span>, med_n<span class="op">=</span><span class="dv">20_000</span>, sigma_n<span class="op">=</span><span class="fl">0.35</span>, rng<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># census_factor scales the library-size law proportionally (census regime);</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># census_factor = 1 for both groups models a sequencer-capped, equal-depth design,</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># in which case N carries no information about absolute material</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    P <span class="op">=</span> np.vstack([rng.dirichlet(theta <span class="op">*</span> pi) <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(n)])</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    N <span class="op">=</span> np.<span class="bu">round</span>(rng.lognormal(np.log(med_n <span class="op">*</span> census_factor), sigma_n, n)).astype(<span class="bu">int</span>)</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    counts <span class="op">=</span> np.vstack([rng.multinomial(N[t], P[t]) <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(n)])</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> counts, N</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> mean_proportion(counts, N):</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (counts <span class="op">/</span> N[:, <span class="va">None</span>]).mean(axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> log2fc(mean_b, mean_a):</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.log2(mean_b <span class="op">/</span> mean_a)</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fc_replicates(pi_b, pi_a, census_b, R<span class="op">=</span><span class="dv">150</span>, n<span class="op">=</span><span class="dv">40</span>, theta<span class="op">=</span>THETA0, rng<span class="op">=</span><span class="va">None</span>, med_n_b<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>    <span class="co"># repeat the two-group experiment R times; returns per-gene log2FC of</span></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>    <span class="co"># mean observed proportions (B / A), one row per replicate.</span></span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>    <span class="co"># med_n_b overrides the library-size law of the B group (e.g. deeper sequencing)</span></span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>    med_b <span class="op">=</span> MED_N0 <span class="cf">if</span> med_n_b <span class="kw">is</span> <span class="va">None</span> <span class="cf">else</span> med_n_b</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> np.empty((R, <span class="bu">len</span>(pi_a)))</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> r <span class="kw">in</span> <span class="bu">range</span>(R):</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>        cnt_a, N_a <span class="op">=</span> simulate_group(pi_a, theta, n, <span class="fl">1.0</span>, MED_N0, SIGMA_N0, rng)</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>        cnt_b, N_b <span class="op">=</span> simulate_group(pi_b, theta, n, census_b, med_b, SIGMA_N0, rng)</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>        out[r] <span class="op">=</span> log2fc(mean_proportion(cnt_b, N_b), mean_proportion(cnt_a, N_a))</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> out</span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_band(ax, reps, col, label):</span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>    med <span class="op">=</span> np.median(reps, axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>    q1, q3 <span class="op">=</span> np.percentile(reps, [<span class="dv">25</span>, <span class="dv">75</span>], axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> np.arange(reps.shape[<span class="dv">1</span>])</span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>    ax.fill_between(x, q1, q3, color<span class="op">=</span>col, alpha<span class="op">=</span><span class="fl">0.22</span>, lw<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>    ax.plot(x, med, color<span class="op">=</span>col, lw<span class="op">=</span><span class="fl">1.8</span>, label<span class="op">=</span>label)</span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> N_sample(pi, census, n<span class="op">=</span><span class="dv">400</span>, med_n<span class="op">=</span>MED_N0):</span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>    _, N <span class="op">=</span> simulate_group(pi, THETA0, n, census, med_n, SIGMA_N0, rng)</span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> N</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="the-mirror-experiment-f-d-vs-1f-1d" class="level2">
+<h2 class="anchored" data-anchor-id="the-mirror-experiment-f-d-vs-1f-1d">2. The mirror experiment: f ×D vs (1−f) ×1/D</h2>
+<p>Two completely different <em>absolute</em> stories. Each replicate redraws 40 fresh samples per group; panels show the median per-gene log2FC with the interquartile band, and the library-size distributions from 400-sample draws.</p>
+<div id="fc5ad26a" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-02T23:39:35.152264Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-02T23:39:35.151966Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-02T23:39:36.804699Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-02T23:39:36.803283Z&quot;}}" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pi0 <span class="op">=</span> make_pi(K0, rng)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>f <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>n_up <span class="op">=</span> <span class="bu">int</span>(<span class="bu">round</span>(f <span class="op">*</span> K0))</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>UP <span class="op">=</span> np.arange(n_up)                       <span class="co"># overexpressed: the 10 most abundant categories</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>W <span class="op">=</span> <span class="op">~</span>np.isin(np.arange(K0), UP)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>piT1, C1 <span class="op">=</span> fold_pi(pi0, UP, D_EX)          <span class="co"># T1: 10 categories ×3       -&gt; material × C1</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>piT2, C2 <span class="op">=</span> fold_pi(pi0, W, <span class="fl">1.0</span> <span class="op">/</span> D_EX)     <span class="co"># T2 mirror: 40 categories ×1/3 -&gt; material × C2</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>mu <span class="op">=</span> <span class="bu">float</span>(pi0[UP].<span class="bu">sum</span>())</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"mass of overexpressed set: mu = </span><span class="sc">{</span>mu<span class="sc">:.3f}</span><span class="ss"> (f = </span><span class="sc">{</span>f<span class="sc">}</span><span class="ss"> of categories)"</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"material multiplier: T1 = </span><span class="sc">{</span>C1<span class="sc">:.4f}</span><span class="ss"> | mirror = </span><span class="sc">{</span>C2<span class="sc">:.4f}</span><span class="ss"> (ratio </span><span class="sc">{</span>C1 <span class="op">/</span> C2<span class="sc">:.2f}</span><span class="ss">)"</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"mirror identity: compositions of T1 and T2 identical -&gt;"</span>, np.allclose(piT1, piT2, atol<span class="op">=</span><span class="fl">1e-12</span>))</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Census regime -----------------------------------------------------------------</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>reps_T1 <span class="op">=</span> fc_replicates(piT1, pi0, C1, rng<span class="op">=</span>rng)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>reps_T2 <span class="op">=</span> fc_replicates(piT2, pi0, C2, rng<span class="op">=</span>rng)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>N_A_big, N_T1_big, N_T2_big <span class="op">=</span> N_sample(pi0, <span class="fl">1.0</span>), N_sample(piT1, C1), N_sample(piT2, C2)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>expected_up <span class="op">=</span> np.log2(D_EX <span class="op">/</span> C1)           <span class="co"># expected composition fold for overexpressed</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>expected_w <span class="op">=</span> <span class="op">-</span>np.log2(C1)                  <span class="co"># expected dilution elsewhere</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="fl">13.0</span>, <span class="fl">4.4</span>))</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> axes[<span class="dv">0</span>]</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>plot_band(ax, reps_T1, COL_B, <span class="st">"truth T1: 10 categories ×D=3"</span>)</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>plot_band(ax, reps_T2, COL_M, <span class="st">"truth T2: mirror (40 categories ×1/D)"</span>)</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>ax.axhline(expected_up, color<span class="op">=</span><span class="st">"k"</span>, ls<span class="op">=</span><span class="st">":"</span>, lw<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>ax.axhline(expected_w, color<span class="op">=</span><span class="st">"k"</span>, ls<span class="op">=</span><span class="st">":"</span>, lw<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>ax.text(K0 <span class="op">-</span> <span class="fl">0.5</span>, expected_up <span class="op">+</span> <span class="fl">0.08</span>, <span class="ss">f"×D categories: </span><span class="sc">{</span>expected_up<span class="sc">:+.2f}</span><span class="ss">"</span>, ha<span class="op">=</span><span class="st">"right"</span>, fontsize<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>ax.text(K0 <span class="op">-</span> <span class="fl">0.5</span>, expected_w <span class="op">-</span> <span class="fl">0.11</span>, <span class="ss">f"dilution: </span><span class="sc">{</span>expected_w<span class="sc">:+.2f}</span><span class="ss">"</span>, ha<span class="op">=</span><span class="st">"right"</span>, fontsize<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"category (sorted by abundance)"</span>, ylim<span class="op">=</span>(<span class="op">-</span><span class="fl">2.6</span>, <span class="fl">2.6</span>),</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>       ylabel<span class="op">=</span><span class="st">"observed log2 fold of proportion (B/A)"</span>,</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>       title<span class="op">=</span><span class="st">"Compositions: the two truths are indistinguishable"</span>)</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>ax.legend(loc<span class="op">=</span><span class="st">"upper right"</span>, fontsize<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> axes[<span class="dv">1</span>]</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> lbl, Ns, col <span class="kw">in</span> [(<span class="st">"group A"</span>, N_A_big, <span class="st">"0.5"</span>), (<span class="st">"B (f×D)"</span>, N_T1_big, COL_B),</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>                     (<span class="st">"B' (mirror)"</span>, N_T2_big, COL_M)]:</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>    sns.histplot(x<span class="op">=</span>Ns, bins<span class="op">=</span><span class="dv">40</span>, stat<span class="op">=</span><span class="st">"density"</span>, element<span class="op">=</span><span class="st">"step"</span>, fill<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>                 color<span class="op">=</span>col, label<span class="op">=</span>lbl, ax<span class="op">=</span>ax)</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>    ax.axvline(np.median(Ns), color<span class="op">=</span>col, ls<span class="op">=</span><span class="st">"--"</span>, lw<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"library size N"</span>, ylabel<span class="op">=</span><span class="st">"density"</span>, xlim<span class="op">=</span>(<span class="dv">0</span>, <span class="va">None</span>),</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>       title<span class="op">=</span><span class="st">"Census depth: N separates the truths (medians "</span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>             <span class="ss">f"</span><span class="sc">{</span>np<span class="sc">.</span>median(N_A_big)<span class="op">/</span><span class="fl">1e3</span><span class="sc">:.0f}</span><span class="ss">k / </span><span class="sc">{</span>np<span class="sc">.</span>median(N_T1_big)<span class="op">/</span><span class="fl">1e3</span><span class="sc">:.0f}</span><span class="ss">k / "</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>             <span class="ss">f"</span><span class="sc">{</span>np<span class="sc">.</span>median(N_T2_big)<span class="op">/</span><span class="fl">1e3</span><span class="sc">:.0f}</span><span class="ss">k)"</span>)</span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"CENSUS regime verdict: compositions identical; N differs by factor "</span></span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"</span><span class="sc">{</span>np<span class="sc">.</span>median(N_T1_big) <span class="op">/</span> np<span class="sc">.</span>median(N_T2_big)<span class="sc">:.1f}</span><span class="ss"> — separable, but ONLY because "</span></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>      <span class="st">"we chose to read N as molecules."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>mass of overexpressed set: mu = 0.533 (f = 0.2 of categories)
+material multiplier: T1 = 2.0650 | mirror = 0.6883 (ratio 3.00)
+mirror identity: compositions of T1 and T2 identical -&gt; True
+CENSUS regime verdict: compositions identical; N differs by factor 3.1 — separable, but ONLY because we chose to read N as molecules.</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dm-overexpression-identifiability_files/figure-html/cell-4-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="e4bc7fdf" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-02T23:39:36.807206Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-02T23:39:36.806964Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-02T23:39:38.665856Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-02T23:39:38.664834Z&quot;}}" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Capped-depth regime: the sequencer always reaches the same total count</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>reps_T1c <span class="op">=</span> fc_replicates(piT1, pi0, <span class="fl">1.0</span>, rng<span class="op">=</span>rng)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>reps_T2c <span class="op">=</span> fc_replicates(piT2, pi0, <span class="fl">1.0</span>, rng<span class="op">=</span>rng)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>reps_null <span class="op">=</span> fc_replicates(pi0, pi0, <span class="fl">1.0</span>, rng<span class="op">=</span>rng)          <span class="co"># truth: no change at all</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>N_B1c, N_B2c <span class="op">=</span> N_sample(piT1, <span class="fl">1.0</span>), N_sample(piT2, <span class="fl">1.0</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="fl">13.0</span>, <span class="fl">4.4</span>))</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> axes[<span class="dv">0</span>]</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>plot_band(ax, reps_T1c, COL_B, <span class="st">"truth T1: 10 ×D=3"</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>plot_band(ax, reps_T2c, COL_M, <span class="st">"truth T2: mirror ×1/D"</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>plot_band(ax, reps_null, <span class="st">"0.55"</span>, <span class="st">"truth: no change"</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>ax.axhline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">"0.4"</span>, ls<span class="op">=</span><span class="st">":"</span>, lw<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"category"</span>, ylim<span class="op">=</span>(<span class="op">-</span><span class="fl">2.6</span>, <span class="fl">2.6</span>),</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>       ylabel<span class="op">=</span><span class="st">"observed log2 fold of proportion (B/A)"</span>,</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>       title<span class="op">=</span><span class="st">"Capped depth: shift still detectable — its absolute story is not"</span>)</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> axes[<span class="dv">1</span>]</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> lbl, Ns, col <span class="kw">in</span> [(<span class="st">"group A"</span>, N_A_big, <span class="st">"0.5"</span>), (<span class="st">"B (f×D)"</span>, N_B1c, COL_B),</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>                     (<span class="st">"B' (mirror)"</span>, N_B2c, COL_M)]:</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    sns.histplot(x<span class="op">=</span>Ns, bins<span class="op">=</span><span class="dv">40</span>, stat<span class="op">=</span><span class="st">"density"</span>, element<span class="op">=</span><span class="st">"step"</span>, fill<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>                 color<span class="op">=</span>col, label<span class="op">=</span>lbl, ax<span class="op">=</span>ax)</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"library size N"</span>, ylabel<span class="op">=</span><span class="st">"density"</span>, xlim<span class="op">=</span>(<span class="dv">0</span>, <span class="va">None</span>),</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>       title<span class="op">=</span><span class="st">"Capped depth: identical N laws for every truth"</span>)</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>sep <span class="op">=</span> np.<span class="bu">abs</span>(np.median(reps_T1c, axis<span class="op">=</span><span class="dv">0</span>) <span class="op">-</span> np.median(reps_T2c, axis<span class="op">=</span><span class="dv">0</span>))[:<span class="dv">20</span>].<span class="bu">max</span>()</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"max |median log2FC difference| between the two truths "</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"(20 most abundant categories): </span><span class="sc">{</span>sep<span class="sc">:.3f}</span><span class="ss"> — pure sampling noise"</span>)</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"CAPPED regime verdict: '10 categories ×3', '40 categories ×1/3' — indistinguishable,"</span>)</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"both still distinguishable from 'no change' (their composition moved); direction (up vs down) is not."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>max |median log2FC difference| between the two truths (20 most abundant categories): 0.056 — pure sampling noise
+CAPPED regime verdict: '10 categories ×3', '40 categories ×1/3' — indistinguishable,
+both still distinguishable from 'no change' (their composition moved); direction (up vs down) is not.</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dm-overexpression-identifiability_files/figure-html/cell-5-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="the-global-shift-experiment-overexpression-of-everything" class="level2">
+<h2 class="anchored" data-anchor-id="the-global-shift-experiment-overexpression-of-everything">3. The global-shift experiment: overexpression of <em>everything</em></h2>
+<p>If condition B scales <strong>all</strong> categories by <span class="math inline">\(c=2\)</span>, the composition does not move — a uniform factor cancels in <span class="math inline">\(\pi\)</span>. Three stories:</p>
+<ul>
+<li><strong>G1</strong> — global ×2 overexpression, census depth,</li>
+<li><strong>G2</strong> — <em>no</em> expression change, but a deeper sequencer (depth ×2),</li>
+<li><strong>G3</strong> — global ×2 overexpression, capped depth.</li>
+</ul>
+<div id="fd5fcebe" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-02T23:39:38.668212Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-02T23:39:38.667972Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-02T23:39:40.299040Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-02T23:39:40.297753Z&quot;}}" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>piG, CG <span class="op">=</span> fold_pi(pi0, np.ones(K0, dtype<span class="op">=</span><span class="bu">bool</span>), <span class="fl">2.0</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>reps_G1 <span class="op">=</span> fc_replicates(piG, pi0, CG, R<span class="op">=</span><span class="dv">120</span>, rng<span class="op">=</span>rng)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>reps_G2 <span class="op">=</span> fc_replicates(pi0, pi0, <span class="fl">1.0</span>, R<span class="op">=</span><span class="dv">120</span>, rng<span class="op">=</span>rng, med_n_b<span class="op">=</span>MED_N0 <span class="op">*</span> <span class="dv">2</span>)   <span class="co"># twice as deep</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>reps_G3 <span class="op">=</span> fc_replicates(piG, pi0, <span class="fl">1.0</span>, R<span class="op">=</span><span class="dv">120</span>, rng<span class="op">=</span>rng)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>N_G1, N_G2, N_G3 <span class="op">=</span> N_sample(piG, CG), N_sample(pi0, <span class="fl">1.0</span>, med_n<span class="op">=</span><span class="dv">40000</span>), N_sample(piG, <span class="fl">1.0</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="fl">13.0</span>, <span class="fl">4.4</span>))</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> axes[<span class="dv">0</span>]</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>plot_band(ax, reps_G1, COL_B, <span class="st">"G1: global ×2, census"</span>)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>plot_band(ax, reps_G3, COL_M, <span class="st">"G3: global ×2, capped"</span>)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>plot_band(ax, reps_G2, <span class="st">"0.55"</span>, <span class="st">"G2: no change, deeper seq"</span>)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>ax.axhline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">"0.4"</span>, ls<span class="op">=</span><span class="st">":"</span>, lw<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"category"</span>, ylim<span class="op">=</span>(<span class="op">-</span><span class="fl">2.6</span>, <span class="fl">2.6</span>),</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>       ylabel<span class="op">=</span><span class="st">"observed log2 fold of proportion (B/A)"</span>,</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>       title<span class="op">=</span><span class="st">"Compositions: every global story looks like 'nothing moved'"</span>)</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> axes[<span class="dv">1</span>]</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> lbl, Ns, col <span class="kw">in</span> [(<span class="st">"A"</span>, N_A_big, <span class="st">"0.5"</span>), (<span class="st">"G1"</span>, N_G1, COL_B),</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>                     (<span class="st">"G2"</span>, N_G2, COL_M), (<span class="st">"G3"</span>, N_G3, COL_M)]:</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    sns.histplot(x<span class="op">=</span>Ns, bins<span class="op">=</span><span class="dv">40</span>, stat<span class="op">=</span><span class="st">"density"</span>, element<span class="op">=</span><span class="st">"step"</span>, fill<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>                 color<span class="op">=</span>col, label<span class="op">=</span>lbl, ax<span class="op">=</span>ax)</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"library size N"</span>, ylabel<span class="op">=</span><span class="st">"density"</span>, xlim<span class="op">=</span>(<span class="dv">0</span>, <span class="va">None</span>),</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>       title<span class="op">=</span><span class="st">"N: G1 ≈ G2 (mechanism unidentifiable); G3 ≈ A"</span>)</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>mx <span class="op">=</span> <span class="bu">max</span>(np.<span class="bu">abs</span>(np.median(r, axis<span class="op">=</span><span class="dv">0</span>))[:<span class="dv">20</span>].<span class="bu">max</span>() <span class="cf">for</span> r <span class="kw">in</span> (reps_G1, reps_G2, reps_G3))</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"max |median log2FC| across the 20 most abundant categories and all truths: "</span></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"</span><span class="sc">{</span>mx<span class="sc">:.3f}</span><span class="ss"> (≈ 0 within noise)"</span>)</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"median N: A </span><span class="sc">{</span>np<span class="sc">.</span>median(N_A_big)<span class="op">/</span><span class="fl">1e3</span><span class="sc">:.0f}</span><span class="ss">k | G1 </span><span class="sc">{</span>np<span class="sc">.</span>median(N_G1)<span class="op">/</span><span class="fl">1e3</span><span class="sc">:.0f}</span><span class="ss">k "</span></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"| G2 </span><span class="sc">{</span>np<span class="sc">.</span>median(N_G2)<span class="op">/</span><span class="fl">1e3</span><span class="sc">:.0f}</span><span class="ss">k | G3 </span><span class="sc">{</span>np<span class="sc">.</span>median(N_G3)<span class="op">/</span><span class="fl">1e3</span><span class="sc">:.0f}</span><span class="ss">k"</span>)</span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"-&gt; global overexpression is invisible in composition, and N cannot say WHY it moved."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>max |median log2FC| across the 20 most abundant categories and all truths: 0.065 (≈ 0 within noise)
+median N: A 20k | G1 40k | G2 41k | G3 20k
+-&gt; global overexpression is invisible in composition, and N cannot say WHY it moved.</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dm-overexpression-identifiability_files/figure-html/cell-6-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="what-detectable-costs-overdispersion-and-false-positives" class="level2">
+<h2 class="anchored" data-anchor-id="what-detectable-costs-overdispersion-and-false-positives">4. What “detectable” costs: overdispersion and false positives</h2>
+<p>Even the <em>identifiable</em> part — enumerating which categories’ compositions shifted — requires variance that respects the Dirichlet overdispersion <span class="math inline">\(\theta\)</span>. The naive multinomial variance underestimates the true variance by the factor <span class="math inline">\(\frac{N+\theta}{1+\theta}\)</span> <span class="math inline">\(\;(\approx 400\)</span> with <span class="math inline">\(N=20{,}000\)</span>, <span class="math inline">\(\theta=50)\)</span>, so <em>every</em> category looks differentially abundant.</p>
+<p>Monte-Carlo null: two groups with <strong>identical</strong> compositions, <span class="math inline">\(n=30\)</span> per group, <span class="math inline">\(K=100\)</span> categories, lognormal depths, two-sided <span class="math inline">\(z\)</span> tests at <span class="math inline">\(\alpha = 0.05\)</span> on the difference of mean observed proportions — one with naive multinomial variance, one with the Dirichlet–multinomial variance (oracle <span class="math inline">\(\theta\)</span>; in practice <span class="math inline">\(\theta\)</span> is estimated, e.g.&nbsp;by beta-binomial or Dirichlet-multinomial regression).</p>
+<div id="3f41a45d" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-02T23:39:40.301269Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-02T23:39:40.301009Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-02T23:39:42.223406Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-02T23:39:42.222154Z&quot;}}" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> collect_z(theta, K<span class="op">=</span><span class="dv">100</span>, n<span class="op">=</span><span class="dv">30</span>, R<span class="op">=</span><span class="dv">60</span>, med_n<span class="op">=</span><span class="dv">20_000</span>, sigma_n<span class="op">=</span><span class="fl">0.3</span>, rng<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>              pi_fixed<span class="op">=</span><span class="va">None</span>, shift_mask<span class="op">=</span><span class="va">None</span>, shift_factor<span class="op">=</span><span class="fl">1.0</span>):</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># returns per-gene z-scores for (naive, DM) variance under repeated experiments;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># pass pi_fixed/shift_mask to simulate a known truth instead of the null</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> np.empty((R, K, <span class="dv">2</span>))</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> r <span class="kw">in</span> <span class="bu">range</span>(R):</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        pi <span class="op">=</span> pi_fixed <span class="cf">if</span> pi_fixed <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span> <span class="op">\</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span> make_pi(K, rng, sigma<span class="op">=</span><span class="fl">1.2</span>, sort_descending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>        piB <span class="op">=</span> pi <span class="cf">if</span> shift_mask <span class="kw">is</span> <span class="va">None</span> <span class="cf">else</span> fold_pi(pi, shift_mask, shift_factor)[<span class="dv">0</span>]</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>        cntA, NA_ <span class="op">=</span> simulate_group(pi, theta, n, <span class="fl">1.0</span>, med_n, sigma_n, rng)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>        cntB, NB_ <span class="op">=</span> simulate_group(piB, theta, n, <span class="fl">1.0</span>, med_n, sigma_n, rng)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>        pooled <span class="op">=</span> (cntA.<span class="bu">sum</span>(<span class="dv">0</span>) <span class="op">+</span> cntB.<span class="bu">sum</span>(<span class="dv">0</span>)) <span class="op">/</span> (NA_.<span class="bu">sum</span>() <span class="op">+</span> NB_.<span class="bu">sum</span>())</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>        p01 <span class="op">=</span> pooled <span class="op">*</span> (<span class="fl">1.0</span> <span class="op">-</span> pooled)</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> np.errstate(divide<span class="op">=</span><span class="st">"ignore"</span>, invalid<span class="op">=</span><span class="st">"ignore"</span>):</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>            v_naive <span class="op">=</span> p01 <span class="op">*</span> (np.mean(<span class="fl">1.0</span> <span class="op">/</span> NA_) <span class="op">+</span> np.mean(<span class="fl">1.0</span> <span class="op">/</span> NB_))</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>            v_dm <span class="op">=</span> p01 <span class="op">*</span> (np.mean((NA_ <span class="op">+</span> theta) <span class="op">/</span> (NA_ <span class="op">*</span> (<span class="fl">1.0</span> <span class="op">+</span> theta)))</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>                          <span class="op">+</span> np.mean((NB_ <span class="op">+</span> theta) <span class="op">/</span> (NB_ <span class="op">*</span> (<span class="fl">1.0</span> <span class="op">+</span> theta))))</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>        xA <span class="op">=</span> (cntA <span class="op">/</span> NA_[:, <span class="va">None</span>]).mean(<span class="dv">0</span>)</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>        xB <span class="op">=</span> (cntB <span class="op">/</span> NB_[:, <span class="va">None</span>]).mean(<span class="dv">0</span>)</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Var(x̄A − x̄B) = p(1−p) · [E_A(1/N) + E_B(1/N)] / n   (naive: multinomial)</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>        <span class="co">#                = p(1−p) · [E_A((N+θ)/(N(1+θ))) + E_B((N+θ)/(N(1+θ)))] / n   (DM)</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>        se <span class="op">=</span> <span class="fl">1.0</span> <span class="op">/</span> np.sqrt(n)</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>        den_naive <span class="op">=</span> np.where(v_naive <span class="op">&gt;</span> <span class="dv">0</span>, np.sqrt(v_naive), np.inf) <span class="op">*</span> se</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>        den_dm <span class="op">=</span> np.where(v_dm <span class="op">&gt;</span> <span class="dv">0</span>, np.sqrt(v_dm), np.inf) <span class="op">*</span> se</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>        z_naive <span class="op">=</span> (xB <span class="op">-</span> xA) <span class="op">/</span> den_naive</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>        z_dm <span class="op">=</span> (xB <span class="op">-</span> xA) <span class="op">/</span> den_dm</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>        out[r, :, <span class="dv">0</span>], out[r, :, <span class="dv">1</span>] <span class="op">=</span> z_naive, z_dm</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> out[..., <span class="dv">0</span>].ravel(), out[..., <span class="dv">1</span>].ravel()</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>theta_grid <span class="op">=</span> [<span class="fl">10_000.0</span>, <span class="fl">500.0</span>, <span class="fl">100.0</span>, <span class="fl">50.0</span>, <span class="fl">25.0</span>]</span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>fpr <span class="op">=</span> {m: [] <span class="cf">for</span> m <span class="kw">in</span> (<span class="st">"naive"</span>, <span class="st">"dm"</span>)}</span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> th <span class="kw">in</span> theta_grid:</span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>    z_naive, z_dm <span class="op">=</span> collect_z(th, rng<span class="op">=</span>rng)</span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>    fpr[<span class="st">"naive"</span>].append(<span class="bu">float</span>(np.mean(np.<span class="bu">abs</span>(z_naive) <span class="op">&gt;</span> <span class="fl">1.96</span>)))</span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>    fpr[<span class="st">"dm"</span>].append(<span class="bu">float</span>(np.mean(np.<span class="bu">abs</span>(z_dm) <span class="op">&gt;</span> <span class="fl">1.96</span>)))</span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>z_naive_50, z_dm_50 <span class="op">=</span> collect_z(<span class="fl">50.0</span>, R<span class="op">=</span><span class="dv">100</span>, rng<span class="op">=</span>rng)       <span class="co"># for the null z histogram</span></span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="fl">13.0</span>, <span class="fl">4.4</span>))</span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> axes[<span class="dv">0</span>]</span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>xx <span class="op">=</span> np.arange(<span class="bu">len</span>(theta_grid))</span>
+<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a>ax.bar(xx <span class="op">-</span> <span class="fl">0.18</span>, fpr[<span class="st">"naive"</span>], width<span class="op">=</span><span class="fl">0.36</span>, color<span class="op">=</span>COL_B, label<span class="op">=</span><span class="st">"naive multinomial var"</span>)</span>
+<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a>ax.bar(xx <span class="op">+</span> <span class="fl">0.18</span>, fpr[<span class="st">"dm"</span>], width<span class="op">=</span><span class="fl">0.36</span>, color<span class="op">=</span>COL_M, label<span class="op">=</span><span class="st">"Dirichlet-multinomial var"</span>)</span>
+<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a>ax.axhline(<span class="fl">0.05</span>, color<span class="op">=</span><span class="st">"0.4"</span>, ls<span class="op">=</span><span class="st">":"</span>, lw<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a>ax.text(<span class="fl">0.05</span>, <span class="fl">0.07</span>, <span class="st">"nominal α = 0.05"</span>, fontsize<span class="op">=</span><span class="dv">9</span>, color<span class="op">=</span><span class="st">"0.3"</span>)</span>
+<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xticks<span class="op">=</span>xx, xticklabels<span class="op">=</span>[<span class="ss">f"θ=</span><span class="sc">{</span>th<span class="sc">:g}</span><span class="ss">"</span> <span class="cf">for</span> th <span class="kw">in</span> theta_grid],</span>
+<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a>       ylim<span class="op">=</span>(<span class="dv">0</span>, <span class="fl">1.02</span>), ylabel<span class="op">=</span><span class="st">"empirical rejection rate under H0"</span>,</span>
+<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a>       title<span class="op">=</span><span class="st">"False positives without overdispersion-aware inference"</span>)</span>
+<span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-55"><a href="#cb10-55" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> axes[<span class="dv">1</span>]</span>
+<span id="cb10-56"><a href="#cb10-56" aria-hidden="true" tabindex="-1"></a>sns.ecdfplot(x<span class="op">=</span>np.<span class="bu">abs</span>(z_naive_50), color<span class="op">=</span>COL_B, label<span class="op">=</span><span class="st">"naive multinomial var"</span>, ax<span class="op">=</span>ax)</span>
+<span id="cb10-57"><a href="#cb10-57" aria-hidden="true" tabindex="-1"></a>sns.ecdfplot(x<span class="op">=</span>np.<span class="bu">abs</span>(z_dm_50), color<span class="op">=</span>COL_M, label<span class="op">=</span><span class="st">"Dirichlet-multinomial var"</span>, ax<span class="op">=</span>ax)</span>
+<span id="cb10-58"><a href="#cb10-58" aria-hidden="true" tabindex="-1"></a>ax.axvline(<span class="fl">1.96</span>, color<span class="op">=</span><span class="st">"0.3"</span>, ls<span class="op">=</span><span class="st">":"</span>, lw<span class="op">=</span><span class="fl">1.2</span>)</span>
+<span id="cb10-59"><a href="#cb10-59" aria-hidden="true" tabindex="-1"></a>ax.text(<span class="fl">2.2</span>, <span class="fl">0.45</span>, <span class="st">"reject when |z| &gt; 1.96"</span>, fontsize<span class="op">=</span><span class="dv">9</span>, color<span class="op">=</span><span class="st">"0.3"</span>, rotation<span class="op">=</span><span class="dv">90</span>)</span>
+<span id="cb10-60"><a href="#cb10-60" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"|z| under H0 (identical compositions, θ = 50)"</span>, xlim<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">60</span>),</span>
+<span id="cb10-61"><a href="#cb10-61" aria-hidden="true" tabindex="-1"></a>       ylabel<span class="op">=</span><span class="st">"empirical CDF"</span>,</span>
+<span id="cb10-62"><a href="#cb10-62" aria-hidden="true" tabindex="-1"></a>       title<span class="op">=</span><span class="st">"Null |z|: naive variance fires for ~92</span><span class="sc">% o</span><span class="st">f categories"</span>)</span>
+<span id="cb10-63"><a href="#cb10-63" aria-hidden="true" tabindex="-1"></a>ax.legend(loc<span class="op">=</span><span class="st">"center right"</span>, fontsize<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb10-64"><a href="#cb10-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-65"><a href="#cb10-65" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb10-66"><a href="#cb10-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-67"><a href="#cb10-67" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"FPR by theta (naive):"</span>, [<span class="ss">f"</span><span class="sc">{</span>v<span class="sc">:.2f}</span><span class="ss">"</span> <span class="cf">for</span> v <span class="kw">in</span> fpr[<span class="st">"naive"</span>]])</span>
+<span id="cb10-68"><a href="#cb10-68" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"FPR by theta (DM):   "</span>, [<span class="ss">f"</span><span class="sc">{</span>v<span class="sc">:.2f}</span><span class="ss">"</span> <span class="cf">for</span> v <span class="kw">in</span> fpr[<span class="st">"dm"</span>]])</span>
+<span id="cb10-69"><a href="#cb10-69" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"-&gt; with the DM variance the test is calibrated (≈5%), so the *set* of shifted"</span>)</span>
+<span id="cb10-70"><a href="#cb10-70" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"   categories can be enumerated; with the naive variance every gene 'shifts'."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>FPR by theta (naive): ['0.25', '0.75', '0.89', '0.92', '0.94']
+FPR by theta (DM):    ['0.05', '0.05', '0.04', '0.04', '0.03']
+-&gt; with the DM variance the test is calibrated (≈5%), so the *set* of shifted
+   categories can be enumerated; with the naive variance every gene 'shifts'.</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dm-overexpression-identifiability_files/figure-html/cell-7-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="anchors-what-normalization-actually-buys-and-when-it-breaks" class="level2">
+<h2 class="anchored" data-anchor-id="anchors-what-normalization-actually-buys-and-when-it-breaks">5. Anchors — what normalization actually buys (and when it breaks)</h2>
+<p>An <strong>anchor</strong> is a set of categories declared <em>unchanged</em> in absolute terms; all estimates become anchor-relative statements. Standard choices: external <strong>spike-ins</strong> (genuinely identify absolutes), <strong>housekeeping genes</strong>, or the <strong>majority rule</strong> — “most categories are unchanged” — which is what median-of-ratios (DESeq2) and TMM <em>assume</em>.</p>
+<p>Median-of-ratios size factors <span class="math inline">\(s_s = \mathrm{median}_i\,(y_{si}+0.5)/g_i\)</span>, with <span class="math inline">\(g_i\)</span> the geometric mean of gene <span class="math inline">\(i\)</span> across samples, pick the scale up from the <em>median</em> category:</p>
+<ul>
+<li>if <span class="math inline">\(f \ll 0.5\)</span>, the median category is unchanged and the estimates land back on the true absolute expression factors <span class="math inline">\(m_i\)</span> (overexpressed → <span class="math inline">\(D\)</span>, others → 1);</li>
+<li>if <span class="math inline">\(f \gtrsim 0.5\)</span>, the <em>median category is itself overexpressed</em>: the anchor absorbs part of the effect and <strong>every</strong> estimate is scaled down by it. Mechanistically, the per-gene ratio to the all-sample geometric mean gains a <span class="math inline">\(\sqrt{m_i}\)</span> for shifted genes (half the samples carry ×<span class="math inline">\(m_i\)</span>), so when the median gene is shifted the size factor inflates by ≈ <span class="math inline">\(\sqrt{D}\)</span> and estimates land at ≈ <span class="math inline">\(m_i/\sqrt{D}\)</span> — the overexpressed genes compress below their truth and the unchanged genes gain a spurious dilution.</li>
+</ul>
+<p>This is the mechanism behind <code>median-of-ratios-normalization-breaks.ipynb</code>, now in an explicit DM setting (census depth; low-expression genes with geometric mean &lt; 5 counts are excluded, as DESeq2-style pipelines do).</p>
+<div id="7cbf6c3f" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-02T23:39:42.225567Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-02T23:39:42.225306Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-02T23:39:42.915534Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-02T23:39:42.914425Z&quot;}}" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> median_ratio_size_factors(counts):</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># DESeq2-style size factors with the standard pseudocount</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    c <span class="op">=</span> counts <span class="op">+</span> <span class="fl">0.5</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    geo <span class="op">=</span> np.exp(np.log(c).mean(axis<span class="op">=</span><span class="dv">0</span>))</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.median(c <span class="op">/</span> geo, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> anchor_experiment(frac, D<span class="op">=</span><span class="fl">3.0</span>, theta<span class="op">=</span><span class="fl">100.0</span>, n<span class="op">=</span><span class="dv">30</span>, K<span class="op">=</span><span class="dv">200</span>, rng<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>                      med_n<span class="op">=</span><span class="dv">50_000</span>, sigma_ab<span class="op">=</span><span class="fl">1.0</span>):</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    pi <span class="op">=</span> make_pi(K, rng, sigma<span class="op">=</span>sigma_ab, sort_descending<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    mask <span class="op">=</span> np.zeros(K, dtype<span class="op">=</span><span class="bu">bool</span>)</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    mask[rng.choice(K, <span class="bu">int</span>(<span class="bu">round</span>(frac <span class="op">*</span> K)), replace<span class="op">=</span><span class="va">False</span>)] <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> np.where(mask, D, <span class="fl">1.0</span>)</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    C <span class="op">=</span> <span class="bu">float</span>((pi <span class="op">*</span> m).<span class="bu">sum</span>())</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    cntA, NA_ <span class="op">=</span> simulate_group(pi, theta, n, <span class="fl">1.0</span>, med_n, <span class="fl">0.35</span>, rng)</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    cntB, NB_ <span class="op">=</span> simulate_group(pi <span class="op">*</span> m <span class="op">/</span> C, theta, n, C, med_n, <span class="fl">0.35</span>, rng)</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    base <span class="op">=</span> np.vstack([cntA, cntB]).astype(<span class="bu">float</span>)</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>    g <span class="op">=</span> np.exp(np.log(np.clip(base, <span class="fl">1e-12</span>, <span class="va">None</span>)).mean(axis<span class="op">=</span><span class="dv">0</span>))  <span class="co"># ~geomean of raw counts</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    keep <span class="op">=</span> g <span class="op">&gt;=</span> <span class="fl">5.0</span>                                              <span class="co"># expressible genes only</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>    sf <span class="op">=</span> median_ratio_size_factors(base)</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>    normed <span class="op">=</span> base <span class="op">/</span> sf[:, <span class="va">None</span>]</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>    est <span class="op">=</span> np.log2(normed[n:].mean(<span class="dv">0</span>) <span class="op">/</span> normed[:n].mean(<span class="dv">0</span>))</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>    raw <span class="op">=</span> np.log2((cntB <span class="op">/</span> NB_[:, <span class="va">None</span>]).mean(<span class="dv">0</span>) <span class="op">/</span> (cntA <span class="op">/</span> NA_[:, <span class="va">None</span>]).mean(<span class="dv">0</span>))</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> raw, est, np.where(mask, np.log2(D), <span class="fl">0.0</span>), mask, C, keep</span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="fl">13.0</span>, <span class="fl">4.8</span>), sharey<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> {}</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, frac <span class="kw">in</span> <span class="bu">zip</span>(axes, [<span class="fl">0.2</span>, <span class="fl">0.6</span>]):</span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>    raw, est, true_log2, mask, C, keep <span class="op">=</span> anchor_experiment(frac, rng<span class="op">=</span>rng)</span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>    results[frac] <span class="op">=</span> (est, true_log2, mask, keep)</span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>    jitter <span class="op">=</span> rng.normal(<span class="fl">0.0</span>, <span class="fl">0.03</span>, keep.<span class="bu">sum</span>())</span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>    tx <span class="op">=</span> true_log2[keep]</span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>    ax.scatter(tx[<span class="op">~</span>mask[keep]] <span class="op">+</span> jitter[<span class="op">~</span>mask[keep]], raw[keep][<span class="op">~</span>mask[keep]], s<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>               alpha<span class="op">=</span><span class="fl">0.3</span>, facecolors<span class="op">=</span><span class="st">"none"</span>, edgecolors<span class="op">=</span>COL_A, label<span class="op">=</span><span class="st">"raw (composition fold)"</span>)</span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>    ax.scatter(tx[mask[keep]] <span class="op">+</span> jitter[mask[keep]], raw[keep][mask[keep]], s<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>               alpha<span class="op">=</span><span class="fl">0.3</span>, facecolors<span class="op">=</span><span class="st">"none"</span>, edgecolors<span class="op">=</span>COL_B)</span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>    ax.scatter(tx[<span class="op">~</span>mask[keep]] <span class="op">+</span> jitter[<span class="op">~</span>mask[keep]], est[keep][<span class="op">~</span>mask[keep]], s<span class="op">=</span><span class="dv">16</span>,</span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>               alpha<span class="op">=</span><span class="fl">0.8</span>, color<span class="op">=</span>COL_A, label<span class="op">=</span><span class="st">"after median-of-ratios"</span>)</span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>    ax.scatter(tx[mask[keep]] <span class="op">+</span> jitter[mask[keep]], est[keep][mask[keep]], s<span class="op">=</span><span class="dv">16</span>,</span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>               alpha<span class="op">=</span><span class="fl">0.8</span>, color<span class="op">=</span>COL_B)</span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>    lo, hi <span class="op">=</span> <span class="op">-</span><span class="fl">2.3</span>, <span class="fl">2.3</span></span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a>    ax.plot([lo, hi], [lo, hi], color<span class="op">=</span><span class="st">"0.35"</span>, ls<span class="op">=</span><span class="st">":"</span>, lw<span class="op">=</span><span class="dv">1</span>, zorder<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>    ax.axhline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">"0.8"</span>, lw<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>    ax.<span class="bu">set</span>(xlim<span class="op">=</span>(lo, hi), ylim<span class="op">=</span>(lo, hi), xlabel<span class="op">=</span><span class="st">"true log2 expression fold (absolute)"</span>,</span>
+<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>           ylabel<span class="op">=</span><span class="st">"estimated log2 fold"</span>,</span>
+<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a>           title<span class="op">=</span><span class="ss">f"f = </span><span class="sc">{</span>frac<span class="sc">:g}</span><span class="ss">: anchor = median category"</span></span>
+<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a>                 <span class="op">+</span> (<span class="st">"  -&gt; median gene IS shifted"</span> <span class="cf">if</span> frac <span class="op">&gt;</span> <span class="fl">0.5</span> <span class="cf">else</span> <span class="st">""</span>))</span>
+<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a>    ax.legend(loc<span class="op">=</span><span class="st">"upper left"</span>, fontsize<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> frac <span class="kw">in</span> [<span class="fl">0.2</span>, <span class="fl">0.6</span>]:</span>
+<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a>    est, true_log2, mask, keep <span class="op">=</span> results[frac]</span>
+<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a>    up <span class="op">=</span> mask <span class="op">&amp;</span> keep</span>
+<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a>    un <span class="op">=</span> (<span class="op">~</span>mask) <span class="op">&amp;</span> keep</span>
+<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"f = </span><span class="sc">{</span>frac<span class="sc">}</span><span class="ss">: (</span><span class="sc">{</span>keep<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span><span class="bu">len</span>(mask)<span class="sc">}</span><span class="ss"> genes expressible)"</span>)</span>
+<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"   overexpressed: median estimated </span><span class="sc">{</span>np<span class="sc">.</span>median(est[up])<span class="sc">:+.2f}</span><span class="ss"> "</span></span>
+<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a>          <span class="ss">f"(true </span><span class="sc">{</span>np<span class="sc">.</span>median(true_log2[up])<span class="sc">:+.2f}</span><span class="ss">)"</span></span>
+<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a>          <span class="ss">f"   |   unchanged: median estimated </span><span class="sc">{</span>np<span class="sc">.</span>median(est[un])<span class="sc">:+.2f}</span><span class="ss"> "</span></span>
+<span id="cb12-63"><a href="#cb12-63" aria-hidden="true" tabindex="-1"></a>          <span class="ss">f"(true </span><span class="sc">{</span>np<span class="sc">.</span>median(true_log2[un])<span class="sc">:.2f}</span><span class="ss">)"</span>)</span>
+<span id="cb12-64"><a href="#cb12-64" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"-&gt; f &lt; 0.5: estimates land close to the absolute truth (anchor holds)."</span>)</span>
+<span id="cb12-65"><a href="#cb12-65" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"-&gt; f &gt; 0.5: the anchor absorbs ~sqrt(D) and every estimate is biased downward;"</span>)</span>
+<span id="cb12-66"><a href="#cb12-66" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"   unchanged genes appear underexpressed, overexpressed genes shrink toward 0."</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>f = 0.2: (75/200 genes expressible)
+   overexpressed: median estimated +1.43 (true +1.58)   |   unchanged: median estimated -0.17 (true 0.00)
+f = 0.6: (91/200 genes expressible)
+   overexpressed: median estimated +0.72 (true +1.58)   |   unchanged: median estimated -0.94 (true 0.00)
+-&gt; f &lt; 0.5: estimates land close to the absolute truth (anchor holds).
+-&gt; f &gt; 0.5: the anchor absorbs ~sqrt(D) and every estimate is biased downward;
+   unchanged genes appear underexpressed, overexpressed genes shrink toward 0.</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="dm-overexpression-identifiability_files/figure-html/cell-8-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="distinguishability-matrix" class="level2">
+<h2 class="anchored" data-anchor-id="distinguishability-matrix">Distinguishability matrix</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>truth pair</th>
+<th>compositions</th>
+<th>library sizes</th>
+<th>separable by</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(f\)</span> categories ×<span class="math inline">\(D\)</span> vs complement ×<span class="math inline">\(1/D\)</span> (census)</td>
+<td>identical</td>
+<td>differ (×<span class="math inline">\(D\)</span> material ratio)</td>
+<td><span class="math inline">\(N\)</span> — <em>if</em> read as molecules</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(f\)</span> categories ×<span class="math inline">\(D\)</span> vs complement ×<span class="math inline">\(1/D\)</span> (capped)</td>
+<td>identical</td>
+<td>identical</td>
+<td>** nothing in the counts</td>
+</tr>
+<tr class="odd">
+<td>global ×<span class="math inline">\(c\)</span> vs no change + deeper sequencing (census)</td>
+<td>identical</td>
+<td>identical</td>
+<td>** nothing in the counts</td>
+</tr>
+<tr class="even">
+<td>global ×<span class="math inline">\(c\)</span> (capped) vs no change</td>
+<td>identical</td>
+<td>identical</td>
+<td>** nothing in the counts</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(f\)</span> categories shifted vs no shift</td>
+<td>differ</td>
+<td>—</td>
+<td>θ-aware tests (naive tests call <em>everything</em> shifted)</td>
+</tr>
+<tr class="even">
+<td>absolute interpretation (up vs down, or molecules)</td>
+<td>—</td>
+<td>—</td>
+<td>spike-ins, housekeeping sets, majority rule — each an assumption</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="conclusions" class="level2">
+<h2 class="anchored" data-anchor-id="conclusions">Conclusions</h2>
+<ol type="1">
+<li><strong>Composition is scale-free.</strong> DM data identify the per-group compositions <span class="math inline">\(\pi_g\)</span> (and overdispersion <span class="math inline">\(\theta\)</span>) — so <em>which</em> categories’ proportions shifted is recoverable, with θ-aware inference (§4: naive variance → ~100% false positives; DM variance → calibrated ≈5%).</li>
+<li><strong>“Overexpressed” is an absolute claim.</strong> The same composition shift is produced by overexpression of the shifted set <em>or</em> underexpression of its complement (mirror identity, §2). Without extra assumptions the absolute story is not in the data.</li>
+<li><strong><span class="math inline">\(N\)</span> is only a bridge under a census assumption.</strong> Reads ∝ molecules makes <span class="math inline">\(N\)</span> informative about material, which breaks the mirror tie (§2) — but a global scaling factor then looks exactly like deeper sequencing (§3), so even that bridge needs an external calibration to separate “material grew” from “sampling rate grew”.</li>
+<li><strong>Anchors make it identifiable — conditionally.</strong> Spike-ins identify absolutes; housekeeping/majority-rule anchors identify <em>anchor-relative</em> fold changes, and they break exactly when their assumption fails (§5; <code>median-of-ratios-normalization-breaks.ipynb</code>).</li>
+<li><strong>Practical upshot:</strong> to claim “a fraction of genes is overexpressed” from DM data, fix identifiability <em>by design</em> (spike-ins / controlled sampling) or state your anchor explicitly; estimate the shifted set with overdispersion-aware tests; and remember the result is a statement <em>relative to the anchor</em>, not about molecules.</li>
+</ol>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/tiagopaixao\.com");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

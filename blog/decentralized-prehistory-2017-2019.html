@@ -6,10 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2020-06-01">
-<meta name="description" content="A Bayesian framework for diagnostic tests">
+<meta name="dcterms.date" content="2026-09-05">
+<meta name="description" content="Three half-finished projects from 2017 to 2019, an Ethereum dApp, a Steem protocol experiment, and a dat-powered lab notebook, and what they taught me before I came back to the same ideas in 2026.">
 
-<title>Evaluating the performance of COVID-19 rapid tests – Tiago Paixão</title>
+<title>A personal prehistory of decentralized apps – Tiago Paixão</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -44,10 +44,10 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-18ce4314b9cdc075e59f6149f353d1f9.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-2509606372cd5e8cdac7b219c213e0ff.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-be5ae1251df9d4e315a8ac012e2bdbff.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -75,6 +75,7 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<meta name="quarto:status" content="draft">
 
 
 <link rel="stylesheet" href="../styles.css">
@@ -83,7 +84,7 @@ ul.task-list li input[type="checkbox"] {
 <body class="nav-fixed fullcontent quarto-light">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
+  <header id="quarto-header" class="headroom fixed-top"><div id="quarto-draft-alert" class="alert alert-warning"><i class="bi bi-pencil-square"></i>Draft</div>
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
@@ -97,10 +98,6 @@ ul.task-list li input[type="checkbox"] {
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
-  <li class="nav-item">
-    <a class="nav-link" href="../projects.html"> 
-<span class="menu-text">Projects</span></a>
-  </li>  
   <li class="nav-item">
     <a class="nav-link" href="../blog.html"> 
 <span class="menu-text">Blog</span></a>
@@ -130,15 +127,15 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Evaluating the performance of COVID-19 rapid tests</h1>
+<h1 class="title">A personal prehistory of decentralized apps</h1>
   <div class="quarto-categories">
-    <div class="quarto-category">Methods &amp; Inference</div>
+    <div class="quarto-category">Decentralized Infrastructure</div>
   </div>
   </div>
 
 <div>
   <div class="description">
-    A Bayesian framework for diagnostic tests
+    Three half-finished projects from 2017 to 2019, an Ethereum dApp, a Steem protocol experiment, and a dat-powered lab notebook, and what they taught me before I came back to the same ideas in 2026.
   </div>
 </div>
 
@@ -149,7 +146,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">June 1, 2020</p>
+      <p class="date">September 5, 2026</p>
     </div>
   </div>
   
@@ -161,61 +158,9 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Note that in the early days of the 2020 pandemic there was a lot of uncertainty regarding the effectiveness of the rapid tests. This was an attempt at quantifying the performance of the different tests present in the market.</p>
-</div>
-</div>
-<section id="abstract" class="level2">
-<h2 class="anchored" data-anchor-id="abstract">Abstract</h2>
-<p>We present a Bayesian hierarchical model to infer true prevalence from observed test results while estimating test‑specific false‑positive and false‑negative rates. The approach accommodates multiple diagnostic tests and provides uncertainty quantification for all parameters.</p>
-</section>
-<section id="introduction" class="level2">
-<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>During the early phase of the COVID‑19 pandemic, rapid serological tests were deployed at scale, but their performance characteristics were poorly understood. Accurate estimation of true prevalence is essential for interpreting serosurveys and informing public‑health decisions.</p>
-</section>
-<section id="methods" class="level2">
-<h2 class="anchored" data-anchor-id="methods">Methods</h2>
-<section id="statistical-model" class="level3">
-<h3 class="anchored" data-anchor-id="statistical-model">Statistical model</h3>
-<p>Let (p_{}) be the observed proportion of positive tests in a population of size (N). The relationship between the observed frequency and the underlying prevalence (p_{}) is</p>
-<p>[ p_{} = p_{} (1 - p_{}) + (1 - p_{}) p_{}, ]</p>
-<p>where (p_{}) and (p_{}) denote false‑negative and false‑positive rates, respectively. We place weakly informative priors on (p_{}), (p_{}), and (p_{}) and sample the joint posterior using Hamiltonian Monte‑Carlo (NUTS) within a PyMC model.</p>
-</section>
-<section id="extension-to-multiple-tests" class="level3">
-<h3 class="anchored" data-anchor-id="extension-to-multiple-tests">Extension to multiple tests</h3>
-<p>For (K) tests, observed counts (y_k) follow binomial distributions with test‑specific sensitivities and specificities. The hierarchical structure shares information across tests while allowing test‑specific effects.</p>
-</section>
-</section>
-<section id="results" class="level2">
-<h2 class="anchored" data-anchor-id="results">Results</h2>
-<ul>
-<li><strong>Simulation study</strong>: Demonstrates unbiased prevalence estimates when the model is correctly specified.</li>
-<li><strong>Application to FDA‑reported data</strong>: Shows how raw observed positivity rates are adjusted and how uncertainty propagates to prevalence estimates.</li>
-</ul>
-</section>
-<section id="discussion" class="level2">
-<h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
-<p>The framework separates statistical modelling of test performance from epidemiological inference, enabling: - Calibrated prevalence estimates even with uncertain test characteristics. - Comparative evaluation of tests on a common scale. - Propagation of uncertainty from test performance to prevalence estimates for risk‑aware decision making.</p>
-</section>
-<section id="conclusions" class="level2">
-<h2 class="anchored" data-anchor-id="conclusions">Conclusions</h2>
-<p>By integrating Bayesian inference with a biologically plausible model of test outcomes, this approach improves the reliability of seroprevalence estimates derived from rapid COVID‑19 tests. Future extensions will consider hierarchical population structures and incorporate prior knowledge from related pathogens.</p>
-</section>
-<section id="references" class="level2">
-<h2 class="anchored" data-anchor-id="references">References</h2>
-<p>References can be added here in any citation style supported by Quarto.</p>
+<p>—title: A personal prehistory of decentralized appsdescription: Three half-finished projects from 2017 to 2019, an Ethereum dApp, a Steem protocol experiment, and a dat-powered lab notebook, and what they taught me before I came back to the same ideas in 2026.date: ’2026-09-05’categories:- Decentralized Infrastructuredraft: truecap-location: marginjupyter: kernelspec: display_name: Python 3 (main) language: python name: main—Going through my old GitHub repositories after writing about DAWN, I realized DAWN was not an isolated experiment but the middle act of a three-part arc that ran from 2017 to 2019. Each project attacked the same question from a different angle, which question being, in one sentence: can a small group of people keep shared records without trusting an operator? None of the projects shipped, but the pattern they trace is the same one I now work on with Pharos, so it is worth reconstructing the arc.## 1. dAppTest (mid 2017): the smart contract eraThe first attempt, from the spring of 2017, was an Ethereum dApp built the way everyone built them at the time: a Solidity contract called <code>Market</code> with offers that could be added, taken, and confirmed, the status machine expressed as an enum and the events as log entries, and a Riot.js frontend glued together with Bower. The git history is two commits long and the last one reads “trying to pass functions with values. not done yet.” What I remember of that era is the tooling friction: deploying to testnets, managing keys, paying gas to learn that your contract had a bug, and the sense that every simple application required an entire development stack to say something quite small. The lesson I took from it was the one that later shaped everything else: putting state into a smart contract buys you trustlessness at a high price, and for most applications the price exceeds the benefit.## 2. steem-app (2017 to 2018): the protocol eraThe second project was a change of substrate. Steem was free to transact on, fast, and had a generic <code>custom_json</code> operation that applications could define, so the same problem, a marketplace with offers and confirmations, could be modeled as a protocol over an existing public log rather than as a program running somewhere. The repository contains a Python blockchain reader with a pickled SQLite-like database, validators that parsed <code>send:&lt;amount&gt;@&lt;account&gt;</code> commands out of transaction memos, and a confirmation module that would broadcast confirmations and even upvote valid ones. The git history again ends mid-sentence, with a commit called “creating a app-specific database.”What this project clarified was the layering. The valuable part was not the contract logic, which was trivial, but the property that anyone could replay the public log and independently reconstruct the state, with validity defined by signatures and parsing rules rather than by code that had to be paid to run. That is the idea DAWN later stripped to its essentials, two operations and a signature chain. It is also, I can now see, the idea of a replicated log that underlies essentially all of the decentralized infrastructure I work with today.## 3. datnotebook (2019): the local-first eraThe third project came after a pause, and it moved the problem in the opposite direction: instead of putting records on a global public chain, make a lab notebook that works offline and syncs between devices. The repository is a React and Electron application, with entries in a Redux store, Summernote and Slate editors competing for attention in the dependencies, and a data model of notebooks with dated entries. The name records the ambition: dat was the protocol that later became Hypercore, the same append-only, content-addressed log that Pharos is built on. The git history is a single commit, “moving to electron,” from July 2019.This was the moment the arc’s underlying question finally got a substrate that fit it. A blockchain is one answer to how strangers agree on shared state, but a lab notebook does not need consensus between strangers; it needs tamper-evident history between devices owned by the same person or small group. Dat and Hypercore were designed for exactly that, single-writer append-only logs that peers verify by signature rather than by proof of work. The project itself went nowhere, but the substrate question it raised is the one that matters.## The arcSeen together, the three projects trace a movement away from global consensus and toward personal, verifiable logs: from a contract on Ethereum, where trustlessness is bought with fees and every application pays the same heavy price, to a protocol on Steem, where the log is public but the logic is application-level, to a local-first notebook, where the history is personal but the integrity guarantees are the same cryptographic ones. The 2021 NFT boom, which I wrote about in the DAWN post, ran the first era’s model at planetary scale and demonstrated its costs; the p2p infrastructure I use now, Hypercore and Hyperswarm, is the third era’s model matured into something usable.What is a little sobering is how long the ideas sat still while the tooling caught up. The claim I would sign in 2017, the replayable log I parsed in 2018, and the content-addressed history I wanted in 2019 are all present in what I build now. The difference is that in 2026 the plumbing exists: the substrate is mature, the identity story is solvable, and the cost is near zero. The arc did not end. It was waiting for its decade.</p>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
