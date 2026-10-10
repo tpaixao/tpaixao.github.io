@@ -81,7 +81,7 @@ ul.task-list li input[type="checkbox"] {
 <link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent quarto-light">
+<body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top"><div id="quarto-draft-alert" class="alert alert-warning"><i class="bi bi-pencil-square"></i>Draft</div>
@@ -121,15 +121,16 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content page-columns page-full" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">A personal health-data pipeline on a Raspberry Pi</h1>
   <div class="quarto-categories">
-    <div class="quarto-category">Engineering Notes</div>
+    <div class="quarto-category">General geekery</div>
   </div>
   </div>
 
@@ -158,9 +159,59 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>—title: A personal health-data pipeline on a Raspberry Pidescription: ’From Google Drive CSV exports to a tidy dataset and a self-contained Plotly dashboard: the data-engineering decisions that matter when the subject is one person and the data is messy.’date: ’2026-09-13’categories:- Engineering Notesdraft: truecap-location: marginjupyter: kernelspec: display_name: Python 3 (main) language: python name: main—I wear a smartwatch and carry a phone, and both track my health data, which syncs to Google Drive every morning as CSV exports. This post describes the pipeline I built to turn those exports into something analyzable: a tidy one-row-per-day dataset and a self-contained dashboard, rebuilt daily on a Raspberry Pi. The repository is at <a href="https://github.com/tpaixao/health_sync_data">github.com/tpaixao/health_sync_data</a>.<img src="../assets/health_sync_data/dashboard_top.png" class="img-fluid" alt="The dashboard: stat cards computed over recorded days only, with the steps chart below. Watch data takes precedence when worn; the phone fills gaps.">## 1. The data model was the hard partTwo sources record overlapping signals: a Huawei Health watch and Health Connect (phone). Steps come from both; heart rate and sleep only from the watch. The exports arrive as one rolling 30-day file per day, which means each calendar day appears in about thirty overlapping files, and the naive aggregation is wrong: summing across files produces 478,000-step days. The correct operation is to take the maximum per-day value across files, then deduplicate between sources with watch-wins precedence and phone filling gaps.This is the least glamorous part of the project and the part with the most permanent consequences. Decisions like “take the max, never the sum” or “watch wins” are encoded once in the loader and silently determine every number the dashboard will ever show.## 2. Missing data is information, not zeroA single-subject dataset has no sampling variability to hide behind: the wearer takes the watch off, forgets it at home, charges it. The design rules reflect that:- No zero-filling or interpolation for heart rate and sleep on unworn days; those days are missing values, not zero values.- Each day carries a coverage class (full, partial, minimal, none), so any downstream aggregation can restrict to observed days explicitly.- Trends are computed over recorded days only; the stat cards in the dashboard state their denominator (“5 nights recorded”, “30 days with watch”).The result is honest by construction: 378 days of data, of which 125 have full coverage and 80 have none. Zero-filling would have silently converted “watch not worn” into “slept zero hours”.## 3. A static dashboard is enoughThe dashboard is a single HTML file, regenerated daily from the tidy CSV embedded as in-page JSON, with Plotly loaded from CDN and all rendering client-side. No server, no database, no JavaScript build step. Charts pan by dragging horizontally with the y-axis locked, which makes time series pleasant to browse on a phone.<img src="../assets/health_sync_data/chart-sleep.png" class="img-fluid" alt="Sleep by night, stacked by stage, with naps as markers. Recording drops off after April 2026, shown honestly as gaps rather than zeros."><img src="../assets/health_sync_data/chart-hr.png" class="img-fluid" alt="Heart rate over the full period: min/mean/max with resting heart rate and its 7-day average on a separate axis. Resting HR is the recovery signal here, since the exports contain no beat-level data for real HRV.">The daily rebuild runs from cron fifteen minutes after the Drive sync, and reports success or failure. Because the dashboard is a build artifact rather than a service, there is nothing to keep alive and nothing to break beyond the cron job itself.<img src="../assets/health_sync_data/chart-wear.png" class="img-fluid" alt="Wear hours per day against sleep hours. The wear-time trace doubles as a data-quality display: gaps in the line are days the watch was off.">## 4. What the data says (and does not)A year in, the honest findings are modest. Sleep duration and heart rate are essentially uncorrelated in this dataset (r near zero, n=157), so the sleep-versus-HR cross-plot is not informative. Resting heart rate computed from the low decile of sleep-window samples behaves sensibly and is the closest available recovery signal, since these exports contain minute-level heart rate only, no beat-to-beat intervals, and therefore no real HRV.That last point is worth stating plainly: consumer exports decide for you what is measurable. The data schema is the ceiling of the analysis, not the watch’s sensing capability.## Take-home messages- Rolling export files demand max-based deduplication; summing across overlapping files fabricates data.- For single-subject data, encode missingness explicitly (coverage classes, NA for unworn days) instead of zero-filling; every downstream number depends on this.- A static, self-contained dashboard rebuilt daily is the right complexity for personal analytics: no services to babysit.- Consumer health exports define the analysis ceiling; no RR intervals means no HRV, regardless of what the marketing says.## References- Pipeline repository: github.com/tpaixao/health_sync_data</p>
+<p>I wear a smartwatch and carry a phone, and both track my health data, which syncs to Google Drive every morning as CSV exports. This post describes the pipeline I built to turn those exports into something analyzable: a tidy one-row-per-day dataset and a self-contained dashboard, rebuilt daily on a Raspberry Pi. The (probably still private) repository is at <a href="https://github.com/tpaixao/health_sync_data">github.com/tpaixao/health_sync_data</a>.</p>
+<div class="quarto-figure quarto-figure-center page-columns page-full">
+<figure class="figure page-columns page-full">
+<p><img src="images/health_dashboard.png" class="img-fluid figure-img"></p>
+<figcaption class="margin-caption">The dashboard: stat cards computed over recorded days only, with the steps chart below. Watch data takes precedence when worn; the phone fills gaps.</figcaption>
+</figure>
+</div>
+<section id="the-data-model-was-the-hard-part" class="level2">
+<h2 class="anchored" data-anchor-id="the-data-model-was-the-hard-part">1. The data model was the hard part</h2>
+<p>Two sources record overlapping signals: a Huawei Health watch and Health Connect (phone). Steps come from both; heart rate and sleep only from the watch. The exports arrive as one rolling 30-day file per day, which means each calendar day appears in about thirty overlapping files, and the naive aggregation is wrong: summing across files produces 478,000-step days. The correct operation is to take the maximum per-day value across files, then deduplicate between sources with watch-wins precedence and phone filling gaps.</p>
+<p>This is the least glamorous part of the project and the part with the most permanent consequences. Decisions like “take the max, never the sum” or “watch wins” are encoded once in the loader and silently determine every number the dashboard will ever show.</p>
+</section>
+<section id="missing-data-is-information-not-zero" class="level2">
+<h2 class="anchored" data-anchor-id="missing-data-is-information-not-zero">2. Missing data is information, not zero</h2>
+<p>A single-subject dataset has no sampling variability to hide behind: the wearer takes the watch off, forgets it at home, charges it. The design rules reflect that:</p>
+<ul>
+<li>No zero-filling or interpolation for heart rate and sleep on unworn days; those days are missing values, not zero values.</li>
+<li>Each day carries a coverage class (full, partial, minimal, none), so any downstream aggregation can restrict to observed days explicitly.</li>
+<li>Trends are computed over recorded days only; the stat cards in the dashboard state their denominator (“5 nights recorded”, “30 days with watch”).</li>
+</ul>
+<p>The result is honest by construction: 378 days of data, of which 125 have full coverage and 80 have none. Zero-filling would have silently converted “watch not worn” into “slept zero hours”.</p>
+</section>
+<section id="a-static-dashboard-is-enough" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="a-static-dashboard-is-enough">3. A static dashboard is enough</h2>
+<p>The dashboard is a single HTML file, regenerated daily from the tidy CSV embedded as in-page JSON, with Plotly loaded from CDN and all rendering client-side. No server, no database, no JavaScript build step. Charts pan by dragging horizontally with the y-axis locked, which makes time series pleasant to browse on a phone.</p>
+<div class="quarto-figure quarto-figure-center page-columns page-full">
+<figure class="figure page-columns page-full">
+<p><img src="images/chart_sleep.png" class="img-fluid figure-img"></p>
+<figcaption class="margin-caption">Sleep by night, stacked by stage, with naps as markers. Recording drops off after April 2026, shown honestly as gaps rather than zeros.</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center page-columns page-full">
+<figure class="figure page-columns page-full">
+<p><img src="images/chart_bpm.png" class="img-fluid figure-img"></p>
+<figcaption class="margin-caption">Heart rate over the full period: min/mean/max with resting heart rate and its 7-day average on a separate axis. Resting HR is the recovery signal here, since the exports contain no beat-level data for real HRV.</figcaption>
+</figure>
+</div>
+<p>The daily rebuild runs from cron fifteen minutes after the Drive sync, and reports success or failure. Because the dashboard is a build artifact rather than a service, there is nothing to keep alive and nothing to break beyond the cron job itself.</p>
+<div class="quarto-figure quarto-figure-center page-columns page-full">
+<figure class="figure page-columns page-full">
+<p><img src="images/chart_wear.png" class="img-fluid figure-img"></p>
+<figcaption class="margin-caption">Wear hours per day against sleep hours. The wear-time trace doubles as a data-quality display: gaps in the line are days the watch was off.</figcaption>
+</figure>
+</div>
+</section>
+<section id="what-the-data-says-and-does-not" class="level2">
+<h2 class="anchored" data-anchor-id="what-the-data-says-and-does-not">4. What the data says (and does not)</h2>
+<p>A year in, the honest findings are modest. Sleep duration and heart rate are essentially uncorrelated in this dataset (r near zero, n=157), so the sleep-versus-HR cross-plot is not informative. Resting heart rate computed from the low decile of sleep-window samples behaves sensibly and is the closest available recovery signal, since these exports contain minute-level heart rate only, no beat-to-beat intervals, and therefore no real HRV.</p>
+<p>One finding that surprised me was when I plotted the mean Heart rate over the time of the day; taking all values and asking what is my typical hear rate for this time of the day. I noticed that there’s a big jump in the morning (that’s normal, waking up, morning routine), which then decreases. But then there’s another jump after lunch! not expecting that, and I hope that’s normal.</p>
+<p>Related to that, I noticed that my recently my heart rate has been noticeably decreased compared to my overall average. I had very rough nights in the last year (new baby), so I guess better sleep really makes a difference!</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
