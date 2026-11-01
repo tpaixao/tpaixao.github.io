@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-10-30">
+<meta name="description" content="The annual school rankings are read as a league table, and a position in the list is heard as a difference in quality. Working with the 2026 national-exam table, restricted to schools with at least 100 exam sittings, I separate position from the grades that produce it, and show where the two come apart.">
+
+<title>School rankings: order without distance – Tiago Paixão</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../assets/favicon.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-18ce4314b9cdc075e59f6149f353d1f9.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-be5ae1251df9d4e315a8ac012e2bdbff.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed fullcontent quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Tiago Paixão</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../blog.html"> 
+<span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../publications.html"> 
+<span class="menu-text">Publications</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">School rankings: order without distance</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">Methods &amp; Inference</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    The annual school rankings are read as a league table, and a position in the list is heard as a difference in quality. Working with the 2026 national-exam table, restricted to schools with at least 100 exam sittings, I separate position from the grades that produce it, and show where the two come apart.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">October 30, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Every autumn Portuguese newspapers publish the ranking of secondary schools by performance in the national exams. The 2026 edition, assembled from the JNE tables by the Correio da Manhã datajournalism desk, lists 651 schools together with their average exam grade. The list invites a specific way of reading: a school at position 5 is <em>better</em> than a school at position 50, by an amount the reader is never shown. This post is about the difference between those two quantities, the position and the grade, and why the first hides the second. It is the first in a planned series on what the school ranking can and cannot tell you.</p>
+<section id="a-rank-is-not-a-distance" class="level2">
+<h2 class="anchored" data-anchor-id="a-rank-is-not-a-distance">A rank is not a distance</h2>
+<p>Ranks are an ordinal quantity: the only information in them is the order of pairwise comparisons, which school sits above which. The grade is a cardinal quantity: it carries a distance. Replacing the grade by a rank is harmless when the ranked quantity is well spread out and the units are far apart; it destroys information exactly where the distribution is dense. A league table built from a dense distribution does precisely this, and it does it throughout the table: two schools one position apart may differ by several grades, or by a fraction of one.</p>
+</section>
+<section id="one-position-many-different-distances" class="level2">
+<h2 class="anchored" data-anchor-id="one-position-many-different-distances">One position, many different distances</h2>
+<p>Load the filtered table and look at the top of it. The consecutive gaps at the top are not variations around a common distance; they are different worlds. Between positions 1 and 2 there are 4.84 points (164.51 versus 159.67). Between positions 3 and 4 there are 1.17 points (155.28 versus 154.11). And around position 210, ten consecutive gaps altogether cover 0.29 points, less than the distance between positions 3 and 4 alone. Note that nothing is wrong with the ranking itself as arithmetic: the rule is applied consistently. What the rank difference cannot tell you is what the grade difference actually means in terms of grades.</p>
+<div id="5b7eee2c-7407-4486-8cd0-8b86da0cb79a" class="cell" data-execution_count="7">
+<div class="cell-output cell-output-display" data-execution_count="7">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">rank</th>
+<th data-quarto-table-cell-role="th">escola</th>
+<th data-quarto-table-cell-role="th">concelho</th>
+<th data-quarto-table-cell-role="th">n</th>
+<th data-quarto-table-cell-role="th">media</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>1</td>
+<td>Colégio St. Paul's School</td>
+<td>Coimbra</td>
+<td>1</td>
+<td>178.00</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>2</td>
+<td>Grande Colégio Universal</td>
+<td>Porto</td>
+<td>87</td>
+<td>169.44</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>3</td>
+<td>Colégio Internacional de Vilamoura</td>
+<td>Loulé</td>
+<td>20</td>
+<td>164.75</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>4</td>
+<td>Colégio Nossa Senhora do Rosário</td>
+<td>Porto</td>
+<td>277</td>
+<td>164.51</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>5</td>
+<td>Colégio Horizonte</td>
+<td>Vila Nova de Gaia</td>
+<td>20</td>
+<td>161.70</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">646</th>
+<td>647</td>
+<td>Escola Monsenhor José Galamba de Oliveira</td>
+<td>Leiria</td>
+<td>10</td>
+<td>66.30</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">647</th>
+<td>648</td>
+<td>Escola Secundária da Baixa da Banheira, Vale d...</td>
+<td>Moita</td>
+<td>137</td>
+<td>64.11</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">648</th>
+<td>649</td>
+<td>Instituto Vaz Serra</td>
+<td>Sertã</td>
+<td>108</td>
+<td>61.54</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">649</th>
+<td>650</td>
+<td>Escola Básica Integrada Mouzinho da Silveira</td>
+<td>Corvo</td>
+<td>4</td>
+<td>54.25</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">650</th>
+<td>651</td>
+<td>Colégio Internacional Lusíadas</td>
+<td>Estrangeiro</td>
+<td>28</td>
+<td>53.29</td>
+</tr>
+</tbody>
+</table>
+
+<p>651 rows × 5 columns</p>
+</div>
+</div>
+</div>
+<div id="90035998" class="cell" data-execution_count="9">
+<div class="cell-output cell-output-stdout">
+<pre><code>431 schools with more than 100 exam sittings, grades from 61.54 to 164.51 on the 0-200 scale
+gap between ranks 1 and 2: 4.84 grades (164.51 vs 159.67)
+gap between ranks 2 and 3: 4.39 grades (159.67 vs 155.28)
+gap between ranks 3 and 4: 1.17 grades (155.28 vs 154.11)</code></pre>
+</div>
+</div>
+<p>The same disproportion runs through the whole table, and it has a location: the compression concentrates where the distribution of average grades is dense, around the middle. Half a grade around the median of 101.95 buys about 13 positions. The stretch from rank 210 to rank 219, ten consecutive gaps altogether, covers 0.29 grades. In the other direction, the largest gap in the filtered table is not at the top: 6.23 grades separate positions 429 and 430, near the bottom, where the schools thin out. And 19 pairs of consecutive schools share exactly the same average, their order decided by nothing the table reports.</p>
+<div id="11cdbd61" class="cell" data-execution_count="10">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Position against grade, and the grade price of one consecutive position.</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>fig, (axA, axB) <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="fl">8.6</span>, <span class="fl">3.6</span>))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel A: the staircase. Steep where schools are scarce, flat where they crowd.</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>axA.plot(grades, ranks, <span class="st">"."</span>, color<span class="op">=</span>BLUE, ms<span class="op">=</span><span class="fl">2.5</span>, alpha<span class="op">=</span><span class="fl">0.6</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>axA.invert_yaxis()</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>axA.set_xlim(<span class="dv">55</span>, <span class="dv">172</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>axA.set_xlabel(<span class="st">"average grade (0-200)"</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>axA.set_ylabel(<span class="st">"position in the ranking"</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># The one position that costs almost five grades.</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>g_top <span class="op">=</span> grade(<span class="dv">1</span>) <span class="op">-</span> grade(<span class="dv">2</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>axA.plot([grade(<span class="dv">2</span>), grade(<span class="dv">1</span>)], [<span class="dv">1</span>, <span class="dv">1</span>], color<span class="op">=</span>ORANGE, lw<span class="op">=</span><span class="fl">2.0</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>axA.annotate(<span class="ss">f"one position apart: </span><span class="sc">{</span>g_top<span class="sc">:.2f}</span><span class="ss"> grades"</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>             xy<span class="op">=</span>(grade(<span class="dv">2</span>) <span class="op">+</span> <span class="fl">0.5</span>, <span class="dv">1</span>), xytext<span class="op">=</span>(<span class="dv">133</span>, <span class="dv">62</span>), fontsize<span class="op">=</span><span class="fl">7.5</span>,</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>             color<span class="op">=</span>ORANGE, ha<span class="op">=</span><span class="st">"left"</span>, va<span class="op">=</span><span class="st">"center"</span>,</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>             arrowprops<span class="op">=</span><span class="bu">dict</span>(arrowstyle<span class="op">=</span><span class="st">"-"</span>, lw<span class="op">=</span><span class="fl">0.7</span>, color<span class="op">=</span>ORANGE))</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>arrows <span class="op">=</span> <span class="bu">dict</span>(arrowstyle<span class="op">=</span><span class="st">"-"</span>, lw<span class="op">=</span><span class="fl">0.7</span>, color<span class="op">=</span>MUTED)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> [(<span class="st">"N. S. do Ros</span><span class="ch">\u00e1</span><span class="st">rio (n=277)"</span>, <span class="dv">105</span>, <span class="dv">26</span>, grade(<span class="dv">1</span>) <span class="op">-</span> <span class="fl">1.5</span>, <span class="dv">1</span>),</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>          (<span class="st">"Novo da Maia (n=134)"</span>, <span class="dv">100</span>, <span class="dv">46</span>, grade(<span class="dv">2</span>) <span class="op">-</span> <span class="fl">1.5</span>, <span class="dv">2</span>),</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>          (<span class="st">"D. Diogo de Sousa (n=334)"</span>, <span class="dv">93</span>, <span class="dv">80</span>, grade(<span class="dv">3</span>) <span class="op">-</span> <span class="fl">1.5</span>, <span class="dv">3</span>),</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>          (<span class="st">"Efanor (n=162)"</span>, <span class="dv">88</span>, <span class="dv">120</span>, grade(<span class="dv">4</span>) <span class="op">-</span> <span class="fl">1.5</span>, <span class="dv">4</span>)]</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> text, tx, ty, px, py <span class="kw">in</span> labels:</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    axA.annotate(text, (px, py), xytext<span class="op">=</span>(tx, ty), fontsize<span class="op">=</span><span class="dv">7</span>, color<span class="op">=</span>INK2,</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>                 ha<span class="op">=</span><span class="st">"right"</span>, va<span class="op">=</span><span class="st">"center"</span>, arrowprops<span class="op">=</span>arrows)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="co"># The ten gaps that cost a fraction of a grade altogether.</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>spans <span class="op">=</span> grades[: <span class="op">-</span><span class="dv">10</span>] <span class="op">-</span> grades[<span class="dv">10</span>:]</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>j <span class="op">=</span> <span class="bu">int</span>(np.argmin(spans))</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>lo_rank <span class="op">=</span> <span class="bu">int</span>(ranks[j])</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>axA.plot([grades[j], grades[j]], [lo_rank, lo_rank <span class="op">+</span> <span class="dv">10</span>], color<span class="op">=</span>ORANGE, lw<span class="op">=</span><span class="fl">2.0</span>)</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>axA.annotate(<span class="ss">f"ten positions apart: </span><span class="sc">{</span>spans[j]<span class="sc">:.2f}</span><span class="ss"> grades"</span>, xy<span class="op">=</span>(grades[j] <span class="op">+</span> <span class="fl">0.6</span>, lo_rank <span class="op">+</span> <span class="dv">5</span>),</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>             xytext<span class="op">=</span>(<span class="dv">115</span>, <span class="dv">330</span>), fontsize<span class="op">=</span><span class="fl">7.5</span>,</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>             color<span class="op">=</span>ORANGE, ha<span class="op">=</span><span class="st">"left"</span>, va<span class="op">=</span><span class="st">"center"</span>,</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>             arrowprops<span class="op">=</span><span class="bu">dict</span>(arrowstyle<span class="op">=</span><span class="st">"-"</span>, lw<span class="op">=</span><span class="fl">0.7</span>, color<span class="op">=</span>ORANGE))</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel B: what one position costs across the whole table (log scale).</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>gaps <span class="op">=</span> <span class="op">-</span>np.diff(grades)</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>axB.bar(ranks[:<span class="op">-</span><span class="dv">1</span>], gaps, width<span class="op">=</span><span class="fl">1.0</span>, color<span class="op">=</span>BLUE, alpha<span class="op">=</span><span class="fl">0.75</span>)</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>axB.bar(<span class="dv">1</span>, gaps[<span class="dv">0</span>], width<span class="op">=</span><span class="fl">1.0</span>, color<span class="op">=</span>ORANGE, zorder<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>axB.set_yscale(<span class="st">"log"</span>)</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>axB.set_ylim(<span class="fl">5e-3</span>, <span class="dv">20</span>)</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>axB.set_xlabel(<span class="st">"position in the ranking"</span>)</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>axB.set_ylabel(<span class="st">"grades between one position and the next"</span>)</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>axB.annotate(<span class="st">"4.84 points"</span>, xy<span class="op">=</span>(<span class="fl">1.8</span>, gaps[<span class="dv">0</span>]),</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>             xytext<span class="op">=</span>(<span class="dv">35</span>, <span class="dv">8</span>), fontsize<span class="op">=</span><span class="fl">7.5</span>, color<span class="op">=</span>ORANGE, ha<span class="op">=</span><span class="st">"left"</span>, va<span class="op">=</span><span class="st">"center"</span>,</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>             arrowprops<span class="op">=</span><span class="bu">dict</span>(arrowstyle<span class="op">=</span><span class="st">"-"</span>, lw<span class="op">=</span><span class="fl">0.7</span>, color<span class="op">=</span>ORANGE))</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>k <span class="op">=</span> <span class="bu">int</span>(np.argmax(gaps))</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>axB.annotate(<span class="st">"6.23 points"</span>, xy<span class="op">=</span>(ranks[k], gaps[k]),</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>             xytext<span class="op">=</span>(<span class="dv">300</span>, <span class="dv">9</span>), fontsize<span class="op">=</span><span class="fl">7.5</span>, color<span class="op">=</span>ORANGE, ha<span class="op">=</span><span class="st">"left"</span>, va<span class="op">=</span><span class="st">"center"</span>,</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>             arrowprops<span class="op">=</span><span class="bu">dict</span>(arrowstyle<span class="op">=</span><span class="st">"-"</span>, lw<span class="op">=</span><span class="fl">0.7</span>, color<span class="op">=</span>ORANGE))</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="school-rankings-rank-vs-mark_files/figure-html/cell-4-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="where-the-compression-lives" class="level2">
+<h2 class="anchored" data-anchor-id="where-the-compression-lives">Where the compression lives</h2>
+<p>Figure 1 makes the point in two views of the same arithmetic. On the left, position against grade traces a staircase: steep at the top, where schools are scarce, and essentially flat in the middle, where dozens of schools share nearly the same average. On the right, each bar is the underlying grade gap of one consecutive position in the table, on a log scale: the 4.84 grades separating positions 1 and 2 and the gaps of a few hundredths of a grade in the middle are the same unit of the table, one position. Note that the ordination itself is beyond dispute in both regions; what changes by orders of magnitude is what one unit of the table is worth in the quantity that produced it.</p>
+<p>This is the sense in which a rank is not a size. Any sentence built on rank differences, <em>close in the ranking</em>, <em>far ahead of</em>, <em>a dozen positions behind</em>, is silent about magnitude, and the underlying distribution supplies magnitudes that differ by a factor of nearly 500 between one stretch of the table and another. The fix is not to abandon rankings; it is to remember that the table answers <em>who is above whom</em> and never <em>by how much</em>.</p>
+</section>
+<section id="take-home" class="level2">
+<h2 class="anchored" data-anchor-id="take-home">Take-home</h2>
+<ul>
+<li>A ranking is an ordinal statement; the grades behind it are cardinal. Compressing one into the other discards magnitude, and the loss is not uniform.</li>
+<li>In the 2026 table restricted to schools with more than 100 exam sittings, one position costs 4.84 grades at the top and 0.01 grades in the middle; ten consecutive positions around rank 210 span 0.29 grades in total, and 27 schools sit within a single grade around the median.</li>
+<li>Positions compare, grades measure. Before reading a league table as a scale of quality, read the grades.</li>
+</ul>
+<p><strong>Data and code note.</strong> The table used here is the 2026 school ranking from the Correio da Manhã datajournalism pages (<a href="https://www.cmjornal.pt/datajournalism/schoolresults/results/2026/1">results/2026/1</a>), a republication of the Ministério da Educação / JNE national exam results (exams sat in June 2026, school year 2025/26); grades are school averages on the 0-200 scale, and the number of exam sittings per school is given alongside. The analysis keeps schools with more than 100 exam sittings, 431 of the 651 listed; the filter and its sensitivity to the cutoff are discussed in Section 2. The working copy is in a private data repository, assembled with documentation of the source tables and their quirks; the computations in this post run on that copy.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/tiagopaixao\.com");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
